@@ -24,7 +24,7 @@ export function ThemeSelector() {
           <span className="sr-only">Escolher tema</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-6 theme-selector" align="end">
+      <PopoverContent className="w-96 p-6 theme-selector" align="end">
         <div className="space-y-4">
           <div className="text-center">
             <h3 className="text-lg font-semibold mb-2">Escolher Tema</h3>
@@ -33,7 +33,7 @@ export function ThemeSelector() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3 max-h-80 overflow-y-auto">
             <AnimatePresence>
               {availableThemes.map((themeOption, index) => (
                 <motion.div
@@ -43,14 +43,14 @@ export function ThemeSelector() {
                   exit={{ opacity: 0, scale: 0.8 }}
                   transition={{ 
                     duration: 0.3, 
-                    delay: index * 0.05,
+                    delay: index * 0.03,
                     ease: "easeOut" 
                   }}
                 >
                   <Card 
-                    className={`theme-option cursor-pointer transition-all duration-300 hover:shadow-lg ${
+                    className={`theme-option cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105 ${
                       theme === themeOption.name 
-                        ? 'ring-2 ring-primary shadow-lg' 
+                        ? 'ring-2 ring-primary shadow-lg scale-105' 
                         : 'hover:ring-1 hover:ring-primary/50'
                     }`}
                     onClick={() => {
@@ -58,12 +58,12 @@ export function ThemeSelector() {
                       setIsOpen(false);
                     }}
                   >
-                    <CardContent className="p-4">
-                      <div className="space-y-3">
+                    <CardContent className="p-3">
+                      <div className="space-y-2">
                         {/* Preview das cores */}
-                        <div className="flex space-x-1 h-3 rounded-full overflow-hidden">
+                        <div className="flex space-x-1 h-4 rounded-lg overflow-hidden shadow-sm">
                           <div 
-                            className="flex-1 rounded-l-full"
+                            className="flex-1 rounded-l-lg"
                             style={{ backgroundColor: themeOption.colors.primary }}
                           />
                           <div 
@@ -71,29 +71,28 @@ export function ThemeSelector() {
                             style={{ backgroundColor: themeOption.colors.secondary }}
                           />
                           <div 
-                            className="flex-1 rounded-r-full"
+                            className="flex-1 rounded-r-lg"
                             style={{ backgroundColor: themeOption.colors.accent }}
                           />
                         </div>
 
-                        {/* Nome e descrição */}
-                        <div className="space-y-1">
-                          <div className="flex items-center justify-between">
-                            <h4 className="font-medium text-sm">{themeOption.label}</h4>
-                            {theme === themeOption.name && (
-                              <motion.div
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ duration: 0.2 }}
-                              >
-                                <Check className="h-4 w-4 text-primary" />
-                              </motion.div>
-                            )}
-                          </div>
-                          <p className="text-xs text-muted-foreground">
-                            {themeOption.description}
-                          </p>
+                        {/* Nome e check */}
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-semibold text-xs truncate">{themeOption.label}</h4>
+                          {theme === themeOption.name && (
+                            <motion.div
+                              initial={{ scale: 0, rotate: -180 }}
+                              animate={{ scale: 1, rotate: 0 }}
+                              transition={{ duration: 0.3, type: "spring" }}
+                            >
+                              <Check className="h-3 w-3 text-primary" />
+                            </motion.div>
+                          )}
                         </div>
+                        
+                        <p className="text-xs text-muted-foreground line-clamp-2">
+                          {themeOption.description}
+                        </p>
                       </div>
                     </CardContent>
                   </Card>

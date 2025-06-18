@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "light" | "dark" | "black" | "green" | "red" | "purple" | "blue" | "orange";
+type Theme = "light" | "dark" | "black" | "green" | "red" | "purple" | "blue" | "orange" | "pink" | "cyan" | "yellow" | "indigo" | "emerald" | "rose";
 
 type ThemeProviderProps = {
   children: React.ReactNode;
@@ -45,32 +45,68 @@ const availableThemes = [
   {
     name: "green" as Theme,
     label: "Green",
-    description: "Preto, branco e verde",
+    description: "Verde vibrante",
     colors: { primary: "#22c55e", secondary: "#16a34a", accent: "#15803d" }
   },
   {
     name: "red" as Theme,
     label: "Red",
-    description: "Preto, branco e vermelho",
+    description: "Vermelho intenso",
     colors: { primary: "#ef4444", secondary: "#dc2626", accent: "#b91c1c" }
   },
   {
     name: "purple" as Theme,
     label: "Purple",
-    description: "Preto, branco e roxo",
+    description: "Roxo elegante",
     colors: { primary: "#8b5cf6", secondary: "#7c3aed", accent: "#6d28d9" }
   },
   {
     name: "blue" as Theme,
     label: "Blue",
-    description: "Preto, branco e azul",
+    description: "Azul profundo",
     colors: { primary: "#3b82f6", secondary: "#2563eb", accent: "#1d4ed8" }
   },
   {
     name: "orange" as Theme,
     label: "Orange",
-    description: "Preto, branco e laranja",
+    description: "Laranja energético",
     colors: { primary: "#f97316", secondary: "#ea580c", accent: "#c2410c" }
+  },
+  {
+    name: "pink" as Theme,
+    label: "Pink",
+    description: "Rosa moderno",
+    colors: { primary: "#ec4899", secondary: "#db2777", accent: "#be185d" }
+  },
+  {
+    name: "cyan" as Theme,
+    label: "Cyan",
+    description: "Ciano refrescante",
+    colors: { primary: "#06b6d4", secondary: "#0891b2", accent: "#0e7490" }
+  },
+  {
+    name: "yellow" as Theme,
+    label: "Yellow",
+    description: "Amarelo brilhante",
+    colors: { primary: "#eab308", secondary: "#ca8a04", accent: "#a16207" }
+  },
+  {
+    name: "indigo" as Theme,
+    label: "Indigo",
+    description: "Índigo místico",
+    colors: { primary: "#6366f1", secondary: "#4f46e5", accent: "#4338ca" }
+  },
+  {
+    name: "emerald" as Theme,
+    label: "Emerald",
+    description: "Esmeralda luxuoso",
+    colors: { primary: "#10b981", secondary: "#059669", accent: "#047857" }
+  },
+  {
+    name: "rose" as Theme,
+    label: "Rose",
+    description: "Rosa suave",
+    colors: { primary: "#f43f5e", secondary: "#e11d48", accent: "#be123c" }
   }
 ];
 

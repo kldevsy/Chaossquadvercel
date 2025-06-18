@@ -21,6 +21,7 @@ import type { Artist } from "@shared/schema";
 
 interface MusicPlayerProps {
   isVisible: boolean;
+  isMinimized: boolean;
   currentArtist: Artist | null;
   isPlaying: boolean;
   currentTime: number;
@@ -32,10 +33,12 @@ interface MusicPlayerProps {
   onSeek: (time: number) => void;
   onVolumeChange: (volume: number) => void;
   onClose: () => void;
+  onToggleMinimize: () => void;
 }
 
 export default function MusicPlayer({
   isVisible,
+  isMinimized,
   currentArtist,
   isPlaying,
   currentTime,
@@ -47,6 +50,7 @@ export default function MusicPlayer({
   onSeek,
   onVolumeChange,
   onClose,
+  onToggleMinimize,
 }: MusicPlayerProps) {
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);

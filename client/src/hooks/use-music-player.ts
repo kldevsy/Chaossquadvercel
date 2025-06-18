@@ -8,6 +8,7 @@ export function useMusicPlayer() {
   const [duration, setDuration] = useState(225); // 3:45 default
   const [volume, setVolume] = useState(70);
   const [isPlayerVisible, setIsPlayerVisible] = useState(false);
+  const [isPlayerMinimized, setIsPlayerMinimized] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -137,6 +138,11 @@ export function useMusicPlayer() {
     setIsPlayerVisible(false);
     setCurrentArtist(null);
     setCurrentTime(0);
+    setIsPlayerMinimized(false);
+  };
+
+  const toggleMinimize = () => {
+    setIsPlayerMinimized(!isPlayerMinimized);
   };
 
   return {
@@ -146,6 +152,7 @@ export function useMusicPlayer() {
     duration,
     volume,
     isPlayerVisible,
+    isPlayerMinimized,
     playArtist,
     togglePlayPause,
     seek,
@@ -153,5 +160,6 @@ export function useMusicPlayer() {
     next,
     previous,
     closePlayer,
+    toggleMinimize,
   };
 }
