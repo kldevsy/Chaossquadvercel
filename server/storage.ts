@@ -117,7 +117,12 @@ export class MemStorage implements IStorage {
 
     sampleArtists.forEach(artist => {
       const id = this.currentArtistId++;
-      const newArtist: Artist = { ...artist, id };
+      const newArtist: Artist = { 
+        ...artist, 
+        id,
+        musicUrl: artist.musicUrl || null,
+        isActive: artist.isActive ?? true
+      };
       this.artists.set(id, newArtist);
     });
   }
@@ -166,7 +171,12 @@ export class MemStorage implements IStorage {
 
   async createArtist(insertArtist: InsertArtist): Promise<Artist> {
     const id = this.currentArtistId++;
-    const artist: Artist = { ...insertArtist, id };
+    const artist: Artist = { 
+      ...insertArtist, 
+      id,
+      musicUrl: insertArtist.musicUrl || null,
+      isActive: insertArtist.isActive ?? true
+    };
     this.artists.set(id, artist);
     return artist;
   }

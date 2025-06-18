@@ -15,8 +15,8 @@ export const artists = pgTable("artists", {
   description: text("description").notNull(),
   roles: text("roles").array().notNull(),
   socialLinks: text("social_links").notNull(), // JSON string
-  musicUrl: text("music_url"),
-  isActive: boolean("is_active").default(true),
+  musicUrl: text("music_url").default(null),
+  isActive: boolean("is_active").default(true).notNull(),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({

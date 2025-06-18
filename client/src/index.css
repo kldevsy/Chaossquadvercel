@@ -98,7 +98,8 @@
   }
 
   .playing-glow {
-    @apply shadow-lg shadow-primary/40;
+    @apply shadow-lg;
+    box-shadow: 0 10px 15px -3px rgba(34, 197, 94, 0.4), 0 4px 6px -2px rgba(34, 197, 94, 0.1);
   }
 
   .gradient-text {
