@@ -1,0 +1,78 @@
+# GeeKTunes - Music Artist Platform
+
+## Overview
+
+GeeKTunes is a modern web application for discovering and exploring music artists with a focus on geek culture and gaming-inspired music. The platform features a clean, responsive interface for browsing artists by categories, playing music samples, and managing artist profiles.
+
+## System Architecture
+
+The application follows a full-stack TypeScript architecture with a clear separation between client and server:
+
+- **Frontend**: React with TypeScript, styled using Tailwind CSS and shadcn/ui components
+- **Backend**: Express.js server with TypeScript
+- **Database**: PostgreSQL with Drizzle ORM for type-safe database operations
+- **Build Tool**: Vite for fast development and optimized production builds
+- **Deployment**: Configured for Replit with autoscale deployment
+
+## Key Components
+
+### Frontend Architecture
+- **React Router**: Using Wouter for lightweight client-side routing
+- **State Management**: TanStack Query for server state management and caching
+- **UI Components**: shadcn/ui component library built on Radix UI primitives
+- **Styling**: Tailwind CSS with custom CSS variables for theming
+- **Animations**: Framer Motion for smooth transitions and micro-interactions
+- **Theme System**: Dark/light mode support with persistent storage
+
+### Backend Architecture
+- **API Design**: RESTful endpoints for artist management and discovery
+- **Database Layer**: Drizzle ORM with PostgreSQL for data persistence
+- **Storage Interface**: Abstracted storage layer with in-memory implementation for development
+- **Development Server**: Vite integration for hot module replacement in development
+
+### Database Schema
+The application uses two main entities:
+- **Users**: Basic user authentication with username/password
+- **Artists**: Comprehensive artist profiles including name, avatar, description, roles, social links, and music URLs
+
+## Data Flow
+
+1. **Client Requests**: React components use TanStack Query to fetch data from API endpoints
+2. **API Layer**: Express routes handle HTTP requests and validate input
+3. **Storage Layer**: Abstracted storage interface allows switching between in-memory and database implementations
+4. **Database Operations**: Drizzle ORM provides type-safe database queries to PostgreSQL
+
+## External Dependencies
+
+### Core Dependencies
+- **@neondatabase/serverless**: PostgreSQL database connection for serverless environments
+- **drizzle-orm & drizzle-kit**: Type-safe ORM and migration tools
+- **@tanstack/react-query**: Server state management and caching
+- **framer-motion**: Animation library for enhanced user experience
+- **@radix-ui/***: Headless UI primitives for accessibility
+
+### Development Tools
+- **Vite**: Fast build tool with HMR support
+- **TypeScript**: Type safety across the entire stack
+- **Tailwind CSS**: Utility-first CSS framework
+- **ESBuild**: Fast JavaScript bundler for production builds
+
+## Deployment Strategy
+
+The application is configured for deployment on Replit with the following setup:
+- **Development**: `npm run dev` starts both client and server with hot reloading
+- **Production Build**: `npm run build` creates optimized bundles for both client and server
+- **Database Migrations**: `npm run db:push` applies schema changes to PostgreSQL
+- **Port Configuration**: Server runs on port 5000, mapped to external port 80
+- **Auto-scaling**: Configured for automatic scaling based on demand
+
+The build process separates client-side assets (served statically) from the server bundle, optimizing for performance and deployment efficiency.
+
+## User Preferences
+
+Preferred communication style: Simple, everyday language.
+
+## Changelog
+
+Changelog:
+- June 18, 2025. Initial setup
