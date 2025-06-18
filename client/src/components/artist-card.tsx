@@ -14,11 +14,11 @@ interface ArtistCardProps {
 }
 
 const roleColors: Record<string, string> = {
-  cantor: "bg-primary text-primary-foreground",
-  compositor: "bg-orange-500 text-white",
-  beatmaker: "bg-purple-600 text-white",
-  mixer: "bg-blue-500 text-white",
-  editor: "bg-green-600 text-white",
+  cantor: "bg-gradient-to-r from-primary to-primary/80 text-white",
+  compositor: "bg-gradient-to-r from-orange-500 to-orange-600 text-white",
+  beatmaker: "bg-gradient-to-r from-purple-500 to-purple-600 text-white",
+  mixer: "bg-gradient-to-r from-blue-500 to-blue-600 text-white",
+  editor: "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white",
 };
 
 const socialIcons: Record<string, any> = {
@@ -43,14 +43,14 @@ export default function ArtistCard({ artist, isPlaying, onPlay, onPause }: Artis
   return (
     <motion.div
       className="group cursor-pointer"
-      whileHover={{ scale: 1.02, y: -8 }}
-      transition={{ duration: 0.3 }}
+      whileHover={{ scale: 1.03, y: -12 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
       onClick={handlePlayPause}
     >
-      <Card className={`h-full shadow-lg hover:shadow-2xl transition-all duration-300 ${
-        isPlaying ? "playing-glow" : ""
+      <Card className={`modern-card h-full transition-all duration-500 hover:shadow-2xl hover:shadow-primary/20 ${
+        isPlaying ? "playing-glow border-primary/50" : "border-border/30"
       }`}>
-        <CardContent className="p-6">
+        <CardContent className="p-8">
           {/* Avatar */}
           <div className="relative mb-4 flex justify-center">
             <div className={`w-24 h-24 rounded-full overflow-hidden ring-4 ring-offset-4 ring-offset-background transition-all duration-300 ${

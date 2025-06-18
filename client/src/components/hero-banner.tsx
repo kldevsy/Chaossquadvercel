@@ -4,10 +4,10 @@ import { Play, Headphones, Music } from "lucide-react";
 
 export default function HeroBanner() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-      {/* Animated Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-purple-500/10 to-primary/10">
-        <div className="absolute inset-0 opacity-20">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24">
+      {/* Modern Animated Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-primary/5 to-secondary/10">
+        <div className="absolute inset-0 opacity-30">
           <motion.div
             className="absolute top-1/4 left-1/4 w-32 h-32 bg-primary rounded-full"
             animate={{
@@ -49,45 +49,49 @@ export default function HeroBanner() {
 
       <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
         <motion.h1
-          className="text-6xl md:text-8xl font-bold mb-6"
+          className="text-5xl md:text-7xl font-bold mb-8 leading-tight"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
           <span className="gradient-text">
-            Música Geek
+            Plataforma Musical
+          </span>
+          <br />
+          <span className="text-foreground font-light">
+            Profissional
           </span>
         </motion.h1>
         
         <motion.p
-          className="text-xl md:text-2xl mb-8 text-muted-foreground"
+          className="text-lg md:text-xl mb-12 text-muted-foreground max-w-2xl leading-relaxed"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
         >
-          Descubra os melhores artistas da cena musical geek brasileira
+          Conecte-se com os melhores talentos musicais. Descubra, ouça e colabore com artistas profissionais de alta qualidade.
         </motion.p>
         
         <motion.div
-          className="flex flex-col sm:flex-row gap-4 justify-center"
+          className="flex flex-col sm:flex-row gap-6 justify-center"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
         >
           <Button 
             size="lg" 
-            className="px-8 py-4 bg-primary text-primary-foreground hover:bg-primary/90 transform transition-all duration-300 hover:scale-105"
+            className="modern-button px-10 py-6 text-lg font-semibold rounded-2xl shadow-xl"
           >
-            <Play className="mr-2 h-5 w-5" />
+            <Play className="mr-3 h-6 w-6" />
             Explorar Artistas
           </Button>
           <Button 
             variant="outline" 
             size="lg"
-            className="px-8 py-4 border-primary text-primary hover:bg-primary hover:text-primary-foreground transform transition-all duration-300"
+            className="px-10 py-6 text-lg font-semibold rounded-2xl border-2 border-primary/30 bg-background/60 backdrop-blur-sm hover:bg-primary/10 transition-all duration-300 hover:border-primary/60"
           >
-            <Headphones className="mr-2 h-5 w-5" />
-            Ouça Agora
+            <Headphones className="mr-3 h-6 w-6" />
+            Descobrir Talentos
           </Button>
         </motion.div>
 
