@@ -42,21 +42,20 @@ export function useMusicPlayer() {
   }, [currentArtist]);
 
   const playArtist = (artist: Artist) => {
-    if (currentArtist?.id === artist.id && isPlaying) {
-      pause();
-      return;
-    }
-
     setCurrentArtist(artist);
     setIsPlayerVisible(true);
+    setIsPlayerMinimized(false);
     
-    // Simulate audio loading and playing
+    // Only show player, don't auto-play
+    console.log(`Artist selected: ${artist.name}`);
+    setIsPlaying(false);
+    setCurrentTime(0);
+    
+    // Prepare audio but don't play
     if (audioRef.current) {
       audioRef.current.src = artist.musicUrl || "";
       audioRef.current.volume = volume / 100;
     }
-    
-    play();
   };
 
   const play = () => {
