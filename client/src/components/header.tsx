@@ -28,7 +28,7 @@ export default function Header({ onSearch, searchQuery }: HeaderProps) {
             </div>
             <div>
               <h1 className="text-2xl font-bold gradient-text">
-                GeeKTunes
+                chaos squad 
               </h1>
               <p className="text-xs text-muted-foreground">Música Profissional</p>
             </div>

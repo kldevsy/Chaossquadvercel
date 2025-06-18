@@ -52,26 +52,37 @@ export default function ArtistCard({ artist, isPlaying, onPlay, onPause }: Artis
       }`}>
         <CardContent className="p-8">
           {/* Avatar */}
-          <div className="relative mb-4 flex justify-center">
-            <div className={`w-24 h-24 rounded-full overflow-hidden ring-4 ring-offset-4 ring-offset-background transition-all duration-300 ${
-              isPlaying ? "ring-primary" : "ring-primary/50 group-hover:ring-orange-500"
+          <div className="relative mb-6 flex justify-center">
+            <div className={`w-28 h-28 rounded-3xl overflow-hidden ring-4 ring-offset-4 ring-offset-background transition-all duration-300 shadow-lg ${
+              isPlaying ? "ring-primary shadow-primary/30" : "ring-primary/30 group-hover:ring-primary/60"
             }`}>
               <img 
                 src={artist.avatar} 
                 alt={`Avatar de ${artist.name}`} 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
               />
             </div>
             
             {/* Music Status Indicator */}
             {isPlaying && (
-              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 music-wave">
+              <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 music-wave">
                 <div className="bar"></div>
                 <div className="bar"></div>
                 <div className="bar"></div>
                 <div className="bar"></div>
               </div>
             )}
+            
+            {/* Play Overlay */}
+            <div className="absolute inset-0 rounded-3xl bg-black/20 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+              <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center">
+                {isPlaying ? (
+                  <Pause className="h-6 w-6 text-primary ml-0.5" />
+                ) : (
+                  <Play className="h-6 w-6 text-primary ml-1" />
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Artist Info */}

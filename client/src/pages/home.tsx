@@ -153,7 +153,7 @@ export default function Home() {
                 <div className="w-8 h-8 bg-gradient-to-r from-primary to-purple-600 rounded-full flex items-center justify-center">
                   <span className="text-white text-sm font-bold">G</span>
                 </div>
-                <h3 className="text-xl font-bold">GeeKTunes</h3>
+                <h3 className="text-xl font-bold">Chaos squad</h3>
               </div>
               <p className="text-muted-foreground mb-4">
                 A plataforma definitiva para descobrir e apoiar artistas da música geek brasileira.
@@ -192,7 +192,7 @@ export default function Home() {
           </div>
 
           <div className="border-t border-border mt-8 pt-8 text-center text-muted-foreground">
-            <p>&copy; 2024 GeeKTunes. Todos os direitos reservados. Feito com ❤️ para a comunidade geek brasileira.</p>
+            <p>&copy; 2024 chaos squad. Todos os direitos reservados. Feito com ❤️ para a comunidade geek brasileira.</p>
           </div>
         </div>
       </footer>

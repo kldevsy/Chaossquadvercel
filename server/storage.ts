@@ -30,37 +30,9 @@ export class MemStorage implements IStorage {
   private initializeArtists() {
     const sampleArtists: InsertArtist[] = [
       {
-        name: "DJ TechnoGeek",
-        avatar: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
-        description: "Especialista em música eletrônica com referências geek e gaming. Produz desde 2018.",
-        roles: ["cantor", "compositor"],
-        socialLinks: JSON.stringify({
-          spotify: "#",
-          soundcloud: "#",
-          instagram: "#",
-          youtube: "#"
-        }),
-        musicUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
-        isActive: true
-      },
-      {
-        name: "Luna Beats",
-        avatar: "https://images.unsplash.com/photo-1494232410401-ad00d5433cfa?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
-        description: "Criadora de beats únicos inspirados em trilhas sonoras de jogos retro e animes.",
-        roles: ["beatmaker", "mixer"],
-        socialLinks: JSON.stringify({
-          spotify: "#",
-          soundcloud: "#",
-          instagram: "#",
-          youtube: "#"
-        }),
-        musicUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
-        isActive: true
-      },
-      {
-        name: "Cyber Voice",
-        avatar: "https://images.unsplash.com/photo-1566753323558-f4e0952af115?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
-        description: "Vocalista com influências cyberpunk e sci-fi. Especialista em vocal processing.",
+        name: "klzinn",
+        avatar: "https://i.pinimg.com/originals/ee/8c/21/ee8c21cbc213428ae44f6c968f8264e4.gif",
+        description: "cantor geek desde 2023.",
         roles: ["cantor", "editor"],
         socialLinks: JSON.stringify({
           spotify: "#",
@@ -68,51 +40,10 @@ export class MemStorage implements IStorage {
           instagram: "#",
           youtube: "#"
         }),
-        musicUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
-        isActive: true
-      },
-      {
-        name: "RetroWave",
-        avatar: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
-        description: "Compositor de trilhas sonoras para jogos indie com estética anos 80-90.",
-        roles: ["compositor", "beatmaker"],
-        socialLinks: JSON.stringify({
-          spotify: "#",
-          soundcloud: "#",
-          instagram: "#",
-          youtube: "#"
-        }),
-        musicUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
-        isActive: true
-      },
-      {
-        name: "Bass Engineer",
-        avatar: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
-        description: "Engenheiro de áudio especializado em mixagem de música eletrônica e chiptune.",
-        roles: ["mixer", "editor"],
-        socialLinks: JSON.stringify({
-          spotify: "#",
-          soundcloud: "#",
-          instagram: "#",
-          youtube: "#"
-        }),
-        musicUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
-        isActive: true
-      },
-      {
-        name: "Otaku Melody",
-        avatar: "https://images.unsplash.com/photo-1494232410401-ad00d5433cfa?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
-        description: "Artista completa especializada em J-pop, K-pop e música de anime com influências geek.",
-        roles: ["cantor", "compositor", "beatmaker"],
-        socialLinks: JSON.stringify({
-          spotify: "#",
-          soundcloud: "#",
-          instagram: "#",
-          youtube: "#"
-        }),
-        musicUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
+        musicUrl: "https://yhdtpoqjntehiruphsjd.supabase.co/storage/v1/object/public/teste//klzinn_estilo_rengoku.mp3",
         isActive: true
       }
+      
     ];
 
     sampleArtists.forEach(artist => {
