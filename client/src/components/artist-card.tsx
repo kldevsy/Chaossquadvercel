@@ -114,13 +114,35 @@ export default function ArtistCard({ artist, isPlaying, onPlay, onPause }: Artis
             
             {/* Role Badges */}
             <div className="flex flex-wrap justify-center gap-2 mb-3">
-              {artist.roles.map((role) => (
-                <Badge 
-                  key={role} 
-                  className={`text-xs ${roleColors[role] || "bg-secondary text-secondary-foreground"}`}
+              {artist.roles.map((role, index) => (
+                <motion.div
+                  key={role}
+                  initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ 
+                    duration: 0.3, 
+                    delay: index * 0.1,
+                    ease: "easeOut" 
+                  }}
+                  whileHover={{ 
+                    scale: 1.1, 
+                    y: -2,
+                    transition: { duration: 0.2 }
+                  }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  {role.charAt(0).toUpperCase() + role.slice(1)}
-                </Badge>
+                  <Badge 
+                    className={`text-xs cursor-pointer transition-all duration-300 hover:shadow-lg ${roleColors[role] || "bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // Trigger filter by role
+                      const event = new CustomEvent('filterByRole', { detail: role });
+                      window.dispatchEvent(event);
+                    }}
+                  >
+                    {role.charAt(0).toUpperCase() + role.slice(1)}
+                  </Badge>
+                </motion.div>
               ))}
             </div>
 

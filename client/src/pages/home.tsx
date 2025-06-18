@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,19 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("todos");
 
   const musicPlayer = useMusicPlayer();
+
+  // Listen for role filter events from badges
+  useEffect(() => {
+    const handleFilterByRole = (event: CustomEvent) => {
+      setActiveTab(event.detail);
+    };
+
+    window.addEventListener('filterByRole', handleFilterByRole as EventListener);
+    
+    return () => {
+      window.removeEventListener('filterByRole', handleFilterByRole as EventListener);
+    };
+  }, []);
 
   const { data: artists = [], isLoading } = useQuery<Artist[]>({
     queryKey: ["/api/artists"],
@@ -131,6 +144,7 @@ export default function Home() {
       {/* Music Player */}
       <MusicPlayer
         isVisible={musicPlayer.isPlayerVisible}
+        isMinimized={musicPlayer.isPlayerMinimized}
         currentArtist={musicPlayer.currentArtist}
         isPlaying={musicPlayer.isPlaying}
         currentTime={musicPlayer.currentTime}
@@ -142,6 +156,7 @@ export default function Home() {
         onSeek={musicPlayer.seek}
         onVolumeChange={musicPlayer.changeVolume}
         onClose={musicPlayer.closePlayer}
+        onToggleMinimize={musicPlayer.toggleMinimize}
       />
 
       {/* Footer */}
