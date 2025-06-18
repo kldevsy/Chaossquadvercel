@@ -1,14 +1,21 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { Badge } from "@/components/ui/badge";
 import { 
   Play, 
   Pause, 
   SkipBack, 
   SkipForward, 
   Volume2, 
-  X 
+  VolumeX,
+  Heart,
+  Repeat,
+  Shuffle,
+  X,
+  ChevronUp,
+  Music
 } from "lucide-react";
 import type { Artist } from "@shared/schema";
 

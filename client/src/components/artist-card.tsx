@@ -42,26 +42,49 @@ export default function ArtistCard({ artist, isPlaying, onPlay, onPause }: Artis
 
   return (
     <motion.div
-      className="group cursor-pointer"
-      whileHover={{ scale: 1.03, y: -12 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
+      className="group cursor-pointer artist-card"
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ 
+        scale: 1.05, 
+        y: -15,
+        rotateY: 5,
+        transition: { duration: 0.4, ease: "easeOut" }
+      }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
       onClick={handlePlayPause}
     >
-      <Card className={`modern-card h-full transition-all duration-500 hover:shadow-2xl hover:shadow-primary/20 ${
-        isPlaying ? "playing-glow border-primary/50" : "border-border/30"
+      <Card className={`modern-card h-full transition-all duration-700 hover:shadow-2xl hover:shadow-primary/25 relative overflow-hidden ${
+        isPlaying ? "playing-glow border-primary/50 ring-2 ring-primary/30" : "border-border/30"
       }`}>
-        <CardContent className="p-8">
+        <CardContent className="p-8 artist-content">
+          {/* Efeito de brilho de fundo */}
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />
+          </div>
+
           {/* Avatar */}
           <div className="relative mb-6 flex justify-center">
-            <div className={`w-28 h-28 rounded-3xl overflow-hidden ring-4 ring-offset-4 ring-offset-background transition-all duration-300 shadow-lg ${
-              isPlaying ? "ring-primary shadow-primary/30" : "ring-primary/30 group-hover:ring-primary/60"
-            }`}>
+            <motion.div 
+              className={`artist-avatar w-28 h-28 rounded-3xl overflow-hidden ring-4 ring-offset-4 ring-offset-background transition-all duration-500 shadow-lg ${
+                isPlaying ? "ring-primary shadow-primary/30" : "ring-primary/30 group-hover:ring-primary/60"
+              }`}
+              whileHover={{ 
+                scale: 1.1, 
+                rotate: [0, -5, 5, 0],
+                transition: { duration: 0.6 }
+              }}
+            >
               <img 
                 src={artist.avatar} 
                 alt={`Avatar de ${artist.name}`} 
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110 group-hover:brightness-110"
               />
-            </div>
+              
+              {/* Overlay gradiente no hover */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </motion.div>
             
             {/* Music Status Indicator */}
             {isPlaying && (

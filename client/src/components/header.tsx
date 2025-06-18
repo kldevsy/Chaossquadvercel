@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useTheme } from "@/components/theme-provider";
-import { Search, Music, Moon, Sun, Menu } from "lucide-react";
+import { ThemeSelector } from "@/components/theme-selector";
+import { Search, Music, Menu } from "lucide-react";
 
 interface HeaderProps {
   onSearch: (query: string) => void;
@@ -10,12 +10,7 @@ interface HeaderProps {
 }
 
 export default function Header({ onSearch, searchQuery }: HeaderProps) {
-  const { theme, setTheme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
-  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-background/80 border-b border-border/50">
@@ -64,19 +59,8 @@ export default function Header({ onSearch, searchQuery }: HeaderProps) {
               <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground/60" />
             </div>
             
-            {/* Theme Toggle */}
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={toggleTheme}
-              className="h-12 w-12 rounded-2xl border-border/50 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all duration-300"
-            >
-              {theme === "dark" ? (
-                <Sun className="h-5 w-5" />
-              ) : (
-                <Moon className="h-5 w-5" />
-              )}
-            </Button>
+            {/* Theme Selector */}
+            <ThemeSelector />
 
             {/* Mobile Menu Button */}
             <Button
