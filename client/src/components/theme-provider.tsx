@@ -152,12 +152,28 @@ export function ThemeProvider({
     // Remove todas as classes de tema
     availableThemes.forEach(t => root.classList.remove(t.name));
     
+    // Limpa todos os estilos customizados antes de aplicar novo tema
+    const customStyle = document.getElementById('custom-theme-style');
+    if (customStyle) {
+      customStyle.remove();
+    }
+    document.body.classList.remove('custom-theme-applied');
+    
+    // Remove todas as propriedades CSS customizadas para evitar interferência
+    const customProps = ['--primary', '--secondary', '--accent', '--background', '--foreground', 
+      '--card', '--card-foreground', '--border', '--input', '--ring', '--muted', '--muted-foreground',
+      '--accent-foreground', '--destructive', '--destructive-foreground', '--popover', '--popover-foreground'];
+    
+    if (theme !== "custom") {
+      customProps.forEach(prop => root.style.removeProperty(prop));
+    }
+    
     // Adiciona a classe do tema atual
     root.classList.add(theme);
 
     // Define as variáveis CSS customizadas para o tema
     const themeConfig = availableThemes.find(t => t.name === theme);
-    if (themeConfig) {
+    if (themeConfig && theme !== "custom") {
       root.style.setProperty('--theme-primary', themeConfig.colors.primary);
       root.style.setProperty('--theme-secondary', themeConfig.colors.secondary);
       root.style.setProperty('--theme-accent', themeConfig.colors.accent);

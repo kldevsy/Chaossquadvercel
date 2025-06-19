@@ -47,54 +47,27 @@ export function ThemeSelector() {
       return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
     };
 
-    // Remove existing custom styles
-    const existingCustomStyle = document.getElementById('custom-theme-style');
-    if (existingCustomStyle) {
-      existingCustomStyle.remove();
-    }
-
-    // Create targeted custom theme CSS that excludes menus
-    const customStyle = document.createElement('style');
-    customStyle.id = 'custom-theme-style';
+    // Apply custom theme colors directly to CSS variables
+    root.style.setProperty('--primary', hexToHsl(colors.primary));
+    root.style.setProperty('--secondary', hexToHsl(colors.secondary));
+    root.style.setProperty('--accent', hexToHsl(colors.accent));
+    root.style.setProperty('--background', hexToHsl(colors.background));
+    root.style.setProperty('--foreground', hexToHsl(colors.foreground));
     
+    // Set complementary colors based on background brightness
     const isLight = parseInt(colors.background.slice(1, 3), 16) > 128;
-    
-    customStyle.textContent = `
-      /* Apply custom theme only to main content areas, exclude popover menus */
-      body:not([data-theme-menu-open]) {
-        --primary: ${hexToHsl(colors.primary)};
-        --secondary: ${hexToHsl(colors.secondary)};
-        --accent: ${hexToHsl(colors.accent)};
-        --background: ${hexToHsl(colors.background)};
-        --foreground: ${hexToHsl(colors.foreground)};
-        --card: ${isLight ? '0 0% 100%' : '224 71% 4%'};
-        --card-foreground: ${hexToHsl(colors.foreground)};
-        --border: ${isLight ? '214 32% 91%' : '215 27% 17%'};
-        --input: ${isLight ? '214 32% 91%' : '215 27% 17%'};
-        --ring: ${hexToHsl(colors.primary)};
-        --muted: ${isLight ? '210 40% 96%' : '223 47% 11%'};
-        --muted-foreground: ${isLight ? '215 13% 45%' : '215 11% 65%'};
-        --accent-foreground: ${isLight ? '210 40% 98%' : '210 40% 98%'};
-      }
-      
-      /* Exclude theme selector popover and custom theme dialog from custom colors */
-      [data-radix-popper-content-wrapper],
-      [role="dialog"],
-      .theme-selector,
-      [data-state="open"] {
-        --primary: 200 100% 60% !important;
-        --secondary: 270 95% 75% !important;
-        --accent: 210 40% 98% !important;
-        --background: 0 0% 100% !important;
-        --foreground: 222 84% 4.9% !important;
-        --card: 0 0% 100% !important;
-        --border: 214 32% 91% !important;
-        --popover: 0 0% 100% !important;
-        --popover-foreground: 222 84% 4.9% !important;
-      }
-    `;
-    
-    document.head.appendChild(customStyle);
+    root.style.setProperty('--card', isLight ? '0 0% 100%' : '224 71% 4%');
+    root.style.setProperty('--card-foreground', hexToHsl(colors.foreground));
+    root.style.setProperty('--border', isLight ? '214 32% 91%' : '215 27% 17%');
+    root.style.setProperty('--input', isLight ? '214 32% 91%' : '215 27% 17%');
+    root.style.setProperty('--ring', hexToHsl(colors.primary));
+    root.style.setProperty('--muted', isLight ? '210 40% 96%' : '223 47% 11%');
+    root.style.setProperty('--muted-foreground', isLight ? '215 13% 45%' : '215 11% 65%');
+    root.style.setProperty('--accent-foreground', isLight ? '210 40% 98%' : '210 40% 98%');
+    root.style.setProperty('--destructive', '0 84% 60%');
+    root.style.setProperty('--destructive-foreground', '210 40% 98%');
+    root.style.setProperty('--popover', isLight ? '0 0% 100%' : '222 84% 4.9%');
+    root.style.setProperty('--popover-foreground', hexToHsl(colors.foreground));
     
     setTheme('custom');
   };
