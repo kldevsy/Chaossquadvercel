@@ -62,7 +62,7 @@ export default function CustomThemeDialog({ open, onOpenChange, onSaveTheme }: C
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto bg-background border-border">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
             <Palette className="w-5 h-5" />
@@ -101,7 +101,7 @@ export default function CustomThemeDialog({ open, onOpenChange, onSaveTheme }: C
           {/* Preset Colors */}
           <div>
             <Label className="text-sm font-medium mb-3 block">Temas Prontos</Label>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
               {colorPresets.map((preset, index) => (
                 <motion.button
                   key={preset.name}
@@ -111,23 +111,23 @@ export default function CustomThemeDialog({ open, onOpenChange, onSaveTheme }: C
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => applyPreset(preset)}
-                  className="p-3 rounded-lg border border-border hover:border-primary/50 transition-all duration-300 group"
+                  className="p-2 sm:p-3 rounded-lg border border-border hover:border-primary/50 transition-all duration-300 group bg-card"
                 >
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center justify-center gap-1 sm:gap-2 mb-1 sm:mb-2">
                     <div 
-                      className="w-4 h-4 rounded-full border border-white/20"
+                      className="w-3 h-3 sm:w-4 sm:h-4 rounded-full border border-white/20"
                       style={{ backgroundColor: preset.colors.primary }}
                     />
                     <div 
-                      className="w-3 h-3 rounded-full border border-white/20"
+                      className="w-2 h-2 sm:w-3 sm:h-3 rounded-full border border-white/20"
                       style={{ backgroundColor: preset.colors.secondary }}
                     />
                     <div 
-                      className="w-3 h-3 rounded-full border border-white/20"
+                      className="w-2 h-2 sm:w-3 sm:h-3 rounded-full border border-white/20"
                       style={{ backgroundColor: preset.colors.accent }}
                     />
                   </div>
-                  <span className="text-xs font-medium group-hover:text-primary transition-colors">
+                  <span className="text-xs font-medium group-hover:text-primary transition-colors block">
                     {preset.name}
                   </span>
                 </motion.button>
@@ -139,7 +139,7 @@ export default function CustomThemeDialog({ open, onOpenChange, onSaveTheme }: C
           <div className="space-y-4">
             <Label className="text-sm font-medium">Cores Personalizadas</Label>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="primary" className="text-sm">Cor Primária</Label>
                 <div className="flex gap-2">
@@ -148,13 +148,13 @@ export default function CustomThemeDialog({ open, onOpenChange, onSaveTheme }: C
                     type="color"
                     value={colors.primary}
                     onChange={(e) => handleColorChange("primary", e.target.value)}
-                    className="w-16 h-10 p-1 border-2"
+                    className="w-12 sm:w-16 h-8 sm:h-10 p-1 border-2"
                   />
                   <Input
                     type="text"
                     value={colors.primary}
                     onChange={(e) => handleColorChange("primary", e.target.value)}
-                    className="flex-1"
+                    className="flex-1 text-sm"
                     placeholder="#3b82f6"
                   />
                 </div>
@@ -168,13 +168,13 @@ export default function CustomThemeDialog({ open, onOpenChange, onSaveTheme }: C
                     type="color"
                     value={colors.secondary}
                     onChange={(e) => handleColorChange("secondary", e.target.value)}
-                    className="w-16 h-10 p-1 border-2"
+                    className="w-12 sm:w-16 h-8 sm:h-10 p-1 border-2"
                   />
                   <Input
                     type="text"
                     value={colors.secondary}
                     onChange={(e) => handleColorChange("secondary", e.target.value)}
-                    className="flex-1"
+                    className="flex-1 text-sm"
                     placeholder="#8b5cf6"
                   />
                 </div>
@@ -188,13 +188,13 @@ export default function CustomThemeDialog({ open, onOpenChange, onSaveTheme }: C
                     type="color"
                     value={colors.accent}
                     onChange={(e) => handleColorChange("accent", e.target.value)}
-                    className="w-16 h-10 p-1 border-2"
+                    className="w-12 sm:w-16 h-8 sm:h-10 p-1 border-2"
                   />
                   <Input
                     type="text"
                     value={colors.accent}
                     onChange={(e) => handleColorChange("accent", e.target.value)}
-                    className="flex-1"
+                    className="flex-1 text-sm"
                     placeholder="#06b6d4"
                   />
                 </div>
@@ -208,33 +208,33 @@ export default function CustomThemeDialog({ open, onOpenChange, onSaveTheme }: C
                     type="color"
                     value={colors.background}
                     onChange={(e) => handleColorChange("background", e.target.value)}
-                    className="w-16 h-10 p-1 border-2"
+                    className="w-12 sm:w-16 h-8 sm:h-10 p-1 border-2"
                   />
                   <Input
                     type="text"
                     value={colors.background}
                     onChange={(e) => handleColorChange("background", e.target.value)}
-                    className="flex-1"
+                    className="flex-1 text-sm"
                     placeholder="#ffffff"
                   />
                 </div>
               </div>
 
-              <div className="space-y-2 md:col-span-2">
+              <div className="space-y-2">
                 <Label htmlFor="foreground" className="text-sm">Cor do Texto</Label>
-                <div className="flex gap-2 max-w-md">
+                <div className="flex gap-2">
                   <Input
                     id="foreground"
                     type="color"
                     value={colors.foreground}
                     onChange={(e) => handleColorChange("foreground", e.target.value)}
-                    className="w-16 h-10 p-1 border-2"
+                    className="w-12 sm:w-16 h-8 sm:h-10 p-1 border-2"
                   />
                   <Input
                     type="text"
                     value={colors.foreground}
                     onChange={(e) => handleColorChange("foreground", e.target.value)}
-                    className="flex-1"
+                    className="flex-1 text-sm"
                     placeholder="#0f172a"
                   />
                 </div>

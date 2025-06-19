@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Play, Pause, Music } from "lucide-react";
+import { Play, Pause, Music, Youtube, Instagram, Calendar, Users } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 import type { Artist } from "@shared/schema";
 
@@ -75,12 +75,26 @@ export default function ArtistCard({ artist, isPlaying, onPlay, onPause }: Artis
   const { theme } = useTheme();
   const roleColors = getRoleColors(theme);
 
+  // Parse social links from JSON string
+  const socialLinks = JSON.parse(artist.socialLinks || '{}');
+  
+  // Calculate join date (mock data for now - can be added to schema later)
+  const joinDate = new Date(2023, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1);
+  const monthsInSquad = Math.ceil((new Date().getTime() - joinDate.getTime()) / (1000 * 60 * 60 * 24 * 30));
+
   const handlePlayPause = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isPlaying) {
       onPause();
     } else {
       onPlay();
+    }
+  };
+
+  const handleSocialClick = (url: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (url && url !== '#') {
+      window.open(url, '_blank');
     }
   };
 
@@ -139,6 +153,20 @@ export default function ArtistCard({ artist, isPlaying, onPlay, onPause }: Artis
               {artist.name}
             </h3>
             
+            {/* Description */}
+            <p className="text-sm text-muted-foreground mb-3">
+              {artist.description}
+            </p>
+
+            {/* Chaos Squad Info */}
+            <div className="flex items-center justify-center gap-2 mb-3 text-xs text-muted-foreground">
+              <Users className="w-3 h-3" />
+              <span>Chaos Squad</span>
+              <span>•</span>
+              <Calendar className="w-3 h-3" />
+              <span>{monthsInSquad} meses</span>
+            </div>
+            
             {/* Role Badges */}
             <div className="flex flex-wrap gap-1.5 justify-center mb-4">
               {artist.roles.map((role, index) => {
@@ -172,6 +200,48 @@ export default function ArtistCard({ artist, isPlaying, onPlay, onPause }: Artis
                   </motion.div>
                 );
               })}
+            </div>
+
+            {/* Social Links */}
+            <div className="flex justify-center gap-2 mb-4">
+              {socialLinks.youtube && socialLinks.youtube !== '#' && (
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="w-8 h-8 rounded-full hover:bg-red-500/20 hover:text-red-500 hover:border-red-500/30"
+                    onClick={(e) => handleSocialClick(socialLinks.youtube, e)}
+                  >
+                    <Youtube className="w-4 h-4" />
+                  </Button>
+                </motion.div>
+              )}
+              
+              {socialLinks.instagram && socialLinks.instagram !== '#' && (
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="w-8 h-8 rounded-full hover:bg-pink-500/20 hover:text-pink-500 hover:border-pink-500/30"
+                    onClick={(e) => handleSocialClick(socialLinks.instagram, e)}
+                  >
+                    <Instagram className="w-4 h-4" />
+                  </Button>
+                </motion.div>
+              )}
+              
+              {socialLinks.spotify && socialLinks.spotify !== '#' && (
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="w-8 h-8 rounded-full hover:bg-green-500/20 hover:text-green-500 hover:border-green-500/30"
+                    onClick={(e) => handleSocialClick(socialLinks.spotify, e)}
+                  >
+                    <Music className="w-4 h-4" />
+                  </Button>
+                </motion.div>
+              )}
             </div>
           </div>
 

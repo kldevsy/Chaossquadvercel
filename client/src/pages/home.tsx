@@ -60,7 +60,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Header onSearch={setSearchQuery} searchQuery={searchQuery} />
+      <Header onSearch={setSearchQuery} searchQuery={searchQuery} totalArtists={artists.length} />
       
       <HeroBanner />
       

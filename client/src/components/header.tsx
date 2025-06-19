@@ -3,15 +3,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ThemeSelector } from "@/components/theme-selector";
+import PlatformStats from "@/components/platform-stats";
 import { useTheme } from "@/components/theme-provider";
 import { Search, Music, Menu, X } from "lucide-react";
 
 interface HeaderProps {
   onSearch: (query: string) => void;
   searchQuery: string;
+  totalArtists?: number;
 }
 
-export default function Header({ onSearch, searchQuery }: HeaderProps) {
+export default function Header({ onSearch, searchQuery, totalArtists = 0 }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const { theme } = useTheme();
@@ -226,6 +228,15 @@ export default function Header({ onSearch, searchQuery }: HeaderProps) {
               </motion.div>
             </motion.div>
             
+            {/* Platform Stats */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+            >
+              <PlatformStats totalArtists={totalArtists} />
+            </motion.div>
+
             {/* Theme Selector */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
