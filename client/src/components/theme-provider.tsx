@@ -179,51 +179,60 @@ export function ThemeProvider({
         try {
           const colors = JSON.parse(customColors);
           
-          // Convert hex to HSL for CSS variables
-          const hexToHsl = (hex: string) => {
-            const r = parseInt(hex.slice(1, 3), 16) / 255;
-            const g = parseInt(hex.slice(3, 5), 16) / 255;
-            const b = parseInt(hex.slice(5, 7), 16) / 255;
+          // Remove any existing custom style
+          const existingStyle = document.getElementById('dynamic-custom-theme');
+          if (existingStyle) {
+            existingStyle.remove();
+          }
 
-            const max = Math.max(r, g, b);
-            const min = Math.min(r, g, b);
-            let h = 0, s = 0, l = (max + min) / 2;
-
-            if (max !== min) {
-              const d = max - min;
-              s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-              switch (max) {
-                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                case g: h = (b - r) / d + 2; break;
-                case b: h = (r - g) / d + 4; break;
-              }
-              h /= 6;
+          // Create dynamic CSS with high specificity for custom theme
+          const customStyle = document.createElement('style');
+          customStyle.id = 'dynamic-custom-theme';
+          customStyle.innerHTML = `
+            html.custom {
+              --primary: ${colors.primary.replace('#', '')} !important;
+              --secondary: ${colors.secondary.replace('#', '')} !important;
+              --accent: ${colors.accent.replace('#', '')} !important;
+              --background: ${colors.background.replace('#', '')} !important;
+              --foreground: ${colors.foreground.replace('#', '')} !important;
+            }
+            
+            .custom * {
+              --primary: ${colors.primary.replace('#', '')} !important;
+              --secondary: ${colors.secondary.replace('#', '')} !important;
+              --accent: ${colors.accent.replace('#', '')} !important;
             }
 
-            return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
-          };
-
-          // Apply custom colors
-          const isLight = parseInt(colors.background.slice(1, 3), 16) > 128;
+            .custom .bg-primary { background-color: ${colors.primary} !important; }
+            .custom .text-primary { color: ${colors.primary} !important; }
+            .custom .border-primary { border-color: ${colors.primary} !important; }
+            .custom .bg-secondary { background-color: ${colors.secondary} !important; }
+            .custom .text-secondary { color: ${colors.secondary} !important; }
+            .custom .bg-accent { background-color: ${colors.accent} !important; }
+            .custom .text-accent { color: ${colors.accent} !important; }
+            .custom .bg-background { background-color: ${colors.background} !important; }
+            .custom .text-foreground { color: ${colors.foreground} !important; }
+            
+            .custom .gradient-text {
+              background: linear-gradient(135deg, ${colors.primary}, ${colors.secondary}) !important;
+              -webkit-background-clip: text !important;
+              -webkit-text-fill-color: transparent !important;
+              background-clip: text !important;
+            }
+          `;
           
-          root.style.setProperty('--primary', hexToHsl(colors.primary));
-          root.style.setProperty('--secondary', hexToHsl(colors.secondary));
-          root.style.setProperty('--accent', hexToHsl(colors.accent));
-          root.style.setProperty('--background', hexToHsl(colors.background));
-          root.style.setProperty('--foreground', hexToHsl(colors.foreground));
-          root.style.setProperty('--card', isLight ? '0 0% 100%' : '224 71% 4%');
-          root.style.setProperty('--card-foreground', hexToHsl(colors.foreground));
-          root.style.setProperty('--border', isLight ? '214 32% 91%' : '215 27% 17%');
-          root.style.setProperty('--input', isLight ? '214 32% 91%' : '215 27% 17%');
-          root.style.setProperty('--ring', hexToHsl(colors.primary));
-          root.style.setProperty('--muted', isLight ? '210 40% 96%' : '223 47% 11%');
-          root.style.setProperty('--muted-foreground', isLight ? '215 13% 45%' : '215 11% 65%');
-          root.style.setProperty('--accent-foreground', isLight ? '210 40% 98%' : '210 40% 98%');
+          document.head.appendChild(customStyle);
         } catch (e) {
           console.error('Error parsing custom theme colors:', e);
         }
       }
     } else {
+      // Remove custom theme styles for predefined themes
+      const customStyle = document.getElementById('dynamic-custom-theme');
+      if (customStyle) {
+        customStyle.remove();
+      }
+      
       // Apply predefined theme colors
       const themeConfig = availableThemes.find(t => t.name === theme);
       if (themeConfig) {
