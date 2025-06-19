@@ -62,38 +62,41 @@ export default function CustomThemeDialog({ open, onOpenChange, onSaveTheme }: C
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto bg-background border-border">
+      <DialogContent className="max-w-[90vw] sm:max-w-lg max-h-[85vh] overflow-y-auto bg-background border-border" aria-describedby="custom-theme-description">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl">
-            <Palette className="w-5 h-5" />
+          <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl">
+            <Palette className="w-4 h-4 sm:w-5 sm:h-5" />
             Personalizar Tema
           </DialogTitle>
+          <p id="custom-theme-description" className="text-sm text-muted-foreground">
+            Crie seu tema personalizado escolhendo as cores principais da interface
+          </p>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Color Preview */}
-          <div className="p-6 rounded-lg border-2 border-border bg-gradient-to-br from-background via-background to-secondary/5">
-            <div className="text-center space-y-4">
+          <div className="p-4 sm:p-6 rounded-lg border-2 border-border bg-gradient-to-br from-background via-background to-secondary/5">
+            <div className="text-center space-y-3 sm:space-y-4">
               <div 
-                className="w-16 h-16 rounded-full mx-auto shadow-lg border-4 border-white"
+                className="w-12 h-12 sm:w-16 sm:h-16 rounded-full mx-auto shadow-lg border-4 border-white"
                 style={{ backgroundColor: colors.primary }}
               />
               <div className="flex justify-center gap-2">
                 <div 
-                  className="w-8 h-8 rounded-full shadow-md"
+                  className="w-6 h-6 sm:w-8 sm:h-8 rounded-full shadow-md"
                   style={{ backgroundColor: colors.secondary }}
                 />
                 <div 
-                  className="w-8 h-8 rounded-full shadow-md"
+                  className="w-6 h-6 sm:w-8 sm:h-8 rounded-full shadow-md"
                   style={{ backgroundColor: colors.accent }}
                 />
               </div>
               <div 
-                className="p-4 rounded-lg shadow-inner"
+                className="p-3 sm:p-4 rounded-lg shadow-inner"
                 style={{ backgroundColor: colors.background, color: colors.foreground }}
               >
-                <h3 className="font-semibold">Preview do Tema</h3>
-                <p className="text-sm opacity-75">Este é um exemplo de como ficará o tema</p>
+                <h3 className="font-semibold text-sm sm:text-base">Preview do Tema</h3>
+                <p className="text-xs sm:text-sm opacity-75">Como ficará o tema</p>
               </div>
             </div>
           </div>
@@ -243,29 +246,34 @@ export default function CustomThemeDialog({ open, onOpenChange, onSaveTheme }: C
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-between pt-4 border-t border-border">
+          <div className="flex flex-col sm:flex-row justify-between gap-3 pt-4 border-t border-border">
             <Button
               variant="outline"
               onClick={resetToDefault}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 text-sm"
+              size="sm"
             >
-              <RotateCcw className="w-4 h-4" />
-              Restaurar Padrão
+              <RotateCcw className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Restaurar Padrão</span>
+              <span className="sm:hidden">Restaurar</span>
             </Button>
             
             <div className="flex gap-2">
               <Button
                 variant="outline"
                 onClick={() => onOpenChange(false)}
+                className="text-sm flex-1 sm:flex-none"
+                size="sm"
               >
                 Cancelar
               </Button>
               <Button
                 onClick={handleSave}
-                className="bg-gradient-to-r from-primary to-secondary text-white"
+                className="bg-gradient-to-r from-primary to-secondary text-white text-sm flex-1 sm:flex-none"
+                size="sm"
               >
-                <Save className="w-4 h-4 mr-2" />
-                Salvar Tema
+                <Save className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+                Salvar
               </Button>
             </div>
           </div>
