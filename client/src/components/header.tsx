@@ -86,7 +86,7 @@ export default function Header({ onSearch, searchQuery }: HeaderProps) {
 
           {/* Search & Theme Toggle */}
           <div className="flex items-center space-x-6">
-            {/* Enhanced Search Input */}
+            {/* Enhanced Professional Search Input */}
             <motion.div 
               className="relative hidden sm:block"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -94,38 +94,107 @@ export default function Header({ onSearch, searchQuery }: HeaderProps) {
               transition={{ delay: 0.5, duration: 0.5 }}
             >
               <motion.div
-                className={`relative transition-all duration-500 ${
+                className={`relative group transition-all duration-700 ${
                   isSearchFocused ? 'transform scale-105' : ''
                 }`}
               >
-                <Input
-                  type="text"
-                  placeholder="Buscar artistas..."
-                  value={searchQuery}
-                  onChange={(e) => onSearch(e.target.value)}
-                  onFocus={() => setIsSearchFocused(true)}
-                  onBlur={() => setIsSearchFocused(false)}
-                  className={`w-72 pl-6 pr-14 h-12 transition-all duration-500 bg-background/70 backdrop-blur-md border-2 rounded-2xl text-sm placeholder:text-muted-foreground/70 shadow-lg ${
-                    isSearchFocused 
-                      ? 'w-80 border-primary/50 shadow-primary/20 shadow-xl bg-background/90' 
-                      : 'border-border/30 hover:border-border/60'
-                  }`}
-                />
+                {/* Glow effect background */}
                 <motion.div
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2"
-                  animate={isSearchFocused ? { scale: 1.1, rotate: 360 } : { scale: 1, rotate: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <Search className="h-5 w-5 text-muted-foreground/60" />
-                </motion.div>
-                {isSearchFocused && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 -z-10"
+                  className="absolute inset-0 rounded-3xl bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 blur-xl opacity-0 group-hover:opacity-50"
+                  animate={isSearchFocused ? { opacity: 0.7, scale: 1.1 } : { opacity: 0 }}
+                  transition={{ duration: 0.6 }}
+                />
+                
+                {/* Main search container */}
+                <div className="relative">
+                  <Input
+                    type="text"
+                    placeholder="Buscar artistas, estilos, categorias..."
+                    value={searchQuery}
+                    onChange={(e) => onSearch(e.target.value)}
+                    onFocus={() => setIsSearchFocused(true)}
+                    onBlur={() => setIsSearchFocused(false)}
+                    className={`w-80 pl-14 pr-16 h-14 transition-all duration-700 bg-card/60 backdrop-blur-xl border-2 rounded-3xl text-sm font-medium placeholder:text-muted-foreground/60 shadow-2xl ${
+                      isSearchFocused 
+                        ? 'w-96 border-primary/60 shadow-primary/30 shadow-2xl bg-card/80 text-foreground' 
+                        : 'border-border/40 hover:border-primary/30 hover:shadow-lg'
+                    }`}
                   />
-                )}
+                  
+                  {/* Search icon with animation */}
+                  <motion.div
+                    className="absolute left-5 top-1/2 transform -translate-y-1/2 flex items-center justify-center"
+                    animate={isSearchFocused ? 
+                      { 
+                        scale: 1.2, 
+                        rotate: 360,
+                        color: 'var(--primary)'
+                      } : 
+                      { 
+                        scale: 1, 
+                        rotate: 0,
+                        color: 'var(--muted-foreground)'
+                      }
+                    }
+                    transition={{ duration: 0.5 }}
+                  >
+                    <Search className="h-5 w-5" />
+                  </motion.div>
+                  
+                  {/* Animated search suggestions indicator */}
+                  <motion.div
+                    className="absolute right-5 top-1/2 transform -translate-y-1/2"
+                    animate={isSearchFocused ? { opacity: 1, x: 0 } : { opacity: 0.6, x: 5 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="flex space-x-1">
+                      {[0, 1, 2].map((i) => (
+                        <motion.div
+                          key={i}
+                          className="w-1 h-1 bg-primary rounded-full"
+                          animate={isSearchFocused ? {
+                            scale: [1, 1.5, 1],
+                            opacity: [0.3, 1, 0.3]
+                          } : { scale: 1, opacity: 0.3 }}
+                          transition={{
+                            duration: 1.5,
+                            repeat: Infinity,
+                            delay: i * 0.2
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </motion.div>
+                  
+                  {/* Search results count or filter indicator */}
+                  {searchQuery && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="absolute right-12 top-1/2 transform -translate-y-1/2"
+                    >
+                      <div className="bg-primary/20 text-primary text-xs px-2 py-1 rounded-full font-medium">
+                        {searchQuery.length}
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
+                
+                {/* Focus border effect */}
+                <motion.div
+                  className="absolute inset-0 rounded-3xl border-2 border-transparent"
+                  animate={isSearchFocused ? 
+                    { 
+                      borderColor: 'var(--primary)',
+                      boxShadow: '0 0 30px rgba(var(--primary-rgb), 0.3)'
+                    } : 
+                    { 
+                      borderColor: 'transparent',
+                      boxShadow: '0 0 0px rgba(var(--primary-rgb), 0)'
+                    }
+                  }
+                  transition={{ duration: 0.5 }}
+                />
               </motion.div>
             </motion.div>
             

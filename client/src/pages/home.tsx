@@ -6,7 +6,7 @@ import { Plus } from "lucide-react";
 import Header from "@/components/header";
 import HeroBanner from "@/components/hero-banner";
 import TabNavigation from "@/components/tab-navigation";
-import ArtistCard from "@/components/artist-card";
+import EnhancedArtistCard from "@/components/enhanced-artist-card";
 import MusicPlayer from "@/components/music-player";
 import { useMusicPlayer } from "@/hooks/use-music-player";
 import type { Artist } from "@shared/schema";
@@ -107,7 +107,7 @@ export default function Home() {
                   ease: "easeOut" 
                 }}
               >
-                <ArtistCard
+                <EnhancedArtistCard
                   artist={artist}
                   isPlaying={
                     musicPlayer.currentArtist?.id === artist.id && 

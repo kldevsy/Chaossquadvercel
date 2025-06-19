@@ -46,16 +46,18 @@ export function useMusicPlayer() {
     setIsPlayerVisible(true);
     setIsPlayerMinimized(false);
     
-    // Only show player, don't auto-play
-    console.log(`Artist selected: ${artist.name}`);
-    setIsPlaying(false);
+    // Start playing immediately when artist is selected
+    console.log(`Playing: ${artist.name}`);
+    setIsPlaying(true);
     setCurrentTime(0);
     
-    // Prepare audio but don't play
+    // Prepare and play audio
     if (audioRef.current) {
       audioRef.current.src = artist.musicUrl || "";
       audioRef.current.volume = volume / 100;
     }
+    
+    play();
   };
 
   const play = () => {

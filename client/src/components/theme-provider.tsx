@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "light" | "dark" | "black" | "green" | "red" | "purple" | "blue" | "orange" | "pink" | "cyan" | "yellow" | "indigo" | "emerald" | "rose";
+type Theme = "light" | "dark" | "black" | "green" | "red" | "purple" | "blue" | "orange" | "pink" | "cyan" | "yellow" | "indigo" | "emerald" | "rose" | "neon" | "gold" | "custom";
 
 type ThemeProviderProps = {
   children: React.ReactNode;
@@ -107,6 +107,24 @@ const availableThemes = [
     label: "Rose",
     description: "Rosa suave",
     colors: { primary: "#f43f5e", secondary: "#e11d48", accent: "#be123c" }
+  },
+  {
+    name: "neon" as Theme,
+    label: "Neon",
+    description: "Ciano neon vibrante",
+    colors: { primary: "#00ffff", secondary: "#00e6e6", accent: "#00cccc" }
+  },
+  {
+    name: "gold" as Theme,
+    label: "Gold",
+    description: "Dourado elegante",
+    colors: { primary: "#ffd700", secondary: "#ffcc00", accent: "#e6b800" }
+  },
+  {
+    name: "custom" as Theme,
+    label: "Custom",
+    description: "Personalizável profissional",
+    colors: { primary: "#3b82f6", secondary: "#1d4ed8", accent: "#1e40af" }
   }
 ];
 
