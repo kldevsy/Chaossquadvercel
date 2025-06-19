@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Play, Pause, Heart } from "lucide-react";
-import { SiSpotify, SiSoundcloud, SiInstagram, SiYoutube } from "react-icons/si";
+import { Button } from "@/components/ui/button";
+import { Play, Pause, Music } from "lucide-react";
+import { useTheme } from "@/components/theme-provider";
 import type { Artist } from "@shared/schema";
 
 interface ArtistCardProps {
@@ -13,23 +13,67 @@ interface ArtistCardProps {
   onPause: () => void;
 }
 
-const roleColors: Record<string, string> = {
-  cantor: "bg-gradient-to-r from-primary to-primary/80 text-white",
-  compositor: "bg-gradient-to-r from-orange-500 to-orange-600 text-white",
-  beatmaker: "bg-gradient-to-r from-purple-500 to-purple-600 text-white",
-  mixer: "bg-gradient-to-r from-blue-500 to-blue-600 text-white",
-  editor: "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white",
-};
+const getRoleColors = (theme: string) => {
+  const baseColors = {
+    "cantor": { bg: "from-blue-500 to-blue-600", text: "text-white", border: "border-blue-400" },
+    "compositor": { bg: "from-purple-500 to-purple-600", text: "text-white", border: "border-purple-400" },
+    "beatmaker": { bg: "from-green-500 to-green-600", text: "text-white", border: "border-green-400" },
+    "mixer": { bg: "from-orange-500 to-orange-600", text: "text-white", border: "border-orange-400" },
+    "editor": { bg: "from-red-500 to-red-600", text: "text-white", border: "border-red-400" },
+  };
 
-const socialIcons: Record<string, any> = {
-  spotify: SiSpotify,
-  soundcloud: SiSoundcloud,
-  instagram: SiInstagram,
-  youtube: SiYoutube,
+  // Cores mais vivas baseadas no tema
+  const themeColors = {
+    red: {
+      "cantor": { bg: "from-red-400 to-red-600", text: "text-white", border: "border-red-300" },
+      "compositor": { bg: "from-pink-400 to-pink-600", text: "text-white", border: "border-pink-300" },
+      "beatmaker": { bg: "from-rose-400 to-rose-600", text: "text-white", border: "border-rose-300" },
+      "mixer": { bg: "from-orange-400 to-orange-600", text: "text-white", border: "border-orange-300" },
+      "editor": { bg: "from-red-500 to-red-700", text: "text-white", border: "border-red-400" },
+    },
+    green: {
+      "cantor": { bg: "from-emerald-400 to-emerald-600", text: "text-white", border: "border-emerald-300" },
+      "compositor": { bg: "from-green-400 to-green-600", text: "text-white", border: "border-green-300" },
+      "beatmaker": { bg: "from-lime-400 to-lime-600", text: "text-white", border: "border-lime-300" },
+      "mixer": { bg: "from-teal-400 to-teal-600", text: "text-white", border: "border-teal-300" },
+      "editor": { bg: "from-green-500 to-green-700", text: "text-white", border: "border-green-400" },
+    },
+    blue: {
+      "cantor": { bg: "from-blue-400 to-blue-600", text: "text-white", border: "border-blue-300" },
+      "compositor": { bg: "from-indigo-400 to-indigo-600", text: "text-white", border: "border-indigo-300" },
+      "beatmaker": { bg: "from-sky-400 to-sky-600", text: "text-white", border: "border-sky-300" },
+      "mixer": { bg: "from-cyan-400 to-cyan-600", text: "text-white", border: "border-cyan-300" },
+      "editor": { bg: "from-blue-500 to-blue-700", text: "text-white", border: "border-blue-400" },
+    },
+    purple: {
+      "cantor": { bg: "from-purple-400 to-purple-600", text: "text-white", border: "border-purple-300" },
+      "compositor": { bg: "from-violet-400 to-violet-600", text: "text-white", border: "border-violet-300" },
+      "beatmaker": { bg: "from-indigo-400 to-indigo-600", text: "text-white", border: "border-indigo-300" },
+      "mixer": { bg: "from-fuchsia-400 to-fuchsia-600", text: "text-white", border: "border-fuchsia-300" },
+      "editor": { bg: "from-purple-500 to-purple-700", text: "text-white", border: "border-purple-400" },
+    },
+    neon: {
+      "cantor": { bg: "from-cyan-400 to-cyan-600", text: "text-black", border: "border-cyan-300" },
+      "compositor": { bg: "from-lime-400 to-lime-600", text: "text-black", border: "border-lime-300" },
+      "beatmaker": { bg: "from-yellow-400 to-yellow-600", text: "text-black", border: "border-yellow-300" },
+      "mixer": { bg: "from-pink-400 to-pink-600", text: "text-white", border: "border-pink-300" },
+      "editor": { bg: "from-cyan-500 to-cyan-700", text: "text-white", border: "border-cyan-400" },
+    },
+    gold: {
+      "cantor": { bg: "from-yellow-400 to-yellow-600", text: "text-black", border: "border-yellow-300" },
+      "compositor": { bg: "from-amber-400 to-amber-600", text: "text-black", border: "border-amber-300" },
+      "beatmaker": { bg: "from-orange-400 to-orange-600", text: "text-white", border: "border-orange-300" },
+      "mixer": { bg: "from-yellow-500 to-yellow-700", text: "text-black", border: "border-yellow-400" },
+      "editor": { bg: "from-amber-500 to-amber-700", text: "text-white", border: "border-amber-400" },
+    }
+  };
+
+  return themeColors[theme as keyof typeof themeColors] || baseColors;
 };
 
 export default function ArtistCard({ artist, isPlaying, onPlay, onPause }: ArtistCardProps) {
-  const socialLinks = JSON.parse(artist.socialLinks);
+  const { theme } = useTheme();
+  const roleColors = getRoleColors(theme);
 
   const handlePlayPause = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -42,164 +86,129 @@ export default function ArtistCard({ artist, isPlaying, onPlay, onPause }: Artis
 
   return (
     <motion.div
-      className="group cursor-pointer artist-card"
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
+      layout
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -20, scale: 0.95 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
       whileHover={{ 
-        scale: 1.05, 
-        y: -15,
-        rotateY: 5,
-        transition: { duration: 0.4, ease: "easeOut" }
+        y: -8, 
+        scale: 1.02,
+        transition: { duration: 0.3 }
       }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      onClick={handlePlayPause}
+      className="group relative"
     >
-      <Card className={`modern-card h-full transition-all duration-700 hover:shadow-2xl hover:shadow-primary/25 relative overflow-hidden ${
-        isPlaying ? "playing-glow border-primary/50 ring-2 ring-primary/30" : "border-border/30"
+      <Card className={`relative h-full transition-all duration-500 hover:shadow-xl rounded-2xl border overflow-hidden ${
+        isPlaying 
+          ? "border-primary/60 shadow-primary/20 shadow-lg" 
+          : "border-border/30 hover:border-primary/40"
       }`}>
-        <CardContent className="p-8 artist-content">
-          {/* Efeito de brilho de fundo */}
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />
-          </div>
+        
+        {/* Playing indicator */}
+        {isPlaying && (
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="absolute top-3 right-3 z-10 w-3 h-3 bg-primary rounded-full animate-pulse"
+          />
+        )}
 
-          {/* Avatar */}
+        <CardContent className="p-6">
+          {/* Avatar Section */}
           <div className="relative mb-6 flex justify-center">
             <motion.div 
-              className={`artist-avatar w-28 h-28 rounded-3xl overflow-hidden ring-4 ring-offset-4 ring-offset-background transition-all duration-500 shadow-lg ${
-                isPlaying ? "ring-primary shadow-primary/30" : "ring-primary/30 group-hover:ring-primary/60"
+              className={`relative w-20 h-20 rounded-xl overflow-hidden ring-3 ring-offset-2 ring-offset-background transition-all duration-300 ${
+                isPlaying ? "ring-primary" : "ring-primary/20 group-hover:ring-primary/50"
               }`}
               whileHover={{ 
-                scale: 1.1, 
-                rotate: [0, -5, 5, 0],
-                transition: { duration: 0.6 }
+                scale: 1.05,
+                transition: { duration: 0.2 }
               }}
             >
               <img 
                 src={artist.avatar} 
-                alt={`Avatar de ${artist.name}`} 
-                className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110 group-hover:brightness-110"
+                alt={`Avatar de ${artist.name}`}
+                className="w-full h-full object-cover"
               />
-              
-              {/* Overlay gradiente no hover */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </motion.div>
-            
-            {/* Music Status Indicator */}
-            {isPlaying && (
-              <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 music-wave">
-                <div className="bar"></div>
-                <div className="bar"></div>
-                <div className="bar"></div>
-                <div className="bar"></div>
-              </div>
-            )}
-            
-            {/* Play Overlay */}
-            <div className="absolute inset-0 rounded-3xl bg-black/20 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
-              <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center">
-                {isPlaying ? (
-                  <Pause className="h-6 w-6 text-primary ml-0.5" />
-                ) : (
-                  <Play className="h-6 w-6 text-primary ml-1" />
-                )}
-              </div>
-            </div>
           </div>
 
           {/* Artist Info */}
           <div className="text-center mb-4">
-            <h3 className="text-xl font-bold mb-2 text-foreground">{artist.name}</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-2">
+              {artist.name}
+            </h3>
             
             {/* Role Badges */}
-            <div className="flex flex-wrap justify-center gap-2 mb-3">
-              {artist.roles.map((role, index) => (
-                <motion.div
-                  key={role}
-                  initial={{ opacity: 0, scale: 0.8, y: 10 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  transition={{ 
-                    duration: 0.3, 
-                    delay: index * 0.1,
-                    ease: "easeOut" 
-                  }}
-                  whileHover={{ 
-                    scale: 1.1, 
-                    y: -2,
-                    transition: { duration: 0.2 }
-                  }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Badge 
-                    className={`text-xs cursor-pointer transition-all duration-300 hover:shadow-lg ${roleColors[role] || "bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      // Trigger filter by role
-                      const event = new CustomEvent('filterByRole', { detail: role });
-                      window.dispatchEvent(event);
+            <div className="flex flex-wrap gap-1.5 justify-center mb-4">
+              {artist.roles.map((role, index) => {
+                const colors = roleColors[role as keyof typeof roleColors];
+                return (
+                  <motion.div
+                    key={role}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ 
+                      duration: 0.3, 
+                      delay: 0.1 + index * 0.05
                     }}
+                    whileHover={{ 
+                      scale: 1.05,
+                      transition: { duration: 0.2 }
+                    }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    {role.charAt(0).toUpperCase() + role.slice(1)}
-                  </Badge>
-                </motion.div>
-              ))}
+                    <Badge 
+                      className={`text-xs font-medium cursor-pointer transition-all duration-300 bg-gradient-to-r ${colors?.bg} ${colors?.text} ${colors?.border} border shadow-sm hover:shadow-md`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const event = new CustomEvent('filterByRole', { detail: role });
+                        window.dispatchEvent(event);
+                      }}
+                    >
+                      <Music className="w-3 h-3 mr-1" />
+                      {role.charAt(0).toUpperCase() + role.slice(1)}
+                    </Badge>
+                  </motion.div>
+                );
+              })}
             </div>
-
-            {/* Description */}
-            <p className="text-sm text-muted-foreground mb-4">
-              {artist.description}
-            </p>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-2 mb-4">
-            <Button 
-              onClick={handlePlayPause}
-              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
+          {/* Play Button */}
+          <div className="flex justify-center">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              {isPlaying ? (
-                <>
-                  <Pause className="mr-2 h-4 w-4" />
-                  Pausar
-                </>
-              ) : (
-                <>
-                  <Play className="mr-2 h-4 w-4" />
-                  Tocar
-                </>
-              )}
-            </Button>
-            <Button 
-              variant="outline" 
-              size="icon"
-              onClick={(e) => e.stopPropagation()}
-              className="hover:bg-red-500 hover:text-white transition-colors"
-            >
-              <Heart className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {/* Social Links */}
-          <div className="flex justify-center space-x-4">
-            {Object.entries(socialLinks).map(([platform, url]) => {
-              const IconComponent = socialIcons[platform];
-              if (!IconComponent) return null;
-              
-              return (
-                <a
-                  key={platform}
-                  href={url as string}
-                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
-                  onClick={(e) => e.stopPropagation()}
-                  title={platform}
-                >
-                  <IconComponent className="h-5 w-5" />
-                </a>
-              );
-            })}
+              <Button
+                className={`rounded-full px-6 py-2 font-medium transition-all duration-300 ${
+                  isPlaying 
+                    ? "bg-primary/20 text-primary border border-primary/30 hover:bg-primary/30" 
+                    : "bg-gradient-to-r from-primary to-secondary text-white hover:from-primary/90 hover:to-secondary/90 shadow-md hover:shadow-lg"
+                }`}
+                onClick={handlePlayPause}
+              >
+                {isPlaying ? (
+                  <>
+                    <Pause className="w-4 h-4 mr-2" />
+                    Pausar
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-4 h-4 mr-2 ml-0.5" />
+                    Tocar
+                  </>
+                )}
+              </Button>
+            </motion.div>
           </div>
         </CardContent>
+
+        {/* Hover background effect */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />
+        </div>
       </Card>
     </motion.div>
   );

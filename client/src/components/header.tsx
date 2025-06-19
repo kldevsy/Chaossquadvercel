@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ThemeSelector } from "@/components/theme-selector";
+import { useTheme } from "@/components/theme-provider";
 import { Search, Music, Menu, X } from "lucide-react";
 
 interface HeaderProps {
@@ -13,6 +14,7 @@ interface HeaderProps {
 export default function Header({ onSearch, searchQuery }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const { theme } = useTheme();
 
   return (
     <motion.header 
@@ -40,7 +42,20 @@ export default function Header({ onSearch, searchQuery }: HeaderProps) {
             </motion.div>
             <div>
               <motion.h1 
-                className="text-2xl font-bold gradient-text"
+                className={`text-2xl font-bold transition-all duration-500 ${
+                  theme === 'red' ? 'text-red-400' :
+                  theme === 'green' ? 'text-green-400' :
+                  theme === 'blue' ? 'text-blue-400' :
+                  theme === 'purple' ? 'text-purple-400' :
+                  theme === 'neon' ? 'text-cyan-400' :
+                  theme === 'gold' ? 'text-yellow-500' :
+                  theme === 'orange' ? 'text-orange-400' :
+                  theme === 'pink' ? 'text-pink-400' :
+                  theme === 'indigo' ? 'text-indigo-400' :
+                  theme === 'emerald' ? 'text-emerald-400' :
+                  theme === 'rose' ? 'text-rose-400' :
+                  'gradient-text'
+                }`}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
@@ -48,7 +63,20 @@ export default function Header({ onSearch, searchQuery }: HeaderProps) {
                 chaos squad 
               </motion.h1>
               <motion.p 
-                className="text-xs text-muted-foreground"
+                className={`text-xs transition-all duration-500 ${
+                  theme === 'red' ? 'text-red-300' :
+                  theme === 'green' ? 'text-green-300' :
+                  theme === 'blue' ? 'text-blue-300' :
+                  theme === 'purple' ? 'text-purple-300' :
+                  theme === 'neon' ? 'text-cyan-300' :
+                  theme === 'gold' ? 'text-yellow-400' :
+                  theme === 'orange' ? 'text-orange-300' :
+                  theme === 'pink' ? 'text-pink-300' :
+                  theme === 'indigo' ? 'text-indigo-300' :
+                  theme === 'emerald' ? 'text-emerald-300' :
+                  theme === 'rose' ? 'text-rose-300' :
+                  'text-muted-foreground'
+                }`}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3, duration: 0.5 }}

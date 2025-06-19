@@ -3,14 +3,33 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Palette, Check } from "lucide-react";
+import { Palette, Check, Settings } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
+import CustomThemeDialog from "@/components/custom-theme-dialog";
 
 export function ThemeSelector() {
   const { theme, setTheme, availableThemes } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
+  const [customDialogOpen, setCustomDialogOpen] = useState(false);
 
   const currentTheme = availableThemes.find(t => t.name === theme);
+
+  const handleCustomTheme = () => {
+    setIsOpen(false);
+    setCustomDialogOpen(true);
+  };
+
+  const handleSaveCustomTheme = (colors: any) => {
+    // Apply custom theme colors to CSS variables
+    const root = document.documentElement;
+    root.style.setProperty('--primary', colors.primary);
+    root.style.setProperty('--secondary', colors.secondary);
+    root.style.setProperty('--accent', colors.accent);
+    root.style.setProperty('--background', colors.background);
+    root.style.setProperty('--foreground', colors.foreground);
+    
+    setTheme('custom');
+  };
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -125,8 +144,12 @@ export function ThemeSelector() {
                           : 'hover:ring-1 hover:ring-primary/50 hover:bg-accent/30'
                       }`}
                       onClick={() => {
-                        setTheme(themeOption.name);
-                        setTimeout(() => setIsOpen(false), 200);
+                        if (themeOption.name === 'custom') {
+                          handleCustomTheme();
+                        } else {
+                          setTheme(themeOption.name);
+                          setTimeout(() => setIsOpen(false), 200);
+                        }
                       }}
                     >
                       <CardContent className="p-4">
@@ -186,6 +209,12 @@ export function ThemeSelector() {
           </div>
         </motion.div>
       </PopoverContent>
+      
+      <CustomThemeDialog
+        open={customDialogOpen}
+        onOpenChange={setCustomDialogOpen}
+        onSaveTheme={handleSaveCustomTheme}
+      />
     </Popover>
   );
 }
