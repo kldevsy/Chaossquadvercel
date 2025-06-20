@@ -42,28 +42,79 @@ export function useMusicPlayer() {
   }, [currentArtist]);
 
   const playArtist = (artist: Artist) => {
+    // Reset state first
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    
     setCurrentArtist(artist);
     setIsPlayerVisible(true);
     setIsPlayerMinimized(false);
-    
-    // Start playing immediately when artist is selected
-    console.log(`Playing: ${artist.name}`);
-    setIsPlaying(true);
     setCurrentTime(0);
     
-    // Prepare and play audio
+    console.log(`Playing: ${artist.name}`);
+    
+    // Initialize audio element if needed
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
+      audioRef.current.preload = "metadata";
+      
+      audioRef.current.addEventListener("loadedmetadata", () => {
+        if (audioRef.current) {
+          setDuration(Math.floor(audioRef.current.duration) || 225);
+        }
+      });
+
+      audioRef.current.addEventListener("ended", () => {
+        setIsPlaying(false);
+        setCurrentTime(0);
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+        }
+      });
+
+      audioRef.current.addEventListener("timeupdate", () => {
+        if (audioRef.current && !audioRef.current.paused) {
+          setCurrentTime(Math.floor(audioRef.current.currentTime));
+        }
+      });
+    }
+    
+    // Set up audio source and play
     if (audioRef.current) {
       audioRef.current.src = artist.musicUrl || "";
       audioRef.current.volume = volume / 100;
+      audioRef.current.currentTime = 0;
     }
     
-    play();
+    // Start playing
+    setTimeout(() => {
+      play();
+    }, 100);
   };
 
   const play = () => {
     setIsPlaying(true);
     
-    // Start time tracking
+    // Try to play actual audio first
+    if (audioRef.current && audioRef.current.src) {
+      audioRef.current.play().then(() => {
+        // Audio is playing, timeupdate will handle time tracking
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+        }
+      }).catch(() => {
+        // Fallback to simulation if audio fails
+        console.log("Audio playback failed, using simulation");
+        startSimulationTimer();
+      });
+    } else {
+      // No audio source, use simulation
+      startSimulationTimer();
+    }
+  };
+
+  const startSimulationTimer = () => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
@@ -80,14 +131,6 @@ export function useMusicPlayer() {
         return prev + 1;
       });
     }, 1000);
-
-    // Try to play actual audio if available
-    if (audioRef.current) {
-      audioRef.current.play().catch(() => {
-        // Fallback to simulation if audio fails
-        console.log("Audio playback failed, using simulation");
-      });
-    }
   };
 
   const pause = () => {
@@ -111,9 +154,10 @@ export function useMusicPlayer() {
   };
 
   const seek = (time: number) => {
-    setCurrentTime(time);
+    const safeTime = Math.max(0, Math.min(time, duration));
+    setCurrentTime(safeTime);
     if (audioRef.current) {
-      audioRef.current.currentTime = time;
+      audioRef.current.currentTime = safeTime;
     }
   };
 

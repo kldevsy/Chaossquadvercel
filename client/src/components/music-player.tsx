@@ -53,10 +53,13 @@ export default function MusicPlayer({
   onToggleMinimize,
 }: MusicPlayerProps) {
   const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
+    const safeSeconds = Math.max(0, Math.floor(seconds));
+    const mins = Math.floor(safeSeconds / 60);
+    const secs = safeSeconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
+
+  const progressPercentage = duration > 0 ? Math.min((currentTime / duration) * 100, 100) : 0;
 
   return (
     <AnimatePresence>
@@ -272,13 +275,20 @@ export default function MusicPlayer({
 
                       {/* Progress Bar */}
                       <div className="w-full max-w-md space-y-2">
-                        <Slider
-                          value={[currentTime]}
-                          max={duration}
-                          step={1}
-                          onValueChange={(value) => onSeek(value[0])}
-                          className="w-full"
-                        />
+                        <div className="relative w-full h-2 bg-muted rounded-full overflow-hidden">
+                          <div 
+                            className="absolute top-0 left-0 h-full bg-gradient-to-r from-primary to-secondary rounded-full transition-all duration-200 ease-out"
+                            style={{ width: `${progressPercentage}%` }}
+                          />
+                          <input
+                            type="range"
+                            min={0}
+                            max={duration}
+                            value={currentTime}
+                            onChange={(e) => onSeek(Number(e.target.value))}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                          />
+                        </div>
                         <div className="flex justify-between text-xs text-muted-foreground">
                           <span>{formatTime(currentTime)}</span>
                           <span>{formatTime(duration)}</span>

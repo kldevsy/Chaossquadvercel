@@ -46,51 +46,19 @@ export class MemStorage implements IStorage {
         artistTypes: ["Geek", "Autoral"]
       },
       {
-        name: "MC Nerdcore",
-        avatar: "https://i.pinimg.com/736x/a8/2e/f4/a82ef4f8d4c8b7f5e6d9a3c1b2e4f8a7.jpg",
-        description: "Rapper especializado em cultura geek e referências de anime.",
-        roles: ["cantor", "compositor"],
+        name: "KAISH",
+        avatar: "https://cdn.discordapp.com/attachments/979267903989899264/1385732810781884526/IMG-20250620-WA0362.jpg?ex=685723bf&is=6855d23f&hm=f8a1b2fe8697fa8a8054668852439d26383074bb7eecef2c5ecdbe4d6bb72c8b&",
+        description: "ᴍᴇsᴍᴏ ǫᴜᴇ ᴛɪᴠᴇssᴇᴍ ᴀsᴀs, ᴀɪɴᴅᴀ ᴀssɪᴍ ɴãᴏ ᴍᴇ ᴀʟᴄᴀɴᴄᴀʀɪᴀᴍ.",
+        roles: ["compositor", "cantor", "streamer"],
         socialLinks: JSON.stringify({
           spotify: "#",
           soundcloud: "#",
-          instagram: "#",
-          youtube: "#"
+          instagram: "https://www.instagram.com/kaishoficial/",
+          youtube: "https://www.youtube.com/@Kaisholas"
         }),
-        musicUrl: null,
+        musicUrl: "https://yhdtpoqjntehiruphsjd.supabase.co/storage/v1/object/public/itachi89//ASSASINO_DE_SHAMANS(1).mp3",
         isActive: true,
-        musicalStyles: ["Trap", "Hip-Hop", "Rap"],
-        artistTypes: ["Geek", "Diss"]
-      },
-      {
-        name: "Beatmaker Otaku",
-        avatar: "https://i.pinimg.com/736x/3f/7e/2a/3f7e2a9b5c8d1e4f6a7b9c2d3e5f8a1b.jpg",
-        description: "Produtor de beats inspirados na cultura japonesa e trilhas sonoras de anime.",
-        roles: ["beatmaker", "produtor"],
-        socialLinks: JSON.stringify({
-          spotify: "#",
-          soundcloud: "#",
-          instagram: "#",
-          youtube: "#"
-        }),
-        musicUrl: null,
-        isActive: true,
-        musicalStyles: ["Jazz", "Orquestral", "Lo-fi", "Trap"],
-        artistTypes: ["Geek", "Autoral"]
-      },
-      {
-        name: "Synthwave Gamer",
-        avatar: "https://i.pinimg.com/736x/9e/4c/7f/9e4c7f2b6d5a8e1c9f3b7a4e2d8c6f1a.jpg",
-        description: "Compositor de música eletrônica inspirada em videogames retrô.",
-        roles: ["compositor", "mixador"],
-        socialLinks: JSON.stringify({
-          spotify: "#",
-          soundcloud: "#",
-          instagram: "#",
-          youtube: "#"
-        }),
-        musicUrl: null,
-        isActive: true,
-        musicalStyles: ["Synthwave", "New Jazz", "Eletrônica"],
+        musicalStyles: ["trap", "New Jazz", "detroit"],
         artistTypes: ["Geek", "Autoral"]
       }
       

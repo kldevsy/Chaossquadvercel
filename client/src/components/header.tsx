@@ -116,117 +116,34 @@ export default function Header({ onSearch, searchQuery, totalArtists = 0 }: Head
 
           {/* Search & Theme Toggle */}
           <div className="flex items-center space-x-6">
-            {/* Enhanced Professional Search Input */}
-            <motion.div 
-              className="relative hidden sm:block"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5, duration: 0.5 }}
-            >
-              <motion.div
-                className={`relative group transition-all duration-700 ${
-                  isSearchFocused ? 'transform scale-105' : ''
-                }`}
-              >
-                {/* Glow effect background */}
-                <motion.div
-                  className="absolute inset-0 rounded-3xl bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 blur-xl opacity-0 group-hover:opacity-50"
-                  animate={isSearchFocused ? { opacity: 0.7, scale: 1.1 } : { opacity: 0 }}
-                  transition={{ duration: 0.6 }}
+            {/* Simplified Search Input */}
+            <div className="relative hidden sm:block">
+              <div className="relative">
+                <Input
+                  type="text"
+                  placeholder="Buscar artistas..."
+                  value={searchQuery}
+                  onChange={(e) => onSearch(e.target.value)}
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setIsSearchFocused(false)}
+                  className="w-72 pl-10 pr-4 h-10 bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl text-sm placeholder:text-muted-foreground/70 transition-all duration-300 focus:border-primary/50 focus:shadow-lg focus:shadow-primary/20"
                 />
                 
-                {/* Main search container */}
-                <div className="relative">
-                  <Input
-                    type="text"
-                    placeholder="Buscar artistas, estilos, categorias..."
-                    value={searchQuery}
-                    onChange={(e) => onSearch(e.target.value)}
-                    onFocus={() => setIsSearchFocused(true)}
-                    onBlur={() => setIsSearchFocused(false)}
-                    className={`w-80 pl-14 pr-16 h-14 transition-all duration-700 bg-card/60 backdrop-blur-xl border-2 rounded-3xl text-sm font-medium placeholder:text-muted-foreground/60 shadow-2xl ${
-                      isSearchFocused 
-                        ? 'w-96 border-primary/60 shadow-primary/30 shadow-2xl bg-card/80 text-foreground' 
-                        : 'border-border/40 hover:border-primary/30 hover:shadow-lg'
-                    }`}
-                  />
-                  
-                  {/* Search icon with animation */}
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
+                
+                {searchQuery && (
                   <motion.div
-                    className="absolute left-5 top-1/2 transform -translate-y-1/2 flex items-center justify-center"
-                    animate={isSearchFocused ? 
-                      { 
-                        scale: 1.2, 
-                        rotate: 360,
-                        color: 'var(--primary)'
-                      } : 
-                      { 
-                        scale: 1, 
-                        rotate: 0,
-                        color: 'var(--muted-foreground)'
-                      }
-                    }
-                    transition={{ duration: 0.5 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
                   >
-                    <Search className="h-5 w-5" />
-                  </motion.div>
-                  
-                  {/* Animated search suggestions indicator */}
-                  <motion.div
-                    className="absolute right-5 top-1/2 transform -translate-y-1/2"
-                    animate={isSearchFocused ? { opacity: 1, x: 0 } : { opacity: 0.6, x: 5 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <div className="flex space-x-1">
-                      {[0, 1, 2].map((i) => (
-                        <motion.div
-                          key={i}
-                          className="w-1 h-1 bg-primary rounded-full"
-                          animate={isSearchFocused ? {
-                            scale: [1, 1.5, 1],
-                            opacity: [0.3, 1, 0.3]
-                          } : { scale: 1, opacity: 0.3 }}
-                          transition={{
-                            duration: 1.5,
-                            repeat: Infinity,
-                            delay: i * 0.2
-                          }}
-                        />
-                      ))}
+                    <div className="bg-primary/20 text-primary text-xs px-2 py-1 rounded-full font-medium">
+                      {searchQuery.length}
                     </div>
                   </motion.div>
-                  
-                  {/* Search results count or filter indicator */}
-                  {searchQuery && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="absolute right-12 top-1/2 transform -translate-y-1/2"
-                    >
-                      <div className="bg-primary/20 text-primary text-xs px-2 py-1 rounded-full font-medium">
-                        {searchQuery.length}
-                      </div>
-                    </motion.div>
-                  )}
-                </div>
-                
-                {/* Focus border effect */}
-                <motion.div
-                  className="absolute inset-0 rounded-3xl border-2 border-transparent"
-                  animate={isSearchFocused ? 
-                    { 
-                      borderColor: 'var(--primary)',
-                      boxShadow: '0 0 30px rgba(var(--primary-rgb), 0.3)'
-                    } : 
-                    { 
-                      borderColor: 'transparent',
-                      boxShadow: '0 0 0px rgba(var(--primary-rgb), 0)'
-                    }
-                  }
-                  transition={{ duration: 0.5 }}
-                />
-              </motion.div>
-            </motion.div>
+                )}
+              </div>
+            </div>
             
             {/* Platform Stats */}
             <motion.div
