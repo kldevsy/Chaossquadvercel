@@ -41,7 +41,57 @@ export class MemStorage implements IStorage {
           youtube: "#"
         }),
         musicUrl: "https://yhdtpoqjntehiruphsjd.supabase.co/storage/v1/object/public/teste//klzinn_estilo_rengoku.mp3",
-        isActive: true
+        isActive: true,
+        musicalStyles: ["Trap", "Funk", "Hip-Hop", "Phonk"],
+        artistTypes: ["Geek", "Autoral"]
+      },
+      {
+        name: "MC Nerdcore",
+        avatar: "https://i.pinimg.com/736x/a8/2e/f4/a82ef4f8d4c8b7f5e6d9a3c1b2e4f8a7.jpg",
+        description: "Rapper especializado em cultura geek e referências de anime.",
+        roles: ["cantor", "compositor"],
+        socialLinks: JSON.stringify({
+          spotify: "#",
+          soundcloud: "#",
+          instagram: "#",
+          youtube: "#"
+        }),
+        musicUrl: null,
+        isActive: true,
+        musicalStyles: ["Trap", "Hip-Hop", "Rap"],
+        artistTypes: ["Geek", "Diss"]
+      },
+      {
+        name: "Beatmaker Otaku",
+        avatar: "https://i.pinimg.com/736x/3f/7e/2a/3f7e2a9b5c8d1e4f6a7b9c2d3e5f8a1b.jpg",
+        description: "Produtor de beats inspirados na cultura japonesa e trilhas sonoras de anime.",
+        roles: ["beatmaker", "produtor"],
+        socialLinks: JSON.stringify({
+          spotify: "#",
+          soundcloud: "#",
+          instagram: "#",
+          youtube: "#"
+        }),
+        musicUrl: null,
+        isActive: true,
+        musicalStyles: ["Jazz", "Orquestral", "Lo-fi", "Trap"],
+        artistTypes: ["Geek", "Autoral"]
+      },
+      {
+        name: "Synthwave Gamer",
+        avatar: "https://i.pinimg.com/736x/9e/4c/7f/9e4c7f2b6d5a8e1c9f3b7a4e2d8c6f1a.jpg",
+        description: "Compositor de música eletrônica inspirada em videogames retrô.",
+        roles: ["compositor", "mixador"],
+        socialLinks: JSON.stringify({
+          spotify: "#",
+          soundcloud: "#",
+          instagram: "#",
+          youtube: "#"
+        }),
+        musicUrl: null,
+        isActive: true,
+        musicalStyles: ["Synthwave", "New Jazz", "Eletrônica"],
+        artistTypes: ["Geek", "Autoral"]
       }
       
     ];
@@ -52,7 +102,9 @@ export class MemStorage implements IStorage {
         ...artist, 
         id,
         musicUrl: artist.musicUrl || null,
-        isActive: artist.isActive ?? true
+        isActive: artist.isActive ?? true,
+        musicalStyles: artist.musicalStyles || [],
+        artistTypes: artist.artistTypes || []
       };
       this.artists.set(id, newArtist);
     });
@@ -106,7 +158,9 @@ export class MemStorage implements IStorage {
       ...insertArtist, 
       id,
       musicUrl: insertArtist.musicUrl || null,
-      isActive: insertArtist.isActive ?? true
+      isActive: insertArtist.isActive ?? true,
+      musicalStyles: insertArtist.musicalStyles || [],
+      artistTypes: insertArtist.artistTypes || []
     };
     this.artists.set(id, artist);
     return artist;

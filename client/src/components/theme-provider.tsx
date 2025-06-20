@@ -222,6 +222,14 @@ export function ThemeProvider({
           `;
           
           document.head.appendChild(customStyle);
+          
+          // Force re-render to apply changes immediately
+          setTimeout(() => {
+            const forceUpdate = document.createElement('div');
+            forceUpdate.style.display = 'none';
+            document.body.appendChild(forceUpdate);
+            document.body.removeChild(forceUpdate);
+          }, 0);
         } catch (e) {
           console.error('Error parsing custom theme colors:', e);
         }
