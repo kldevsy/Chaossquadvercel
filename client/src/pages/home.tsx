@@ -14,6 +14,7 @@ import type { Artist } from "@shared/schema";
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("todos");
+  const [visibleCount, setVisibleCount] = useState(5);
 
   const musicPlayer = useMusicPlayer();
 
@@ -58,6 +59,21 @@ export default function Home() {
     return filtered;
   }, [artists, searchQuery, activeTab]);
 
+  const visibleArtists = useMemo(() => {
+    return filteredArtists.slice(0, visibleCount);
+  }, [filteredArtists, visibleCount]);
+
+  const hasMoreArtists = filteredArtists.length > visibleCount;
+
+  const loadMoreArtists = () => {
+    setVisibleCount(prev => prev + 5);
+  };
+
+  // Reset visible count when filters change
+  useEffect(() => {
+    setVisibleCount(5);
+  }, [searchQuery, activeTab]);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Header onSearch={setSearchQuery} searchQuery={searchQuery} totalArtists={artists.length} />
@@ -96,7 +112,7 @@ export default function Home() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            {filteredArtists.map((artist, index) => (
+            {visibleArtists.map((artist, index) => (
               <motion.div
                 key={artist.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -122,7 +138,7 @@ export default function Home() {
         )}
 
         {/* Load More Button */}
-        {filteredArtists.length > 0 && (
+        {hasMoreArtists && (
           <motion.div 
             className="text-center mt-12"
             initial={{ opacity: 0 }}
@@ -132,10 +148,11 @@ export default function Home() {
             <Button 
               variant="outline" 
               size="lg"
+              onClick={loadMoreArtists}
               className="px-8 py-4 border-primary text-primary hover:bg-primary hover:text-primary-foreground transform transition-all duration-300 hover:scale-105"
             >
               <Plus className="mr-2 h-5 w-5" />
-              Carregar Mais Artistas
+              Carregar Mais Artistas ({filteredArtists.length - visibleCount} restantes)
             </Button>
           </motion.div>
         )}

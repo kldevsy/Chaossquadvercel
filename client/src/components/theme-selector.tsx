@@ -23,8 +23,55 @@ export function ThemeSelector() {
     // Store custom colors for later use
     localStorage.setItem('custom-theme-colors', JSON.stringify(colors));
     
-    // Just set the theme to custom, let the theme provider handle the rest
+    // Apply theme immediately without waiting for useEffect
+    const root = document.documentElement;
+    
+    // Remove any existing custom style
+    const existingStyle = document.getElementById('dynamic-custom-theme');
+    if (existingStyle) {
+      existingStyle.remove();
+    }
+
+    // Create and apply custom CSS immediately
+    const customStyle = document.createElement('style');
+    customStyle.id = 'dynamic-custom-theme';
+    customStyle.innerHTML = `
+      html.custom {
+        --primary: ${colors.primary.replace('#', '')} !important;
+        --secondary: ${colors.secondary.replace('#', '')} !important;
+        --accent: ${colors.accent.replace('#', '')} !important;
+        --background: ${colors.background.replace('#', '')} !important;
+        --foreground: ${colors.foreground.replace('#', '')} !important;
+      }
+      
+      .custom .bg-primary { background-color: ${colors.primary} !important; }
+      .custom .text-primary { color: ${colors.primary} !important; }
+      .custom .border-primary { border-color: ${colors.primary} !important; }
+      .custom .bg-secondary { background-color: ${colors.secondary} !important; }
+      .custom .text-secondary { color: ${colors.secondary} !important; }
+      .custom .bg-accent { background-color: ${colors.accent} !important; }
+      .custom .text-accent { color: ${colors.accent} !important; }
+      .custom .bg-background { background-color: ${colors.background} !important; }
+      .custom .text-foreground { color: ${colors.foreground} !important; }
+      
+      .custom .gradient-text {
+        background: linear-gradient(135deg, ${colors.primary}, ${colors.secondary}) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
+      }
+    `;
+    
+    document.head.appendChild(customStyle);
+    
+    // Now set the theme which will trigger the class change
     setTheme('custom');
+    
+    // Force immediate re-render
+    root.style.setProperty('--force-refresh', Math.random().toString());
+    setTimeout(() => {
+      root.style.removeProperty('--force-refresh');
+    }, 1);
   };
 
   return (
