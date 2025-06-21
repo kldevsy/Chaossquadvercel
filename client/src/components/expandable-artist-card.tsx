@@ -4,9 +4,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Play, Pause, ChevronDown, ChevronUp, Instagram, Youtube, Music2 } from "lucide-react";
+import { Play, Pause, ChevronDown, ChevronUp, Instagram, Youtube, Music2, Heart } from "lucide-react";
 import { Artist } from "@shared/schema";
 import { useTheme } from "./theme-provider";
+import { useLikes } from "@/hooks/useLikes";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ExpandableArtistCardProps {
   artist: Artist;
@@ -18,6 +20,10 @@ interface ExpandableArtistCardProps {
 export default function ExpandableArtistCard({ artist, isPlaying, onPlay, onPause }: ExpandableArtistCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const { theme } = useTheme();
+  const { isAuthenticated } = useAuth();
+  const { isArtistLiked, toggleLike, isLiking } = useLikes();
+  
+  const liked = isAuthenticated && isArtistLiked(artist.id);
 
   const socialLinks = JSON.parse(artist.socialLinks);
   const joinYear = new Date().getFullYear() - Math.floor(Math.random() * 3) - 1;

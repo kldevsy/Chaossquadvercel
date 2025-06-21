@@ -293,9 +293,24 @@ export default function ArtistCard({ artist, isPlaying, onPlay, onPause }: Artis
                     : "border-red-400 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
                 }`}
               >
-                <Heart 
-                  className={`w-4 h-4 ${liked ? 'fill-current' : ''}`} 
-                />
+                <motion.div
+                  animate={{ 
+                    scale: liked ? [1, 1.3, 1] : 1,
+                    rotate: liked ? [0, -15, 15, 0] : 0
+                  }}
+                  transition={{ 
+                    duration: liked ? 0.8 : 0.3,
+                    ease: "easeInOut"
+                  }}
+                  whileHover={{ scale: 1.2 }}
+                  whileTap={{ scale: 0.8 }}
+                >
+                  <Heart 
+                    className={`w-4 h-4 transition-all duration-300 ${
+                      liked ? 'fill-current text-white' : 'text-red-500'
+                    }`} 
+                  />
+                </motion.div>
               </Button>
             </motion.div>
           </div>

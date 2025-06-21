@@ -4,6 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, Heart, Share2, Music, Star, Users, Calendar, MapPin, Award, Headphones } from "lucide-react";
 import type { Artist } from "@shared/schema";
+import { useLikes } from "@/hooks/useLikes";
+import { useAuth } from "@/hooks/useAuth";
 
 interface EnhancedArtistCardProps {
   artist: Artist;
@@ -32,6 +34,10 @@ const getRoleIcon = (role: string) => {
 };
 
 export default function EnhancedArtistCard({ artist, isPlaying, onPlay, onPause }: EnhancedArtistCardProps) {
+  const { isAuthenticated } = useAuth();
+  const { isArtistLiked, toggleLike, isLiking } = useLikes();
+  
+  const liked = isAuthenticated && isArtistLiked(artist.id);
   const handlePlayPause = () => {
     if (isPlaying) {
       onPause();
