@@ -1012,51 +1012,199 @@
   --ring: hsl(120, 100%, 50%);
 }
 
-body.matrix::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: 
+/* Matrix Theme Animation */
+.matrix-bg-animation {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: 
     repeating-linear-gradient(
       0deg,
       transparent,
       transparent 2px,
-      rgba(0, 255, 65, 0.05) 2px,
-      rgba(0, 255, 65, 0.05) 4px
+      rgba(0, 255, 65, 0.08) 2px,
+      rgba(0, 255, 65, 0.08) 4px
     ),
     repeating-linear-gradient(
       90deg,
       transparent,
-      transparent 100px,
-      rgba(0, 255, 65, 0.03) 100px,
-      rgba(0, 255, 65, 0.03) 102px
-    );
-  animation: matrix-rain 25s linear infinite;
-  pointer-events: none;
-  z-index: 999;
-  mix-blend-mode: screen;
+      transparent 80px,
+      rgba(0, 255, 65, 0.05) 80px,
+      rgba(0, 255, 65, 0.05) 82px
+    ) !important;
+  animation: matrix-rain 20s linear infinite !important;
+  pointer-events: none !important;
+  z-index: 999999 !important;
+  mix-blend-mode: screen !important;
 }
 
-body.matrix::after {
-  content: '01101001011010010110111001100110011011110010000001101101011000010111010001110010011010010111100000100000011000010110111001101001011011010110000101110100011010010110111101101110';
-  position: fixed;
-  top: -10%;
-  left: 0;
-  width: 100%;
-  height: 120%;
-  font-family: 'Courier New', monospace;
-  font-size: 12px;
-  line-height: 14px;
-  color: rgba(0, 255, 65, 0.08);
-  word-wrap: break-word;
-  white-space: pre-wrap;
-  animation: matrix-code-fall 30s linear infinite;
-  pointer-events: none;
-  z-index: 998;
-  overflow: hidden;
+.matrix-code-animation {
+  position: fixed !important;
+  top: -20% !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 140% !important;
+  font-family: 'Courier New', monospace !important;
+  font-size: 10px !important;
+  line-height: 12px !important;
+  color: rgba(0, 255, 65, 0.12) !important;
+  word-wrap: break-word !important;
+  animation: matrix-code-fall 25s linear infinite !important;
+  pointer-events: none !important;
+  z-index: 999998 !important;
+  overflow: hidden !important;
+}
+
+/* Cosmos Theme Animation */
+.cosmos-bg-animation {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: 
+    radial-gradient(1px 1px at 25px 25px, rgba(255,255,255,0.9), transparent),
+    radial-gradient(1px 1px at 75px 75px, rgba(99,102,241,0.7), transparent),
+    radial-gradient(2px 2px at 150px 100px, rgba(139,92,246,0.5), transparent),
+    radial-gradient(1px 1px at 200px 150px, rgba(236,72,153,0.6), transparent),
+    radial-gradient(1px 1px at 50px 200px, rgba(255,255,255,0.8), transparent) !important;
+  background-repeat: repeat !important;
+  background-size: 250px 200px !important;
+  animation: cosmos-drift 120s linear infinite !important;
+  pointer-events: none !important;
+  z-index: 999999 !important;
+}
+
+.cosmos-nebula-animation {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: 
+    linear-gradient(45deg, transparent 40%, rgba(99,102,241,0.15) 50%, transparent 60%),
+    linear-gradient(-45deg, transparent 40%, rgba(139,92,246,0.12) 50%, transparent 60%) !important;
+  animation: cosmos-nebula 15s ease-in-out infinite alternate !important;
+  pointer-events: none !important;
+  z-index: 999998 !important;
+  mix-blend-mode: overlay !important;
+}
+
+/* Ocean Theme Animation */
+.ocean-waves-animation {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: 
+    radial-gradient(circle at 30% 40%, rgba(6, 182, 212, 0.18), transparent 50%),
+    radial-gradient(circle at 70% 80%, rgba(14, 116, 144, 0.12), transparent 60%),
+    linear-gradient(180deg, transparent 60%, rgba(6, 182, 212, 0.08) 100%) !important;
+  animation: ocean-waves 12s ease-in-out infinite !important;
+  pointer-events: none !important;
+  z-index: 999999 !important;
+}
+
+.ocean-ripples-animation {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 200px !important;
+  background: 
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 20px,
+      rgba(6, 182, 212, 0.06) 20px,
+      rgba(6, 182, 212, 0.06) 40px
+    ) !important;
+  animation: ocean-ripples 6s ease-in-out infinite !important;
+  pointer-events: none !important;
+  z-index: 999998 !important;
+  transform-origin: bottom !important;
+}
+
+/* Fire Theme Animation */
+.fire-flames-animation {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 60% !important;
+  background: 
+    radial-gradient(ellipse at 20% 100%, rgba(239, 68, 68, 0.15) 0%, transparent 70%),
+    radial-gradient(ellipse at 50% 100%, rgba(249, 115, 22, 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, rgba(220, 38, 38, 0.15) 0%, transparent 65%) !important;
+  animation: fire-flicker 3s ease-in-out infinite !important;
+  pointer-events: none !important;
+  z-index: 999999 !important;
+}
+
+.fire-embers-animation {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 3px,
+      rgba(239, 68, 68, 0.04) 3px,
+      rgba(239, 68, 68, 0.04) 6px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 5px,
+      rgba(249, 115, 22, 0.03) 5px,
+      rgba(249, 115, 22, 0.03) 10px
+    ) !important;
+  animation: fire-embers 8s linear infinite !important;
+  pointer-events: none !important;
+  z-index: 999998 !important;
+}
+
+/* Aurora Theme Animation */
+.aurora-lights-animation {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 120vw !important;
+  height: 100vh !important;
+  background: 
+    linear-gradient(135deg, 
+      transparent 0%, 
+      rgba(16, 185, 129, 0.12) 20%, 
+      rgba(139, 92, 246, 0.08) 40%, 
+      rgba(6, 182, 212, 0.10) 60%, 
+      rgba(16, 185, 129, 0.06) 80%, 
+      transparent 100%
+    ) !important;
+  animation: aurora-dance 20s ease-in-out infinite !important;
+  pointer-events: none !important;
+  z-index: 999999 !important;
+  transform-origin: top left !important;
+}
+
+.aurora-shimmer-animation {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: 
+    radial-gradient(ellipse at 10% 20%, rgba(16, 185, 129, 0.06), transparent 60%),
+    radial-gradient(ellipse at 90% 30%, rgba(139, 92, 246, 0.05), transparent 70%),
+    radial-gradient(ellipse at 50% 10%, rgba(6, 182, 212, 0.08), transparent 50%) !important;
+  animation: aurora-shimmer 15s ease-in-out infinite alternate !important;
+  pointer-events: none !important;
+  z-index: 999998 !important;
 }
 
 /* Cosmos Theme - Starfield */
@@ -1082,42 +1230,6 @@ body.matrix::after {
   --ring: hsl(270, 100%, 65%);
 }
 
-body.cosmos::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: 
-    radial-gradient(1px 1px at 25px 25px, rgba(255,255,255,0.8), transparent),
-    radial-gradient(1px 1px at 75px 75px, rgba(99,102,241,0.6), transparent),
-    radial-gradient(2px 2px at 150px 100px, rgba(139,92,246,0.4), transparent),
-    radial-gradient(1px 1px at 200px 150px, rgba(236,72,153,0.5), transparent),
-    radial-gradient(1px 1px at 50px 200px, rgba(255,255,255,0.7), transparent);
-  background-repeat: repeat;
-  background-size: 250px 200px;
-  animation: cosmos-drift 120s linear infinite;
-  pointer-events: none;
-  z-index: 999;
-}
-
-body.cosmos::after {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: 
-    linear-gradient(45deg, transparent 40%, rgba(99,102,241,0.1) 50%, transparent 60%),
-    linear-gradient(-45deg, transparent 40%, rgba(139,92,246,0.1) 50%, transparent 60%);
-  animation: cosmos-nebula 15s ease-in-out infinite alternate;
-  pointer-events: none;
-  z-index: 998;
-  mix-blend-mode: overlay;
-}
-
 /* Ocean Theme - Wave Motion */
 .ocean {
   --background: hsl(200, 100%, 2%);
@@ -1139,43 +1251,6 @@ body.cosmos::after {
   --destructive: hsl(0, 70%, 55%);
   --destructive-foreground: hsl(0, 0%, 100%);
   --ring: hsl(180, 100%, 50%);
-}
-
-body.ocean::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: 
-    radial-gradient(circle at 30% 40%, rgba(6, 182, 212, 0.15), transparent 50%),
-    radial-gradient(circle at 70% 80%, rgba(14, 116, 144, 0.1), transparent 60%),
-    linear-gradient(180deg, transparent 60%, rgba(6, 182, 212, 0.05) 100%);
-  animation: ocean-waves 12s ease-in-out infinite;
-  pointer-events: none;
-  z-index: 999;
-}
-
-body.ocean::after {
-  content: '';
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 200px;
-  background: 
-    repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 20px,
-      rgba(6, 182, 212, 0.03) 20px,
-      rgba(6, 182, 212, 0.03) 40px
-    );
-  animation: ocean-ripples 6s ease-in-out infinite;
-  pointer-events: none;
-  z-index: 998;
-  transform-origin: bottom;
 }
 
 /* Fire Theme - Flame Animation */
@@ -1201,49 +1276,6 @@ body.ocean::after {
   --ring: hsl(15, 100%, 60%);
 }
 
-body.fire::before {
-  content: '';
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 60%;
-  background: 
-    radial-gradient(ellipse at 20% 100%, rgba(239, 68, 68, 0.1) 0%, transparent 70%),
-    radial-gradient(ellipse at 50% 100%, rgba(249, 115, 22, 0.08) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 100%, rgba(220, 38, 38, 0.1) 0%, transparent 65%);
-  animation: fire-flicker 3s ease-in-out infinite;
-  pointer-events: none;
-  z-index: 999;
-}
-
-body.fire::after {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: 
-    repeating-linear-gradient(
-      45deg,
-      transparent,
-      transparent 3px,
-      rgba(239, 68, 68, 0.02) 3px,
-      rgba(239, 68, 68, 0.02) 6px
-    ),
-    repeating-linear-gradient(
-      -45deg,
-      transparent,
-      transparent 5px,
-      rgba(249, 115, 22, 0.015) 5px,
-      rgba(249, 115, 22, 0.015) 10px
-    );
-  animation: fire-embers 8s linear infinite;
-  pointer-events: none;
-  z-index: 998;
-}
-
 /* Aurora Theme - Northern Lights */
 .aurora {
   --background: hsl(220, 100%, 2%);
@@ -1265,44 +1297,6 @@ body.fire::after {
   --destructive: hsl(0, 70%, 55%);
   --destructive-foreground: hsl(0, 0%, 100%);
   --ring: hsl(160, 100%, 50%);
-}
-
-body.aurora::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 120%;
-  height: 100%;
-  background: 
-    linear-gradient(135deg, 
-      transparent 0%, 
-      rgba(16, 185, 129, 0.08) 20%, 
-      rgba(139, 92, 246, 0.06) 40%, 
-      rgba(6, 182, 212, 0.05) 60%, 
-      rgba(16, 185, 129, 0.04) 80%, 
-      transparent 100%
-    );
-  animation: aurora-dance 20s ease-in-out infinite;
-  pointer-events: none;
-  z-index: 999;
-  transform-origin: top left;
-}
-
-body.aurora::after {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: 
-    radial-gradient(ellipse at 10% 20%, rgba(16, 185, 129, 0.04), transparent 60%),
-    radial-gradient(ellipse at 90% 30%, rgba(139, 92, 246, 0.03), transparent 70%),
-    radial-gradient(ellipse at 50% 10%, rgba(6, 182, 212, 0.05), transparent 50%);
-  animation: aurora-shimmer 15s ease-in-out infinite alternate;
-  pointer-events: none;
-  z-index: 998;
 }
 
 /* Animations for new themes */

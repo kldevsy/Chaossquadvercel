@@ -205,6 +205,53 @@ export function ThemeProvider({
     // Adiciona a classe do tema atual no root e body
     root.classList.add(theme);
     body.classList.add(theme);
+    
+    // Remove existing theme animations
+    document.querySelectorAll('.theme-animation').forEach(el => el.remove());
+    
+    // Add specific theme animations
+    if (theme === 'matrix') {
+      const matrixBg = document.createElement('div');
+      matrixBg.className = 'matrix-bg-animation theme-animation';
+      document.body.appendChild(matrixBg);
+      
+      const matrixCode = document.createElement('div');
+      matrixCode.className = 'matrix-code-animation theme-animation';
+      matrixCode.textContent = '01101001011010010110111001100110011011110010000001101101011000010111010001110010011010010111100000100000011000010110111001101001011011010110000101110100011010010110111101101110001101000110100101100111011010010111010001100001011011000010000001110010011000010110100101101110001000000110000101101110011010010110110101100001011101000110100101101111011011100010000001100011011011110110010001100101001000000110011001100001011011000110110001101001011011100110011100100000011001100111001001101111011011010010000001110100011010000110010100100000011100110110101101111001';
+      document.body.appendChild(matrixCode);
+    } else if (theme === 'cosmos') {
+      const cosmosBg = document.createElement('div');
+      cosmosBg.className = 'cosmos-bg-animation theme-animation';
+      document.body.appendChild(cosmosBg);
+      
+      const cosmosNebula = document.createElement('div');
+      cosmosNebula.className = 'cosmos-nebula-animation theme-animation';
+      document.body.appendChild(cosmosNebula);
+    } else if (theme === 'ocean') {
+      const oceanWaves = document.createElement('div');
+      oceanWaves.className = 'ocean-waves-animation theme-animation';
+      document.body.appendChild(oceanWaves);
+      
+      const oceanRipples = document.createElement('div');
+      oceanRipples.className = 'ocean-ripples-animation theme-animation';
+      document.body.appendChild(oceanRipples);
+    } else if (theme === 'fire') {
+      const fireFlames = document.createElement('div');
+      fireFlames.className = 'fire-flames-animation theme-animation';
+      document.body.appendChild(fireFlames);
+      
+      const fireEmbers = document.createElement('div');
+      fireEmbers.className = 'fire-embers-animation theme-animation';
+      document.body.appendChild(fireEmbers);
+    } else if (theme === 'aurora') {
+      const auroraLights = document.createElement('div');
+      auroraLights.className = 'aurora-lights-animation theme-animation';
+      document.body.appendChild(auroraLights);
+      
+      const auroraShimmer = document.createElement('div');
+      auroraShimmer.className = 'aurora-shimmer-animation theme-animation';
+      document.body.appendChild(auroraShimmer);
+    }
 
     // Apply theme-specific configurations
     if (theme === "custom") {
