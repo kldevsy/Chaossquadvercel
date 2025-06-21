@@ -541,22 +541,46 @@ export default function Admin() {
           transition={{ delay: 0.6 }}
         >
           <Tabs defaultValue="artists" className="space-y-8">
-            <TabsList className="grid w-full grid-cols-4 h-14 p-1 bg-card/50 backdrop-blur-sm">
-              <TabsTrigger value="artists" className="flex items-center gap-2 h-full data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white transition-all duration-300">
-                <Users className="w-4 h-4" />
-                <span className="font-medium">Artistas ({artists.length})</span>
+            <TabsList className="grid w-full grid-cols-4 h-16 p-1 bg-card/50 backdrop-blur-sm rounded-xl">
+              <TabsTrigger 
+                value="artists" 
+                className="flex flex-col items-center justify-center gap-1 h-full px-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white transition-all duration-300 rounded-lg"
+              >
+                <div className="flex items-center gap-1">
+                  <Users className="w-4 h-4" />
+                  <span className="font-medium text-sm">Artistas</span>
+                </div>
+                <span className="text-xs opacity-75">({artists.length})</span>
               </TabsTrigger>
-              <TabsTrigger value="projects" className="flex items-center gap-2 h-full data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-blue-500 data-[state=active]:text-white transition-all duration-300">
-                <Music className="w-4 h-4" />
-                <span className="font-medium">Projetos ({projects.length})</span>
+              <TabsTrigger 
+                value="projects" 
+                className="flex flex-col items-center justify-center gap-1 h-full px-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-blue-500 data-[state=active]:text-white transition-all duration-300 rounded-lg"
+              >
+                <div className="flex items-center gap-1">
+                  <Music className="w-4 h-4" />
+                  <span className="font-medium text-sm">Projetos</span>
+                </div>
+                <span className="text-xs opacity-75">({projects.length})</span>
               </TabsTrigger>
-              <TabsTrigger value="notifications" className="flex items-center gap-2 h-full data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white transition-all duration-300">
-                <Bell className="w-4 h-4" />
-                <span className="font-medium">Notificações ({notifications.length})</span>
+              <TabsTrigger 
+                value="notifications" 
+                className="flex flex-col items-center justify-center gap-1 h-full px-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white transition-all duration-300 rounded-lg"
+              >
+                <div className="flex items-center gap-1">
+                  <Bell className="w-4 h-4" />
+                  <span className="font-medium text-sm">Notificações</span>
+                </div>
+                <span className="text-xs opacity-75">({notifications.length})</span>
               </TabsTrigger>
-              <TabsTrigger value="users" className="flex items-center gap-2 h-full data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all duration-300">
-                <UserCheck className="w-4 h-4" />
-                <span className="font-medium">Usuários ({users.length})</span>
+              <TabsTrigger 
+                value="users" 
+                className="flex flex-col items-center justify-center gap-1 h-full px-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all duration-300 rounded-lg"
+              >
+                <div className="flex items-center gap-1">
+                  <UserCheck className="w-4 h-4" />
+                  <span className="font-medium text-sm">Usuários</span>
+                </div>
+                <span className="text-xs opacity-75">({users.length})</span>
               </TabsTrigger>
             </TabsList>
 

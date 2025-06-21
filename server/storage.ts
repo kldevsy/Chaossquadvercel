@@ -238,6 +238,51 @@ export class DatabaseStorage implements IStorage {
     )).limit(1);
     return !!like;
   }
+
+  // Notification operations
+  async getAllNotifications(): Promise<Notification[]> {
+    return await db.select().from(notifications).orderBy(desc(notifications.createdAt));
+  }
+
+  async getActiveNotifications(): Promise<Notification[]> {
+    return await db
+      .select()
+      .from(notifications)
+      .where(eq(notifications.isActive, true))
+      .orderBy(desc(notifications.createdAt));
+  }
+
+  async createNotification(insertNotification: InsertNotification): Promise<Notification> {
+    const [notification] = await db
+      .insert(notifications)
+      .values({
+        title: insertNotification.title,
+        message: insertNotification.message,
+        type: insertNotification.type || "info",
+        isActive: insertNotification.isActive ?? true,
+        createdAt: new Date().toISOString(),
+      })
+      .returning();
+    return notification;
+  }
+
+  async deleteNotification(id: number): Promise<void> {
+    await db.update(notifications).set({ isActive: false }).where(eq(notifications.id, id));
+  }
+  
+  // Admin user operations
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users).orderBy(users.createdAt);
+  }
+
+  async updateUserAdminStatus(userId: string, isAdmin: boolean): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set({ isAdmin, updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
 }
 
 // Keep MemStorage for fallback/development
