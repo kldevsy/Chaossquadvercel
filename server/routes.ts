@@ -59,6 +59,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all projects
+  app.get("/api/projects", async (req, res) => {
+    try {
+      const projects = await storage.getAllProjects();
+      res.json(projects);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar projetos" });
+    }
+  });
+
+  // Get project by ID
+  app.get("/api/projects/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "ID inválido" });
+      }
+
+      const project = await storage.getProject(id);
+      if (!project) {
+        return res.status(404).json({ message: "Projeto não encontrado" });
+      }
+
+      res.json(project);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar projeto" });
+    }
+  });
+
+  // Search projects
+  app.get("/api/projects/search/:query", async (req, res) => {
+    try {
+      const query = req.params.query;
+      const projects = await storage.searchProjects(query);
+      res.json(projects);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar projetos" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

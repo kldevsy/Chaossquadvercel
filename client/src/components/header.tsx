@@ -90,10 +90,15 @@ export default function Header({ onSearch, searchQuery, totalArtists = 0 }: Head
 
           {/* Navigation - Hidden on mobile */}
           <nav className="hidden md:flex items-center space-x-8">
-            {["Início", "Artistas", "Gêneros", "Sobre"].map((item, index) => (
+            {[
+              { label: "Artistas", href: "/" },
+              { label: "Projetos", href: "/projects" },
+              { label: "Gêneros", href: "#generos" },
+              { label: "Sobre", href: "#sobre" }
+            ].map((item, index) => (
               <motion.a
-                key={item}
-                href={`#${item.toLowerCase()}`}
+                key={item.label}
+                href={item.href}
                 className="nav-link text-foreground hover:text-primary transition-all duration-300 relative"
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -103,7 +108,7 @@ export default function Header({ onSearch, searchQuery, totalArtists = 0 }: Head
                   transition: { duration: 0.2 }
                 }}
               >
-                {item}
+                {item.label}
                 <motion.div
                   className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary origin-left"
                   initial={{ scaleX: 0 }}
@@ -219,10 +224,15 @@ export default function Header({ onSearch, searchQuery, totalArtists = 0 }: Head
               transition={{ duration: 0.3 }}
             >
               <div className="flex flex-col space-y-2">
-                {["Início", "Artistas", "Gêneros", "Sobre"].map((item, index) => (
+                {[
+                  { label: "Artistas", href: "/" },
+                  { label: "Projetos", href: "/projects" },
+                  { label: "Gêneros", href: "#generos" },
+                  { label: "Sobre", href: "#sobre" }
+                ].map((item, index) => (
                   <motion.a
-                    key={item}
-                    href={`#${item.toLowerCase()}`}
+                    key={item.label}
+                    href={item.href}
                     className="text-foreground hover:text-primary transition-all duration-300 py-3 px-2 rounded-lg hover:bg-accent/50"
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -230,7 +240,7 @@ export default function Header({ onSearch, searchQuery, totalArtists = 0 }: Head
                     whileHover={{ x: 10, scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    {item}
+                    {item.label}
                   </motion.a>
                 ))}
               </div>

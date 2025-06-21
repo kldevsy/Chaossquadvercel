@@ -74,8 +74,12 @@ export function useMusicPlayer() {
       });
 
       audioRef.current.addEventListener("timeupdate", () => {
-        if (audioRef.current && !audioRef.current.paused) {
-          setCurrentTime(Math.floor(audioRef.current.currentTime));
+        if (audioRef.current && !audioRef.current.paused && !audioRef.current.seeking) {
+          const newTime = Math.floor(audioRef.current.currentTime);
+          setCurrentTime(prevTime => {
+            // Only update if time actually changed to avoid unnecessary re-renders
+            return prevTime !== newTime ? newTime : prevTime;
+          });
         }
       });
     }

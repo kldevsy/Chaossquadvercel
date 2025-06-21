@@ -21,6 +21,20 @@ export const artists = pgTable("artists", {
   artistTypes: text("artist_types").array().notNull(),
 });
 
+export const projects = pgTable("projects", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  cover: text("cover").notNull(),
+  description: text("description").notNull(),
+  genres: text("genres").array().notNull(),
+  collaborators: text("collaborators").array().notNull(), // Artist IDs
+  previewUrl: text("preview_url"),
+  status: text("status").notNull().default("em_desenvolvimento"), // em_desenvolvimento, finalizado, lancado
+  releaseDate: text("release_date"),
+  createdAt: text("created_at").notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
@@ -30,7 +44,13 @@ export const insertArtistSchema = createInsertSchema(artists).omit({
   id: true,
 });
 
+export const insertProjectSchema = createInsertSchema(projects).omit({
+  id: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type InsertArtist = z.infer<typeof insertArtistSchema>;
 export type Artist = typeof artists.$inferSelect;
+export type InsertProject = z.infer<typeof insertProjectSchema>;
+export type Project = typeof projects.$inferSelect;
