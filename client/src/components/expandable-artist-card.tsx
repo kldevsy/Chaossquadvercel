@@ -157,19 +157,19 @@ export default function ExpandableArtistCard({ artist, isPlaying, onPlay, onPaus
                     </Button>
                     
                     {/* Likes Counter */}
-                    {artist.likesCount > 0 && (
+                    {(artist.likesCount ?? 0) > 0 && (
                       <motion.div
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold"
                       >
                         <motion.span
-                          key={artist.likesCount}
+                          key={artist.likesCount ?? 0}
                           initial={{ scale: 1.5 }}
                           animate={{ scale: 1 }}
                           transition={{ duration: 0.3 }}
                         >
-                          {artist.likesCount > 99 ? '99+' : artist.likesCount}
+                          {(artist.likesCount ?? 0) > 99 ? '99+' : (artist.likesCount ?? 0)}
                         </motion.span>
                       </motion.div>
                     )}

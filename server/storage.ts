@@ -1,6 +1,6 @@
 import { users, artists, projects, likes, type User, type UpsertUser, type InsertUser, type Artist, type InsertArtist, type Project, type InsertProject, type Like, type InsertLike } from "@shared/schema";
 import { db } from "./db";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 
 export interface IStorage {
   // User operations
@@ -135,18 +135,43 @@ export class DatabaseStorage implements IStorage {
 
   // Like operations
   async likeArtist(userId: string, artistId: number): Promise<Like> {
-    const [like] = await db.insert(likes).values({
-      userId,
-      artistId,
-    }).returning();
-    return like;
+    return await db.transaction(async (tx) => {
+      // Insert the like
+      const [like] = await tx
+        .insert(likes)
+        .values({
+          userId,
+          artistId,
+        })
+        .returning();
+
+      // Update the likes count
+      await tx
+        .update(artists)
+        .set({
+          likesCount: sql`COALESCE(${artists.likesCount}, 0) + 1`,
+        })
+        .where(eq(artists.id, artistId));
+
+      return like;
+    });
   }
 
   async unlikeArtist(userId: string, artistId: number): Promise<void> {
-    await db.delete(likes).where(and(
-      eq(likes.userId, userId),
-      eq(likes.artistId, artistId)
-    ));
+    await db.transaction(async (tx) => {
+      // Delete the like
+      await tx
+        .delete(likes)
+        .where(and(eq(likes.userId, userId), eq(likes.artistId, artistId)));
+
+      // Update the likes count
+      await tx
+        .update(artists)
+        .set({
+          likesCount: sql`GREATEST(0, COALESCE(${artists.likesCount}, 0) - 1)`,
+        })
+        .where(eq(artists.id, artistId));
+    });
   }
 
   async getUserLikes(userId: string): Promise<Like[]> {
@@ -203,7 +228,7 @@ export class MemStorage implements IStorage {
         isActive: true,
         musicalStyles: ["Trap", "Funk", "Hip-Hop", "Phonk"],
         artistTypes: ["Geek", "Autoral"],
-        likesCount: 12
+        likesCount: 0
       },
       {
         name: "KAISH",
@@ -355,7 +380,8 @@ export class MemStorage implements IStorage {
       musicUrl: insertArtist.musicUrl || null,
       isActive: insertArtist.isActive ?? true,
       musicalStyles: insertArtist.musicalStyles || [],
-      artistTypes: insertArtist.artistTypes || []
+      artistTypes: insertArtist.artistTypes || [],
+      likesCount: insertArtist.likesCount ?? 0
     };
     this.artists.set(id, artist);
     return artist;
