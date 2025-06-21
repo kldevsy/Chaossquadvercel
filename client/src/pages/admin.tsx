@@ -1157,13 +1157,52 @@ export default function Admin() {
                   ))}
                 </AnimatePresence>
                 {notifications.length === 0 && (
-                  <Card className="text-center py-12">
-                    <CardContent>
-                      <Bell className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                      <h3 className="text-lg font-semibold mb-2">Nenhuma notificação</h3>
-                      <p className="text-muted-foreground">Crie sua primeira notificação para os usuários</p>
-                    </CardContent>
-                  </Card>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                  >
+                    <Card className="text-center py-16 bg-gradient-to-br from-background via-background to-secondary/10 border-dashed border-2">
+                      <CardContent className="space-y-6">
+                        <motion.div
+                          initial={{ scale: 0.8 }}
+                          animate={{ scale: 1 }}
+                          transition={{ duration: 0.5, delay: 0.2 }}
+                          className="relative mx-auto w-24 h-24"
+                        >
+                          <Bell className="w-24 h-24 text-muted-foreground/30" />
+                          <Sparkles className="w-8 h-8 text-orange-500 absolute -top-2 -right-2 animate-bounce" />
+                        </motion.div>
+                        
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.4 }}
+                          className="space-y-3"
+                        >
+                          <h3 className="text-2xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+                            Painel de Notificações
+                          </h3>
+                          <p className="text-muted-foreground max-w-md mx-auto leading-relaxed">
+                            Aqui você pode enviar mensagens importantes para todos os usuários da plataforma. 
+                            Mantenha sua comunidade sempre informada! 🚀
+                          </p>
+                        </motion.div>
+
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.6 }}
+                          className="pt-4"
+                        >
+                          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                            <span>Sistema pronto para envio</span>
+                          </div>
+                        </motion.div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
                 )}
               </div>
             )}
