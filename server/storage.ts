@@ -173,13 +173,13 @@ export class MemStorage implements IStorage {
         isActive: true
       },
       {
-        name: "Retro Gaming Soundtrack",
+        name: "caos!",
         cover: "https://i.pinimg.com/736x/7f/2b/6d/7f2b6d5a8e1c9f3b7a4e2d8c6f1a5b9e.jpg",
         description: "Trilha sonora inspirada em jogos retrô com elementos de chiptune e synthwave",
-        genres: ["Synthwave", "Chiptune", "Gaming"],
+        genres: ["caos", "hard"],
         collaborators: ["4"], // Synthwave Gamer
-        previewUrl: "https://example.com/preview/retro-gaming.mp3",
-        previewVideoUrl: "https://www.instagram.com/p/ABC123/",
+        previewUrl: "",
+        previewVideoUrl: "https://www.instagram.com/reel/DLDu9J8vs3R/?igsh=bG8yYWx1M2J6NHI2",
         status: "lancado",
         releaseDate: "2024-01-10",
         createdAt: "2023-11-15",

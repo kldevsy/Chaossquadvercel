@@ -34,9 +34,18 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
       return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}`;
     }
 
-    // Instagram
+    // Instagram - needs special handling
     if (url.includes('instagram.com/p/') || url.includes('instagram.com/reel/')) {
-      return `${url}embed/`;
+      // Extract post ID and use proper embed format
+      const postMatch = url.match(/\/p\/([^\/\?]+)/);
+      const reelMatch = url.match(/\/reel\/([^\/\?]+)/);
+      if (postMatch) {
+        return `https://www.instagram.com/p/${postMatch[1]}/embed/`;
+      }
+      if (reelMatch) {
+        return `https://www.instagram.com/p/${reelMatch[1]}/embed/`;
+      }
+      return null;
     }
 
     // TikTok
@@ -86,14 +95,13 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
     // Special handling for Instagram
     if (url.includes('instagram.com/')) {
       return (
-        <iframe
-          src={embedUrl}
-          className="w-full h-full"
-          frameBorder="0"
-          scrolling="no"
-          allowTransparency={true}
-          allow="encrypted-media"
-        />
+        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-400 via-pink-500 to-red-500">
+          <div className="text-white text-center p-4">
+            <div className="text-2xl mb-2">📷</div>
+            <div className="text-sm font-medium mb-1">Instagram</div>
+            <div className="text-xs opacity-90">Clique para ver no Instagram</div>
+          </div>
+        </div>
       );
     }
 
@@ -172,8 +180,10 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
   const handleClick = useCallback(() => {
     if (!project.previewVideoUrl) return;
 
-    // For Twitter/X, open in new tab instead of embedding
-    if (project.previewVideoUrl.includes('twitter.com/') || project.previewVideoUrl.includes('x.com/')) {
+    // For Twitter/X and Instagram, open in new tab instead of embedding
+    if (project.previewVideoUrl.includes('twitter.com/') || 
+        project.previewVideoUrl.includes('x.com/') ||
+        project.previewVideoUrl.includes('instagram.com/')) {
       window.open(project.previewVideoUrl, '_blank');
       return;
     }
