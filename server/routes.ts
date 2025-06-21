@@ -320,6 +320,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin notification routes
+  // Create new notification (Admin only)
+  app.post("/api/admin/notifications", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const validatedData = insertNotificationSchema.parse(req.body);
+      const notification = await storage.createNotification(validatedData);
+      res.status(201).json(notification);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Dados inválidos", errors: error.errors });
+      }
+      console.error("Error creating notification:", error);
+      res.status(500).json({ message: "Erro ao criar notificação" });
+    }
+  });
+
+  // Delete notification (Admin only)
+  app.delete("/api/admin/notifications/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "ID inválido" });
+      }
+
+      await storage.deleteNotification(id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting notification:", error);
+      res.status(500).json({ message: "Erro ao deletar notificação" });
+    }
+  });
+
+  // Get all users (Admin only)
+  app.get("/api/admin/users", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      res.json(users);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "Erro ao buscar usuários" });
+    }
+  });
+
+  // Update user admin status (Admin only)
+  app.put("/api/admin/users/:id/admin", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const userId = req.params.id;
+      const { isAdmin: newAdminStatus } = req.body;
+      
+      if (typeof newAdminStatus !== 'boolean') {
+        return res.status(400).json({ message: "Status de admin deve ser boolean" });
+      }
+
+      const user = await storage.updateUserAdminStatus(userId, newAdminStatus);
+      if (!user) {
+        return res.status(404).json({ message: "Usuário não encontrado" });
+      }
+      res.json(user);
+    } catch (error) {
+      console.error("Error updating user admin status:", error);
+      res.status(500).json({ message: "Erro ao atualizar status de admin" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
