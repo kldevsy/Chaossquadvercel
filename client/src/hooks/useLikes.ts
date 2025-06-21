@@ -25,6 +25,7 @@ export function useLikes() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/user/likes"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/artists"] });
       toast({
         title: "Curtido!",
         description: "Artista adicionado aos seus favoritos",
@@ -59,6 +60,7 @@ export function useLikes() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/user/likes"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/artists"] });
       toast({
         title: "Descurtido",
         description: "Artista removido dos seus favoritos",
@@ -88,11 +90,27 @@ export function useLikes() {
     return userLikes.some((like: any) => like.artistId === artistId);
   };
 
-  const toggleLike = (artistId: number) => {
-    if (isArtistLiked(artistId)) {
-      unlikeMutation.mutate(artistId);
-    } else {
-      likeMutation.mutate(artistId);
+  const toggleLike = async (artistId: number) => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Login necessário",
+        description: "Faça login para curtir artistas",
+        variant: "destructive",
+      });
+      setTimeout(() => {
+        window.location.href = "/api/login";
+      }, 1000);
+      return;
+    }
+
+    try {
+      if (isArtistLiked(artistId)) {
+        await unlikeMutation.mutateAsync(artistId);
+      } else {
+        await likeMutation.mutateAsync(artistId);
+      }
+    } catch (error) {
+      // Error handling is done in mutation onError
     }
   };
 

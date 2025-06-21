@@ -122,6 +122,7 @@ export default function ExpandableArtistCard({ artist, isPlaying, onPlay, onPaus
                   <motion.div
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
+                    className="relative"
                   >
                     <Button
                       size="sm"
@@ -154,6 +155,24 @@ export default function ExpandableArtistCard({ artist, isPlaying, onPlay, onPaus
                         />
                       </motion.div>
                     </Button>
+                    
+                    {/* Likes Counter */}
+                    {artist.likesCount > 0 && (
+                      <motion.div
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold"
+                      >
+                        <motion.span
+                          key={artist.likesCount}
+                          initial={{ scale: 1.5 }}
+                          animate={{ scale: 1 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          {artist.likesCount > 99 ? '99+' : artist.likesCount}
+                        </motion.span>
+                      </motion.div>
+                    )}
                   </motion.div>
                   
                   <motion.div

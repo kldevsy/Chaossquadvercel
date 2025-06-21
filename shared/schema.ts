@@ -37,6 +37,7 @@ export const artists = pgTable("artists", {
   isActive: boolean("is_active").default(true).notNull(),
   musicalStyles: text("musical_styles").array().notNull(),
   artistTypes: text("artist_types").array().notNull(),
+  likesCount: integer("likes_count").default(0),
 });
 
 // Likes table for user likes on artists

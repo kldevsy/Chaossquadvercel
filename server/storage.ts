@@ -202,7 +202,8 @@ export class MemStorage implements IStorage {
         musicUrl: "https://yhdtpoqjntehiruphsjd.supabase.co/storage/v1/object/public/teste//klzinn_estilo_rengoku.mp3",
         isActive: true,
         musicalStyles: ["Trap", "Funk", "Hip-Hop", "Phonk"],
-        artistTypes: ["Geek", "Autoral"]
+        artistTypes: ["Geek", "Autoral"],
+        likesCount: 12
       },
       {
         name: "KAISH",
