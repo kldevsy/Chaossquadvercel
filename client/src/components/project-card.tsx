@@ -14,9 +14,10 @@ interface ProjectCardProps {
   isPlaying: boolean;
   onPlay: () => void;
   onPause: () => void;
+  musicPlayer?: any;
 }
 
-export default function ProjectCard({ project, artists, isPlaying, onPlay, onPause }: ProjectCardProps) {
+export default function ProjectCard({ project, artists, isPlaying, onPlay, onPause, musicPlayer }: ProjectCardProps) {
   const { theme } = useTheme();
   const [showVideo, setShowVideo] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
@@ -244,10 +245,14 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
     }
     hoverTimeoutRef.current = setTimeout(() => {
       if (project.previewVideoUrl) {
+        // Pause music player if playing
+        if (musicPlayer?.pauseForVideo) {
+          musicPlayer.pauseForVideo();
+        }
         setShowVideo(true);
       }
     }, 800);
-  }, [project.previewVideoUrl]);
+  }, [project.previewVideoUrl, musicPlayer]);
 
   const handleMouseLeave = useCallback(() => {
     setIsHovering(false);
@@ -286,12 +291,21 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4 }}
-      transition={{ duration: 0.3 }}
+      whileHover={{ 
+        y: -8,
+        scale: 1.02,
+        boxShadow: "0 20px 40px rgba(0,0,0,0.15)"
+      }}
+      transition={{ 
+        duration: 0.4,
+        type: "spring",
+        stiffness: 200,
+        damping: 15
+      }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <Card className="overflow-hidden backdrop-blur-sm bg-card/50 border-border/50 hover:border-primary/20 transition-all duration-300 cursor-pointer">
+      <Card className="overflow-hidden backdrop-blur-sm bg-card/50 border-border/50 hover:border-primary/20 transition-all duration-500 cursor-pointer hover:shadow-2xl hover:shadow-primary/10">
         <div className="relative" onClick={handleClick}>
           {/* Image/Video Container */}
           <div className="relative w-full h-48 overflow-hidden">
@@ -409,18 +423,42 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
             {/* Genres */}
             <div className="flex flex-wrap gap-2">
               {project.genres.map((genre, index) => (
-                <Badge
+                <motion.div
                   key={genre}
-                  variant="outline"
-                  className="text-xs"
-                  style={{
-                    backgroundColor: `${getThemeColor('primary')}15`,
-                    color: getThemeColor('primary'),
-                    borderColor: `${getThemeColor('primary')}30`
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ 
+                    duration: 0.3, 
+                    delay: index * 0.1,
+                    type: "spring",
+                    stiffness: 200 
                   }}
+                  whileHover={{ 
+                    scale: 1.05,
+                    boxShadow: `0 0 15px ${getThemeColor('primary')}40`
+                  }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  {genre}
-                </Badge>
+                  <Badge
+                    variant="outline"
+                    className="text-xs relative overflow-hidden transition-all duration-300 hover:shadow-lg"
+                    style={{
+                      backgroundColor: `${getThemeColor('primary')}15`,
+                      color: getThemeColor('primary'),
+                      borderColor: `${getThemeColor('primary')}30`
+                    }}
+                  >
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r opacity-0 hover:opacity-20"
+                      style={{
+                        background: `linear-gradient(45deg, ${getThemeColor('primary')}20, ${getThemeColor('primary')}40)`
+                      }}
+                      whileHover={{ opacity: 0.2 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                    <span className="relative z-10">{genre}</span>
+                  </Badge>
+                </motion.div>
               ))}
             </div>
 

@@ -149,6 +149,12 @@ export function useMusicPlayer() {
     }
   };
 
+  const pauseForVideo = () => {
+    if (isPlaying) {
+      pause();
+    }
+  };
+
   const togglePlayPause = () => {
     if (isPlaying) {
       pause();
@@ -210,5 +216,6 @@ export function useMusicPlayer() {
     previous,
     closePlayer,
     toggleMinimize,
+    pauseForVideo,
   };
 }

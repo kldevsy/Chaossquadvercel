@@ -229,6 +229,7 @@ export default function Projects() {
                     musicPlayer.playArtist(projectArtist);
                   }}
                   onPause={() => musicPlayer.togglePlayPause()}
+                  musicPlayer={musicPlayer}
                 />
               </motion.div>
             ))}

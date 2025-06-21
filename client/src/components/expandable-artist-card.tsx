@@ -48,18 +48,36 @@ export default function ExpandableArtistCard({ artist, isPlaying, onPlay, onPaus
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4 }}
-      transition={{ duration: 0.3 }}
+      initial={{ opacity: 0, y: 30, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      whileHover={{ 
+        y: -8,
+        scale: 1.02,
+        boxShadow: "0 25px 50px rgba(0,0,0,0.15)"
+      }}
+      transition={{ 
+        duration: 0.5,
+        type: "spring",
+        stiffness: 200,
+        damping: 20
+      }}
     >
-      <Card className="overflow-hidden backdrop-blur-sm bg-card/50 border-border/50 hover:border-primary/20 transition-all duration-300">
+      <Card className="overflow-hidden backdrop-blur-sm bg-card/50 border-border/50 hover:border-primary/20 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10 relative group">
         <CardContent className="p-6">
           <div className="flex items-start gap-4">
-            <Avatar className="w-16 h-16 ring-2 ring-border">
-              <AvatarImage src={artist.avatar} alt={artist.name} />
-              <AvatarFallback>{artist.name.slice(0, 2).toUpperCase()}</AvatarFallback>
-            </Avatar>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Avatar className="w-16 h-16 ring-2 ring-border group-hover:ring-primary/30 transition-all duration-300 relative">
+                <AvatarImage src={artist.avatar} alt={artist.name} />
+                <AvatarFallback>{artist.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+                <motion.div
+                  className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 to-transparent opacity-0 group-hover:opacity-100"
+                  transition={{ duration: 0.3 }}
+                />
+              </Avatar>
+            </motion.div>
             
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between mb-2">
@@ -67,30 +85,56 @@ export default function ExpandableArtistCard({ artist, isPlaying, onPlay, onPaus
                   {artist.name}
                 </h3>
                 <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={isPlaying ? onPause : onPlay}
-                    className="w-8 h-8 p-0 hover:bg-primary/10"
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
                   >
-                    {isPlaying ? (
-                      <Pause className="w-4 h-4" />
-                    ) : (
-                      <Play className="w-4 h-4" />
-                    )}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => setIsExpanded(!isExpanded)}
-                    className="w-8 h-8 p-0 hover:bg-primary/10"
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={isPlaying ? onPause : onPlay}
+                      className="w-8 h-8 p-0 hover:bg-primary/10 transition-all duration-300 relative overflow-hidden group"
+                    >
+                      <motion.div
+                        className="absolute inset-0 bg-primary/20 rounded-md opacity-0 group-hover:opacity-100"
+                        transition={{ duration: 0.3 }}
+                      />
+                      <motion.div
+                        animate={isPlaying ? { scale: [1, 1.2, 1] } : {}}
+                        transition={{ duration: 0.5, repeat: isPlaying ? Infinity : 0 }}
+                        className="relative z-10"
+                      >
+                        {isPlaying ? (
+                          <Pause className="w-4 h-4" />
+                        ) : (
+                          <Play className="w-4 h-4" />
+                        )}
+                      </motion.div>
+                    </Button>
+                  </motion.div>
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
                   >
-                    {isExpanded ? (
-                      <ChevronUp className="w-4 h-4" />
-                    ) : (
-                      <ChevronDown className="w-4 h-4" />
-                    )}
-                  </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setIsExpanded(!isExpanded)}
+                      className="w-8 h-8 p-0 hover:bg-primary/10 transition-all duration-300 relative overflow-hidden group"
+                    >
+                      <motion.div
+                        className="absolute inset-0 bg-primary/20 rounded-md opacity-0 group-hover:opacity-100"
+                        transition={{ duration: 0.3 }}
+                      />
+                      <motion.div
+                        animate={{ rotate: isExpanded ? 180 : 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="relative z-10"
+                      >
+                        <ChevronDown className="w-4 h-4" />
+                      </motion.div>
+                    </Button>
+                  </motion.div>
                 </div>
               </div>
               
@@ -100,44 +144,104 @@ export default function ExpandableArtistCard({ artist, isPlaying, onPlay, onPaus
               
               <div className="flex flex-wrap gap-2 mb-3">
                 {artist.roles.map((role, index) => (
-                  <Badge
+                  <motion.div
                     key={role}
-                    variant={getBadgeVariant(index)}
-                    className="text-xs font-medium"
-                    style={{
-                      backgroundColor: `${getThemeColor('primary')}20`,
-                      color: getThemeColor('primary'),
-                      borderColor: `${getThemeColor('primary')}40`
+                    initial={{ opacity: 0, scale: 0.8, x: -10 }}
+                    animate={{ opacity: 1, scale: 1, x: 0 }}
+                    transition={{ 
+                      duration: 0.4, 
+                      delay: index * 0.1,
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 20
+                    }}
+                    whileHover={{ 
+                      scale: 1.1,
+                      y: -2,
+                      boxShadow: `0 8px 25px ${getThemeColor('primary')}30`
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => {
+                      // Trigger role filter
+                      window.dispatchEvent(new CustomEvent('filterByRole', { detail: role }));
                     }}
                   >
-                    {role}
-                  </Badge>
+                    <Badge
+                      variant={getBadgeVariant(index)}
+                      className="text-xs font-medium cursor-pointer relative overflow-hidden transition-all duration-300 hover:shadow-lg"
+                      style={{
+                        backgroundColor: `${getThemeColor('primary')}20`,
+                        color: getThemeColor('primary'),
+                        borderColor: `${getThemeColor('primary')}40`
+                      }}
+                    >
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r opacity-0"
+                        style={{
+                          background: `linear-gradient(45deg, ${getThemeColor('primary')}20, ${getThemeColor('primary')}50)`
+                        }}
+                        whileHover={{ opacity: 0.3 }}
+                        transition={{ duration: 0.3 }}
+                      />
+                      <span className="relative z-10">{role}</span>
+                    </Badge>
+                  </motion.div>
                 ))}
               </div>
 
               <div className="flex items-center justify-between text-xs text-muted-foreground">
                 <span>Desde {joinYear}</span>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
                   {socialLinks.instagram && (
-                    <Button size="sm" variant="ghost" className="w-6 h-6 p-0" asChild>
-                      <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer">
-                        <Instagram className="w-3 h-3" />
-                      </a>
-                    </Button>
+                    <motion.div
+                      whileHover={{ scale: 1.2, y: -2 }}
+                      whileTap={{ scale: 0.9 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                    >
+                      <Button size="sm" variant="ghost" className="w-6 h-6 p-0 relative overflow-hidden group hover:bg-pink-500/20" asChild>
+                        <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer">
+                          <motion.div
+                            className="absolute inset-0 bg-gradient-to-r from-pink-500/30 to-purple-500/30 opacity-0 group-hover:opacity-100"
+                            transition={{ duration: 0.3 }}
+                          />
+                          <Instagram className="w-3 h-3 relative z-10 text-pink-500" />
+                        </a>
+                      </Button>
+                    </motion.div>
                   )}
                   {socialLinks.youtube && (
-                    <Button size="sm" variant="ghost" className="w-6 h-6 p-0" asChild>
-                      <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer">
-                        <Youtube className="w-3 h-3" />
-                      </a>
-                    </Button>
+                    <motion.div
+                      whileHover={{ scale: 1.2, y: -2 }}
+                      whileTap={{ scale: 0.9 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                    >
+                      <Button size="sm" variant="ghost" className="w-6 h-6 p-0 relative overflow-hidden group hover:bg-red-500/20" asChild>
+                        <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer">
+                          <motion.div
+                            className="absolute inset-0 bg-red-500/30 opacity-0 group-hover:opacity-100"
+                            transition={{ duration: 0.3 }}
+                          />
+                          <Youtube className="w-3 h-3 relative z-10 text-red-500" />
+                        </a>
+                      </Button>
+                    </motion.div>
                   )}
                   {socialLinks.spotify && (
-                    <Button size="sm" variant="ghost" className="w-6 h-6 p-0" asChild>
-                      <a href={socialLinks.spotify} target="_blank" rel="noopener noreferrer">
-                        <Music2 className="w-3 h-3" />
-                      </a>
-                    </Button>
+                    <motion.div
+                      whileHover={{ scale: 1.2, y: -2 }}
+                      whileTap={{ scale: 0.9 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                    >
+                      <Button size="sm" variant="ghost" className="w-6 h-6 p-0 relative overflow-hidden group hover:bg-green-500/20" asChild>
+                        <a href={socialLinks.spotify} target="_blank" rel="noopener noreferrer">
+                          <motion.div
+                            className="absolute inset-0 bg-green-500/30 opacity-0 group-hover:opacity-100"
+                            transition={{ duration: 0.3 }}
+                          />
+                          <Music2 className="w-3 h-3 relative z-10 text-green-500" />
+                        </a>
+                      </Button>
+                    </motion.div>
                   )}
                 </div>
               </div>

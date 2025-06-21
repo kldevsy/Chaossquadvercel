@@ -148,7 +148,7 @@ export class MemStorage implements IStorage {
     const sampleProjects: InsertProject[] = [
       {
         name: "estilo Itachi 🔴",
-        cover: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRv5Ew41KAM1vjZarpAGJ4c0zuObLkgAErTWQ&s",
+        cover: "https://i.pinimg.com/originals/e2/ee/ec/e2eeec1c8f1ba8c9e347a023a2de7839.gif",
         description: "Álbum colaborativo de trap geek sobre Itachi de Naruto",
         genres: ["Trap", "Wave", "geek"],
         collaborators: ["1", "2"], // klzinn e MC Nerdcore
@@ -166,7 +166,7 @@ export class MemStorage implements IStorage {
         genres: ["trap", "Geek"],
         collaborators: ["1"], // MC Nerdcore e Beatmaker Otaku
         previewUrl: null,
-        previewVideoUrl: "https://youtu.be/LyQPnW60kIM?si=rfEvI8KoxfirXhe_",
+        previewVideoUrl: "https://yhdtpoqjntehiruphsjd.supabase.co/storage/v1/object/public/itachi89//Estilo_Rengoku_%20Style%20Trap%20_%20Prod.%20Eopivete%20_%20klzinn(1080P_HD).mp4",
         status: "finalizado",
         releaseDate: "2024-02-20",
         createdAt: "2023-12-01",
