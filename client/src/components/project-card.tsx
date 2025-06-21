@@ -31,7 +31,7 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
       const videoId = url.includes('youtu.be/') 
         ? url.split('youtu.be/')[1].split('?')[0]
         : url.split('v=')[1]?.split('&')[0];
-      return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&controls=1&loop=1&playlist=${videoId}&enablejsapi=1`;
+      return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&loop=1&playlist=${videoId}&enablejsapi=1&start=0&end=30`;
     }
 
     // Instagram - needs special handling
@@ -80,6 +80,26 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
     
     if (!embedUrl) return null;
 
+    // Special handling for YouTube - show preview with play button
+    if (url.includes('youtube.com/') || url.includes('youtu.be/')) {
+      return (
+        <div className="w-full h-full relative">
+          <iframe
+            src={embedUrl}
+            className="w-full h-full"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="bg-red-600/90 backdrop-blur-sm rounded-lg px-4 py-2 text-white text-sm font-medium">
+              YouTube Preview - Clique para interagir
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     // Special handling for Twitter/X
     if (url.includes('twitter.com/') || url.includes('x.com/')) {
       return (
@@ -112,12 +132,42 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
           src={embedUrl}
           className="w-full h-full object-cover"
           autoPlay
-          muted
+          muted={false}
           loop
           controls={false}
           onEnded={() => setShowVideo(false)}
           onError={() => setShowVideo(false)}
+          onLoadedData={(e) => {
+            // Unmute after video loads for better user experience
+            const video = e.target as HTMLVideoElement;
+            video.muted = false;
+            video.volume = 0.7;
+          }}
         />
+      );
+    }
+
+    // Check if it's a direct audio file (MP3, etc.)
+    if (url.match(/\.(mp3|wav|ogg|aac)(\?.*)?$/i)) {
+      return (
+        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
+          <div className="text-center text-white">
+            <div className="text-4xl mb-4">🎵</div>
+            <div className="text-sm font-medium mb-2">Preview de Áudio</div>
+            <audio
+              src={embedUrl}
+              autoPlay
+              loop
+              controls={false}
+              onEnded={() => setShowVideo(false)}
+              onError={() => setShowVideo(false)}
+              onLoadedData={(e) => {
+                const audio = e.target as HTMLAudioElement;
+                audio.volume = 0.7;
+              }}
+            />
+          </div>
+        </div>
       );
     }
 
@@ -130,10 +180,10 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
         onLoad={(e) => {
-          // Auto-hide video after 10 seconds for iframes without duration detection
+          // Auto-hide video after 30 seconds for iframes without duration detection
           setTimeout(() => {
             setShowVideo(false);
-          }, 10000);
+          }, 30000);
         }}
       />
     );
