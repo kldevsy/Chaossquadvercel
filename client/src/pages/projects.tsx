@@ -62,10 +62,10 @@ export default function Projects() {
   }, [searchQuery, activeFilter]);
 
   const statusFilters = [
-    { key: "todos", label: "Todos", count: projects.length },
-    { key: "em_desenvolvimento", label: "Em Desenvolvimento", count: projects.filter(p => p.status === "em_desenvolvimento").length },
-    { key: "finalizado", label: "Finalizado", count: projects.filter(p => p.status === "finalizado").length },
-    { key: "lancado", label: "Lançado", count: projects.filter(p => p.status === "lancado").length }
+    { key: "todos", label: "🎵 Todos", emoji: "🎵", count: projects.length },
+    { key: "em_desenvolvimento", label: "🔧 Em Desenvolvimento", emoji: "🔧", count: projects.filter(p => p.status === "em_desenvolvimento").length },
+    { key: "finalizado", label: "✅ Finalizado", emoji: "✅", count: projects.filter(p => p.status === "finalizado").length },
+    { key: "lancado", label: "🚀 Lançado", emoji: "🚀", count: projects.filter(p => p.status === "lancado").length }
   ];
 
   return (
@@ -92,23 +92,76 @@ export default function Projects() {
 
       {/* Filter Navigation */}
       <section className="container mx-auto px-4 mb-8">
-        <div className="flex flex-wrap gap-2 justify-center">
-          {statusFilters.map((filter) => (
-            <Button
+        <motion.div 
+          className="flex flex-wrap gap-3 justify-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          {statusFilters.map((filter, index) => (
+            <motion.div
               key={filter.key}
-              variant={activeFilter === filter.key ? "default" : "outline"}
-              onClick={() => setActiveFilter(filter.key)}
-              className="transition-all duration-300"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ 
+                duration: 0.3, 
+                delay: index * 0.1,
+                type: "spring",
+                stiffness: 300,
+                damping: 20
+              }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              {filter.label}
-              {filter.count > 0 && (
-                <span className="ml-2 bg-primary/20 text-primary px-2 py-0.5 rounded-full text-xs">
-                  {filter.count}
-                </span>
-              )}
-            </Button>
+              <Button
+                variant={activeFilter === filter.key ? "default" : "outline"}
+                onClick={() => setActiveFilter(filter.key)}
+                className={`
+                  relative overflow-hidden transition-all duration-300 
+                  ${activeFilter === filter.key 
+                    ? "bg-primary text-primary-foreground shadow-lg transform scale-105" 
+                    : "hover:bg-primary/10 hover:border-primary/50"
+                  }
+                `}
+              >
+                <motion.div 
+                  className="flex items-center gap-2"
+                  initial={false}
+                  animate={activeFilter === filter.key ? { x: [0, -2, 2, 0] } : {}}
+                  transition={{ duration: 0.3 }}
+                >
+                  <span className="text-lg">{filter.emoji}</span>
+                  <span className="font-medium">{filter.label.replace(filter.emoji + " ", "")}</span>
+                  {filter.count > 0 && (
+                    <motion.span 
+                      className={`
+                        px-2 py-0.5 rounded-full text-xs font-bold
+                        ${activeFilter === filter.key 
+                          ? "bg-primary-foreground/20 text-primary-foreground" 
+                          : "bg-primary/20 text-primary"
+                        }
+                      `}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.2, type: "spring" }}
+                    >
+                      {filter.count}
+                    </motion.span>
+                  )}
+                </motion.div>
+                
+                {/* Active indicator */}
+                {activeFilter === filter.key && (
+                  <motion.div
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-foreground/50"
+                    layoutId="activeFilter"
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  />
+                )}
+              </Button>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </section>
 
       {/* Projects Grid */}

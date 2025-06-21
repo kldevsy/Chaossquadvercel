@@ -29,6 +29,7 @@ export const projects = pgTable("projects", {
   genres: text("genres").array().notNull(),
   collaborators: text("collaborators").array().notNull(), // Artist IDs
   previewUrl: text("preview_url"),
+  previewVideoUrl: text("preview_video_url"), // Video preview URL
   status: text("status").notNull().default("em_desenvolvimento"), // em_desenvolvimento, finalizado, lancado
   releaseDate: text("release_date"),
   createdAt: text("created_at").notNull(),

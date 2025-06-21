@@ -153,6 +153,7 @@ export class MemStorage implements IStorage {
         genres: ["Trap", "Cyberpunk", "Synthwave"],
         collaborators: ["1", "2"], // klzinn e MC Nerdcore
         previewUrl: "https://example.com/preview/cyber-beats-vol1.mp3",
+        previewVideoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&controls=0&loop=1&playlist=dQw4w9WgXcQ",
         status: "em_desenvolvimento",
         releaseDate: null,
         createdAt: "2024-01-15",
@@ -165,6 +166,7 @@ export class MemStorage implements IStorage {
         genres: ["Rap", "Hip-Hop", "Geek"],
         collaborators: ["2", "3"], // MC Nerdcore e Beatmaker Otaku
         previewUrl: null,
+        previewVideoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&controls=0&loop=1&playlist=dQw4w9WgXcQ",
         status: "finalizado",
         releaseDate: "2024-02-20",
         createdAt: "2023-12-01",
@@ -177,6 +179,7 @@ export class MemStorage implements IStorage {
         genres: ["Synthwave", "Chiptune", "Gaming"],
         collaborators: ["4"], // Synthwave Gamer
         previewUrl: "https://example.com/preview/retro-gaming.mp3",
+        previewVideoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&controls=0&loop=1&playlist=dQw4w9WgXcQ",
         status: "lancado",
         releaseDate: "2024-01-10",
         createdAt: "2023-11-15",
@@ -190,6 +193,7 @@ export class MemStorage implements IStorage {
         ...project, 
         id,
         previewUrl: project.previewUrl || null,
+        previewVideoUrl: project.previewVideoUrl || null,
         releaseDate: project.releaseDate || null,
         isActive: project.isActive ?? true,
         status: project.status || "em_desenvolvimento"
@@ -229,6 +233,7 @@ export class MemStorage implements IStorage {
       ...insertProject, 
       id,
       previewUrl: insertProject.previewUrl || null,
+      previewVideoUrl: insertProject.previewVideoUrl || null,
       releaseDate: insertProject.releaseDate || null,
       isActive: insertProject.isActive ?? true,
       status: insertProject.status || "em_desenvolvimento"

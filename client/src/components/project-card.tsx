@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,9 @@ interface ProjectCardProps {
 
 export default function ProjectCard({ project, artists, isPlaying, onPlay, onPause }: ProjectCardProps) {
   const { theme } = useTheme();
+  const [showVideo, setShowVideo] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -59,20 +62,75 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
     project.collaborators.includes(artist.id.toString())
   );
 
+  const handleMouseEnter = () => {
+    setIsHovering(true);
+    if (project.previewVideoUrl && hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+    hoverTimeoutRef.current = setTimeout(() => {
+      if (project.previewVideoUrl) {
+        setShowVideo(true);
+      }
+    }, 800); // 800ms delay before showing video
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovering(false);
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+    setShowVideo(false);
+  };
+
+  const handleClick = () => {
+    if (project.previewVideoUrl) {
+      setShowVideo(!showVideo);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -4 }}
       transition={{ duration: 0.3 }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
-      <Card className="overflow-hidden backdrop-blur-sm bg-card/50 border-border/50 hover:border-primary/20 transition-all duration-300">
-        <div className="relative">
-          <img
-            src={project.cover}
-            alt={project.name}
-            className="w-full h-48 object-cover"
-          />
+      <Card className="overflow-hidden backdrop-blur-sm bg-card/50 border-border/50 hover:border-primary/20 transition-all duration-300 cursor-pointer">
+        <div className="relative" onClick={handleClick}>
+          {/* Image/Video Container */}
+          <div className="relative w-full h-48 overflow-hidden">
+            <motion.img
+              src={project.cover}
+              alt={project.name}
+              className="w-full h-full object-cover"
+              animate={{ 
+                opacity: showVideo ? 0 : 1,
+                scale: showVideo ? 1.1 : 1 
+              }}
+              transition={{ duration: 0.3 }}
+            />
+            
+            {/* Video Preview */}
+            {project.previewVideoUrl && (
+              <motion.div
+                className="absolute inset-0"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: showVideo ? 1 : 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <iframe
+                  src={showVideo ? project.previewVideoUrl : ""}
+                  className="w-full h-full object-cover"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </motion.div>
+            )}
+          </div>
+          
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
           
           {/* Status Badge */}
@@ -82,12 +140,28 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
             </Badge>
           </div>
 
+          {/* Video Preview Indicator */}
+          {project.previewVideoUrl && (
+            <motion.div 
+              className="absolute top-3 right-3"
+              animate={{ scale: isHovering ? 1.1 : 1 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="bg-black/60 backdrop-blur-sm rounded-full p-2">
+                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+              </div>
+            </motion.div>
+          )}
+
           {/* Play Button */}
           {project.previewUrl && (
             <div className="absolute bottom-3 right-3">
               <Button
                 size="sm"
-                onClick={isPlaying ? onPause : onPlay}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  isPlaying ? onPause() : onPlay();
+                }}
                 className="w-10 h-10 p-0 rounded-full bg-primary/90 hover:bg-primary text-white shadow-lg"
               >
                 {isPlaying ? (
@@ -97,6 +171,39 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
                 )}
               </Button>
             </div>
+          )}
+
+          {/* Video Toggle Hint */}
+          {project.previewVideoUrl && !showVideo && (
+            <motion.div 
+              className="absolute bottom-3 left-3"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: isHovering ? 1 : 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="bg-black/60 backdrop-blur-sm rounded-lg px-3 py-1">
+                <span className="text-white text-xs font-medium">
+                  Clique para ver prévia
+                </span>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Video Playing Indicator */}
+          {showVideo && (
+            <motion.div 
+              className="absolute bottom-3 left-3"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <div className="bg-red-500/90 backdrop-blur-sm rounded-lg px-3 py-1 flex items-center gap-2">
+                <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                <span className="text-white text-xs font-medium">
+                  Prévia
+                </span>
+              </div>
+            </motion.div>
           )}
         </div>
 
