@@ -470,17 +470,34 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
                     <motion.div
                       className="absolute inset-0 opacity-0"
                       style={{
-                        background: `radial-gradient(circle, ${getThemeColor('primary')}20 0%, transparent 70%)`
+                        background: `radial-gradient(circle, ${getThemeColor('primary')}30 0%, transparent 70%)`
                       }}
                       animate={{
-                        opacity: [0, 0.4, 0],
-                        scale: [1, 1.2, 1]
+                        opacity: [0, 0.6, 0],
+                        scale: [1, 1.3, 1],
+                        rotate: [0, 5, 0]
                       }}
                       transition={{
-                        duration: 2,
+                        duration: 1.8,
                         repeat: Infinity,
                         ease: "easeInOut",
                         delay: index * 0.3
+                      }}
+                    />
+                    <motion.div
+                      className="absolute inset-0 opacity-0"
+                      style={{
+                        background: `conic-gradient(from 0deg, transparent, ${getThemeColor('primary')}40, transparent)`
+                      }}
+                      animate={{
+                        opacity: [0, 0.3, 0],
+                        rotate: [0, 360]
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "linear",
+                        delay: index * 0.5
                       }}
                     />
                     <span className="relative z-10 font-medium">{genre}</span>

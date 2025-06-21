@@ -197,14 +197,15 @@ export default function ExpandableArtistCard({ artist, isPlaying, onPlay, onPaus
                       <motion.div
                         className="absolute inset-0 opacity-0"
                         style={{
-                          background: `radial-gradient(circle at center, ${getThemeColor('primary')}30 0%, transparent 60%)`
+                          background: `radial-gradient(circle at center, ${getThemeColor('primary')}40 0%, transparent 60%)`
                         }}
                         animate={{
-                          opacity: [0, 0.5, 0],
-                          scale: [0.8, 1.3, 0.8]
+                          opacity: [0, 0.7, 0],
+                          scale: [0.8, 1.4, 0.8],
+                          rotate: [0, 10, 0]
                         }}
                         transition={{
-                          duration: 2.5,
+                          duration: 2.2,
                           repeat: Infinity,
                           ease: "easeInOut",
                           delay: index * 0.4
@@ -213,17 +214,34 @@ export default function ExpandableArtistCard({ artist, isPlaying, onPlay, onPaus
                       <motion.div
                         className="absolute top-0 left-0 w-full h-full opacity-0"
                         style={{
-                          background: `linear-gradient(90deg, transparent, ${getThemeColor('primary')}40, transparent)`
+                          background: `linear-gradient(45deg, transparent, ${getThemeColor('primary')}50, transparent)`
                         }}
                         animate={{
-                          x: ['-100%', '100%'],
-                          opacity: [0, 0.8, 0]
+                          x: ['-120%', '120%'],
+                          y: ['-120%', '120%'],
+                          opacity: [0, 0.9, 0]
                         }}
                         transition={{
-                          duration: 3,
+                          duration: 2.8,
                           repeat: Infinity,
                           ease: "easeInOut",
                           delay: index * 0.5
+                        }}
+                      />
+                      <motion.div
+                        className="absolute inset-0 opacity-0"
+                        style={{
+                          background: `conic-gradient(from ${index * 45}deg, ${getThemeColor('primary')}30, transparent, ${getThemeColor('primary')}30)`
+                        }}
+                        animate={{
+                          rotate: [0, 360],
+                          opacity: [0, 0.4, 0]
+                        }}
+                        transition={{
+                          duration: 4,
+                          repeat: Infinity,
+                          ease: "linear",
+                          delay: index * 0.6
                         }}
                       />
                       <span className="relative z-10 font-semibold">{role}</span>
