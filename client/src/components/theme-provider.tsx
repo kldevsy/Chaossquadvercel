@@ -178,16 +178,20 @@ export function ThemeProvider({
 
   useEffect(() => {
     const root = window.document.documentElement;
+    const body = document.body;
 
-    // Remove todas as classes de tema
-    availableThemes.forEach(t => root.classList.remove(t.name));
+    // Remove todas as classes de tema do root e body
+    availableThemes.forEach(t => {
+      root.classList.remove(t.name);
+      body.classList.remove(t.name);
+    });
     
     // Limpa todos os estilos customizados antes de aplicar novo tema
     const customStyle = document.getElementById('custom-theme-style');
     if (customStyle) {
       customStyle.remove();
     }
-    document.body.classList.remove('custom-theme-applied');
+    body.classList.remove('custom-theme-applied');
     
     // Remove todas as propriedades CSS customizadas para evitar interferência
     const customProps = ['--primary', '--secondary', '--accent', '--background', '--foreground', 
@@ -198,8 +202,9 @@ export function ThemeProvider({
       customProps.forEach(prop => root.style.removeProperty(prop));
     }
     
-    // Adiciona a classe do tema atual
+    // Adiciona a classe do tema atual no root e body
     root.classList.add(theme);
+    body.classList.add(theme);
 
     // Apply theme-specific configurations
     if (theme === "custom") {
