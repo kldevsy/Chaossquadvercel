@@ -129,6 +129,7 @@ export default function ExpandableArtistCard({ artist, isPlaying, onPlay, onPaus
                       variant={liked ? "default" : "ghost"}
                       onClick={() => toggleLike(artist.id)}
                       disabled={isLiking}
+                      title={!isAuthenticated ? "Faça login para curtir artistas" : liked ? "Descurtir artista" : "Curtir artista"}
                       className={`w-8 h-8 p-0 transition-all duration-300 relative overflow-hidden group ${
                         liked 
                           ? "bg-red-500 hover:bg-red-600 text-white" 

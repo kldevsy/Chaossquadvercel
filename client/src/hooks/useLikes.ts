@@ -10,7 +10,7 @@ export function useLikes() {
   const { isAuthenticated } = useAuth();
 
   // Get user's likes
-  const { data: userLikes = [] } = useQuery({
+  const { data: userLikes = [] } = useQuery<any[]>({
     queryKey: ["/api/user/likes"],
     enabled: isAuthenticated,
     retry: false,
@@ -19,9 +19,10 @@ export function useLikes() {
   // Like an artist
   const likeMutation = useMutation({
     mutationFn: async (artistId: number) => {
-      return await apiRequest(`/api/artists/${artistId}/like`, {
-        method: "POST",
-      });
+      if (!isAuthenticated) {
+        throw new Error("UNAUTHENTICATED");
+      }
+      return await apiRequest("POST", `/api/artists/${artistId}/like`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/user/likes"] });
@@ -32,7 +33,7 @@ export function useLikes() {
       });
     },
     onError: (error) => {
-      if (isUnauthorizedError(error)) {
+      if (error.message === "UNAUTHENTICATED" || isUnauthorizedError(error)) {
         toast({
           title: "Login necessário",
           description: "Faça login para curtir artistas. Redirecionando...",
@@ -54,9 +55,10 @@ export function useLikes() {
   // Unlike an artist
   const unlikeMutation = useMutation({
     mutationFn: async (artistId: number) => {
-      return await apiRequest(`/api/artists/${artistId}/like`, {
-        method: "DELETE",
-      });
+      if (!isAuthenticated) {
+        throw new Error("UNAUTHENTICATED");
+      }
+      return await apiRequest("DELETE", `/api/artists/${artistId}/like`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/user/likes"] });
@@ -67,7 +69,7 @@ export function useLikes() {
       });
     },
     onError: (error) => {
-      if (isUnauthorizedError(error)) {
+      if (error.message === "UNAUTHENTICATED" || isUnauthorizedError(error)) {
         toast({
           title: "Login necessário",
           description: "Faça login para gerenciar curtidas. Redirecionando...",
