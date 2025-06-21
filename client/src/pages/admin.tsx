@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,12 +10,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { useAuth } from "@/hooks/useAuth";
-import { Plus, Edit, Trash2, Music, Users, Settings, Save, X } from "lucide-react";
-import type { Artist, Project } from "@shared/schema";
+import { Plus, Edit, Trash2, Music, Users, Settings, Save, X, Bell, Send, UserCheck, Crown, Shield } from "lucide-react";
+import type { Artist, Project, User, Notification } from "@shared/schema";
 
 export default function Admin() {
   const { user, isAuthenticated } = useAuth();
@@ -57,6 +59,15 @@ export default function Admin() {
     queryKey: ["/api/projects"],
   });
 
+  const { data: users = [], isLoading: loadingUsers } = useQuery<User[]>({
+    queryKey: ["/api/admin/users"],
+    enabled: user?.isAdmin,
+  });
+
+  const { data: notifications = [], isLoading: loadingNotifications } = useQuery<Notification[]>({
+    queryKey: ["/api/notifications"],
+  });
+
   // Artist form state
   const [isArtistDialogOpen, setIsArtistDialogOpen] = useState(false);
   const [editingArtist, setEditingArtist] = useState<Artist | null>(null);
@@ -91,6 +102,17 @@ export default function Admin() {
     releaseDate: "",
     createdAt: new Date().toISOString()
   });
+
+  // Notification form state
+  const [isNotificationDialogOpen, setIsNotificationDialogOpen] = useState(false);
+  const [notificationForm, setNotificationForm] = useState({
+    title: "",
+    message: "",
+    type: "info"
+  });
+
+  // User management state
+  const [userFilter, setUserFilter] = useState("");
 
   // Artist mutations
   const createArtistMutation = useMutation({
@@ -256,6 +278,78 @@ export default function Admin() {
     },
   });
 
+  // Notification mutations
+  const createNotificationMutation = useMutation({
+    mutationFn: async (data: any) => {
+      return await apiRequest("POST", "/api/admin/notifications", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/notifications"] });
+      setIsNotificationDialogOpen(false);
+      resetNotificationForm();
+      toast({
+        title: "Sucesso!",
+        description: "Notificação criada com sucesso",
+      });
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Acesso negado",
+          description: "Você não tem permissão para esta ação",
+          variant: "destructive",
+        });
+        return;
+      }
+      toast({
+        title: "Erro",
+        description: "Não foi possível criar a notificação",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteNotificationMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return await apiRequest("DELETE", `/api/admin/notifications/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/notifications"] });
+      toast({
+        title: "Sucesso!",
+        description: "Notificação removida com sucesso",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Erro",
+        description: "Não foi possível remover a notificação",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // User admin mutation
+  const updateUserAdminMutation = useMutation({
+    mutationFn: async ({ userId, isAdmin }: { userId: string; isAdmin: boolean }) => {
+      return await apiRequest("PUT", `/api/admin/users/${userId}/admin`, { isAdmin });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      toast({
+        title: "Sucesso!",
+        description: "Permissões do usuário atualizadas",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Erro",
+        description: "Não foi possível atualizar as permissões",
+        variant: "destructive",
+      });
+    },
+  });
+
   const resetArtistForm = () => {
     setArtistForm({
       name: "",
@@ -286,6 +380,14 @@ export default function Admin() {
       status: "em_desenvolvimento",
       releaseDate: "",
       createdAt: new Date().toISOString()
+    });
+  };
+
+  const resetNotificationForm = () => {
+    setNotificationForm({
+      title: "",
+      message: "",
+      type: "info"
     });
   };
 
@@ -339,6 +441,22 @@ export default function Admin() {
     }
   };
 
+  const handleSubmitNotification = (e: React.FormEvent) => {
+    e.preventDefault();
+    createNotificationMutation.mutate(notificationForm);
+  };
+
+  const handleToggleUserAdmin = (userId: string, currentStatus: boolean) => {
+    updateUserAdminMutation.mutate({ userId, isAdmin: !currentStatus });
+  };
+
+  const filteredUsers = users.filter(u =>
+    u.firstName?.toLowerCase().includes(userFilter.toLowerCase()) ||
+    u.lastName?.toLowerCase().includes(userFilter.toLowerCase()) ||
+    u.email?.toLowerCase().includes(userFilter.toLowerCase()) ||
+    u.username?.toLowerCase().includes(userFilter.toLowerCase())
+  );
+
   if (!isAuthenticated || (user && !user.isAdmin)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -353,38 +471,94 @@ export default function Admin() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="border-b border-border bg-card/50 backdrop-blur-sm">
-        <div className="container mx-auto px-6 py-6">
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="border-b border-border bg-gradient-to-r from-card/80 to-card/40 backdrop-blur-xl shadow-lg"
+      >
+        <div className="container mx-auto px-6 py-8">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center">
-                <Settings className="text-white text-xl" />
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+              className="flex items-center gap-6"
+            >
+              <div className="relative">
+                <motion.div 
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                  className="w-16 h-16 bg-gradient-to-br from-purple-500 via-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-xl"
+                >
+                  <Settings className="text-white text-2xl" />
+                </motion.div>
+                <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                  <div className="w-3 h-3 bg-white rounded-full animate-pulse" />
+                </div>
               </div>
               <div>
-                <h1 className="text-3xl font-bold gradient-text">Painel Administrativo</h1>
-                <p className="text-muted-foreground">Gerencie artistas e projetos da plataforma</p>
+                <motion.h1 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent"
+                >
+                  Painel Administrativo
+                </motion.h1>
+                <motion.p 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                  className="text-muted-foreground text-lg"
+                >
+                  Central de controle da plataforma GeeKTunes
+                </motion.p>
               </div>
-            </div>
-            <Button variant="outline" onClick={() => window.location.href = "/"}>
-              Voltar ao Site
-            </Button>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <Button 
+                variant="outline" 
+                onClick={() => window.location.href = "/"}
+                className="hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+              >
+                <Settings className="w-4 h-4 mr-2" />
+                Voltar ao Site
+              </Button>
+            </motion.div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Content */}
       <div className="container mx-auto px-6 py-8">
-        <Tabs defaultValue="artists" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="artists" className="flex items-center gap-2">
-              <Users className="w-4 h-4" />
-              Artistas ({artists.length})
-            </TabsTrigger>
-            <TabsTrigger value="projects" className="flex items-center gap-2">
-              <Music className="w-4 h-4" />
-              Projetos ({projects.length})
-            </TabsTrigger>
-          </TabsList>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+        >
+          <Tabs defaultValue="artists" className="space-y-8">
+            <TabsList className="grid w-full grid-cols-4 h-14 p-1 bg-card/50 backdrop-blur-sm">
+              <TabsTrigger value="artists" className="flex items-center gap-2 h-full data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white transition-all duration-300">
+                <Users className="w-4 h-4" />
+                <span className="font-medium">Artistas ({artists.length})</span>
+              </TabsTrigger>
+              <TabsTrigger value="projects" className="flex items-center gap-2 h-full data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-blue-500 data-[state=active]:text-white transition-all duration-300">
+                <Music className="w-4 h-4" />
+                <span className="font-medium">Projetos ({projects.length})</span>
+              </TabsTrigger>
+              <TabsTrigger value="notifications" className="flex items-center gap-2 h-full data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white transition-all duration-300">
+                <Bell className="w-4 h-4" />
+                <span className="font-medium">Notificações ({notifications.length})</span>
+              </TabsTrigger>
+              <TabsTrigger value="users" className="flex items-center gap-2 h-full data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all duration-300">
+                <UserCheck className="w-4 h-4" />
+                <span className="font-medium">Usuários ({users.length})</span>
+              </TabsTrigger>
+            </TabsList>
 
           {/* Artists Tab */}
           <TabsContent value="artists" className="space-y-6">
@@ -805,7 +979,288 @@ export default function Admin() {
               </div>
             )}
           </TabsContent>
+
+          {/* Notifications Tab */}
+          <TabsContent value="notifications" className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex justify-between items-center"
+            >
+              <div>
+                <h2 className="text-2xl font-bold">Gerenciar Notificações</h2>
+                <p className="text-muted-foreground">Envie notificações para todos os usuários da plataforma</p>
+              </div>
+              <Dialog open={isNotificationDialogOpen} onOpenChange={setIsNotificationDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button 
+                    onClick={() => resetNotificationForm()}
+                    className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-lg"
+                  >
+                    <Send className="w-4 h-4 mr-2" />
+                    Nova Notificação
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                      <Bell className="w-5 h-5" />
+                      Criar Nova Notificação
+                    </DialogTitle>
+                  </DialogHeader>
+                  <form onSubmit={handleSubmitNotification} className="space-y-4">
+                    <div>
+                      <Label htmlFor="notificationTitle">Título</Label>
+                      <Input
+                        id="notificationTitle"
+                        value={notificationForm.title}
+                        onChange={(e) => setNotificationForm({ ...notificationForm, title: e.target.value })}
+                        placeholder="Título da notificação"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="notificationMessage">Mensagem</Label>
+                      <Textarea
+                        id="notificationMessage"
+                        value={notificationForm.message}
+                        onChange={(e) => setNotificationForm({ ...notificationForm, message: e.target.value })}
+                        placeholder="Conteúdo da notificação"
+                        rows={4}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="notificationType">Tipo</Label>
+                      <Select
+                        value={notificationForm.type}
+                        onValueChange={(value) => setNotificationForm({ ...notificationForm, type: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="info">Informação</SelectItem>
+                          <SelectItem value="success">Sucesso</SelectItem>
+                          <SelectItem value="warning">Aviso</SelectItem>
+                          <SelectItem value="error">Erro</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex gap-4 justify-end">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setIsNotificationDialogOpen(false)}
+                      >
+                        <X className="w-4 h-4 mr-2" />
+                        Cancelar
+                      </Button>
+                      <Button
+                        type="submit"
+                        disabled={createNotificationMutation.isPending}
+                        className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+                      >
+                        <Send className="w-4 h-4 mr-2" />
+                        Enviar Notificação
+                      </Button>
+                    </div>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            </motion.div>
+
+            {loadingNotifications ? (
+              <div className="grid grid-cols-1 gap-4">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <Card key={i}>
+                    <CardContent className="p-6">
+                      <div className="animate-pulse space-y-4">
+                        <div className="h-4 bg-muted rounded w-1/4"></div>
+                        <div className="h-3 bg-muted rounded w-3/4"></div>
+                        <div className="h-3 bg-muted rounded w-1/2"></div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <AnimatePresence>
+                  {notifications.map((notification, index) => (
+                    <motion.div
+                      key={notification.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 20 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-orange-500">
+                        <CardContent className="p-6">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3 mb-2">
+                                <Badge 
+                                  variant={
+                                    notification.type === "success" ? "default" :
+                                    notification.type === "warning" ? "secondary" :
+                                    notification.type === "error" ? "destructive" : "outline"
+                                  }
+                                >
+                                  {notification.type === "info" ? "Informação" :
+                                   notification.type === "success" ? "Sucesso" :
+                                   notification.type === "warning" ? "Aviso" : "Erro"}
+                                </Badge>
+                                <span className="text-sm text-muted-foreground">
+                                  {new Date(notification.createdAt).toLocaleString('pt-BR')}
+                                </span>
+                              </div>
+                              <h3 className="font-semibold text-lg mb-2">{notification.title}</h3>
+                              <p className="text-muted-foreground">{notification.message}</p>
+                            </div>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => deleteNotificationMutation.mutate(notification.id)}
+                              disabled={deleteNotificationMutation.isPending}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+                {notifications.length === 0 && (
+                  <Card className="text-center py-12">
+                    <CardContent>
+                      <Bell className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                      <h3 className="text-lg font-semibold mb-2">Nenhuma notificação</h3>
+                      <p className="text-muted-foreground">Crie sua primeira notificação para os usuários</p>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Users Tab */}
+          <TabsContent value="users" className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-4"
+            >
+              <div className="flex justify-between items-center">
+                <div>
+                  <h2 className="text-2xl font-bold">Gerenciar Usuários</h2>
+                  <p className="text-muted-foreground">Controle as permissões de administrador dos usuários</p>
+                </div>
+              </div>
+              
+              <div className="flex gap-4 items-center">
+                <Input
+                  placeholder="Buscar usuários..."
+                  value={userFilter}
+                  onChange={(e) => setUserFilter(e.target.value)}
+                  className="max-w-sm"
+                />
+                <Badge variant="outline" className="px-3 py-1">
+                  {filteredUsers.length} usuário{filteredUsers.length !== 1 ? 's' : ''}
+                </Badge>
+              </div>
+            </motion.div>
+
+            {loadingUsers ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <Card key={i}>
+                    <CardContent className="p-6">
+                      <div className="animate-pulse space-y-4">
+                        <div className="w-12 h-12 bg-muted rounded-full"></div>
+                        <div className="h-4 bg-muted rounded w-3/4"></div>
+                        <div className="h-3 bg-muted rounded w-1/2"></div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <AnimatePresence>
+                  {filteredUsers.map((userData, index) => (
+                    <motion.div
+                      key={userData.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-purple-500">
+                        <CardContent className="p-6">
+                          <div className="flex items-start gap-4">
+                            <Avatar className="w-12 h-12">
+                              <AvatarImage src={userData.profileImageUrl || undefined} />
+                              <AvatarFallback>
+                                <Users className="w-6 h-6" />
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-2">
+                                <h3 className="font-semibold truncate">
+                                  {userData.firstName || userData.username || 'Usuário'}
+                                  {userData.lastName && ` ${userData.lastName}`}
+                                </h3>
+                                {userData.isAdmin && (
+                                  <Crown className="w-4 h-4 text-yellow-500" />
+                                )}
+                              </div>
+                              {userData.email && (
+                                <p className="text-sm text-muted-foreground truncate mb-3">
+                                  {userData.email}
+                                </p>
+                              )}
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <Switch
+                                    checked={userData.isAdmin || false}
+                                    onCheckedChange={() => handleToggleUserAdmin(userData.id, userData.isAdmin || false)}
+                                    disabled={updateUserAdminMutation.isPending}
+                                  />
+                                  <Label className="text-sm">
+                                    Administrador
+                                  </Label>
+                                </div>
+                                {userData.isAdmin && (
+                                  <Badge variant="default" className="text-xs">
+                                    <Shield className="w-3 h-3 mr-1" />
+                                    Admin
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
+            )}
+            
+            {filteredUsers.length === 0 && !loadingUsers && (
+              <Card className="text-center py-12">
+                <CardContent>
+                  <Users className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                  <h3 className="text-lg font-semibold mb-2">Nenhum usuário encontrado</h3>
+                  <p className="text-muted-foreground">Tente ajustar os filtros de busca</p>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
         </Tabs>
+        </motion.div>
       </div>
     </div>
   );

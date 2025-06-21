@@ -8,6 +8,7 @@ import PlatformStats from "@/components/platform-stats";
 import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/hooks/useAuth";
 import AdminButton from "@/components/admin-button";
+import NotificationBell from "@/components/notification-bell";
 import { Search, Music, Menu, X, User, LogOut } from "lucide-react";
 
 interface HeaderProps {
@@ -166,6 +167,7 @@ export default function Header({ onSearch, searchQuery, totalArtists = 0 }: Head
             {/* User Section & Actions */}
             <div className="flex items-center space-x-4">
               <ThemeSelector />
+              <NotificationBell />
               
               {isAuthenticated && user ? (
                 <div className="flex items-center gap-3">

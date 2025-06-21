@@ -1,6 +1,6 @@
-import { users, artists, projects, likes, type User, type UpsertUser, type InsertUser, type Artist, type InsertArtist, type Project, type InsertProject, type Like, type InsertLike } from "@shared/schema";
+import { users, artists, projects, likes, notifications, type User, type UpsertUser, type InsertUser, type Artist, type InsertArtist, type Project, type InsertProject, type Like, type InsertLike, type Notification, type InsertNotification } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and, sql, desc } from "drizzle-orm";
 
 export interface IStorage {
   // User operations
@@ -32,6 +32,26 @@ export interface IStorage {
   unlikeArtist(userId: string, artistId: number): Promise<void>;
   getUserLikes(userId: string): Promise<Like[]>;
   isArtistLiked(userId: string, artistId: number): Promise<boolean>;
+  
+  // Notification operations
+  getAllNotifications(): Promise<Notification[]>;
+  getActiveNotifications(): Promise<Notification[]>;
+  createNotification(notification: InsertNotification): Promise<Notification>;
+  deleteNotification(id: number): Promise<void>;
+  
+  // Admin user operations
+  getAllUsers(): Promise<User[]>;
+  updateUserAdminStatus(userId: string, isAdmin: boolean): Promise<User | undefined>;
+  
+  // Notification operations
+  getAllNotifications(): Promise<Notification[]>;
+  getActiveNotifications(): Promise<Notification[]>;
+  createNotification(notification: InsertNotification): Promise<Notification>;
+  deleteNotification(id: number): Promise<void>;
+  
+  // Admin user operations
+  getAllUsers(): Promise<User[]>;
+  updateUserAdminStatus(userId: string, isAdmin: boolean): Promise<User | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -226,18 +246,22 @@ export class MemStorage implements IStorage {
   private artists: Map<number, Artist>;
   private projects: Map<number, Project>;
   private likes: Map<string, Like>;
+  private notifications: Map<number, Notification>;
   private currentArtistId: number;
   private currentProjectId: number;
   private currentLikeId: number;
+  private currentNotificationId: number;
 
   constructor() {
     this.users = new Map();
     this.artists = new Map();
     this.projects = new Map();
     this.likes = new Map();
+    this.notifications = new Map();
     this.currentArtistId = 1;
     this.currentProjectId = 1;
     this.currentLikeId = 1;
+    this.currentNotificationId = 1;
     
     // Initialize with sample data
     this.initializeArtists();
@@ -536,6 +560,57 @@ export class MemStorage implements IStorage {
 
   async isArtistLiked(userId: string, artistId: number): Promise<boolean> {
     return this.likes.has(`${userId}-${artistId}`);
+  }
+  
+  // Notification operations
+  async getAllNotifications(): Promise<Notification[]> {
+    return Array.from(this.notifications.values())
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+
+  async getActiveNotifications(): Promise<Notification[]> {
+    return Array.from(this.notifications.values())
+      .filter(notification => notification.isActive)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+
+  async createNotification(insertNotification: InsertNotification): Promise<Notification> {
+    const id = this.currentNotificationId++;
+    const notification: Notification = {
+      id,
+      ...insertNotification,
+      isActive: insertNotification.isActive ?? true,
+      createdAt: new Date().toISOString(),
+    };
+    this.notifications.set(id, notification);
+    return notification;
+  }
+
+  async deleteNotification(id: number): Promise<void> {
+    const notification = this.notifications.get(id);
+    if (notification) {
+      notification.isActive = false;
+      this.notifications.set(id, notification);
+    }
+  }
+  
+  // Admin user operations
+  async getAllUsers(): Promise<User[]> {
+    return Array.from(this.users.values())
+      .sort((a, b) => new Date(a.createdAt || '').getTime() - new Date(b.createdAt || '').getTime());
+  }
+
+  async updateUserAdminStatus(userId: string, isAdmin: boolean): Promise<User | undefined> {
+    const user = this.users.get(userId);
+    if (!user) return undefined;
+    
+    const updatedUser: User = {
+      ...user,
+      isAdmin,
+      updatedAt: new Date(),
+    };
+    this.users.set(userId, updatedUser);
+    return updatedUser;
   }
 }
 

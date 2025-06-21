@@ -64,6 +64,15 @@ export const projects = pgTable("projects", {
   isActive: boolean("is_active").default(true).notNull(),
 });
 
+export const notifications = pgTable("notifications", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  type: text("type").notNull().default("info"), // info, success, warning, error
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: text("created_at").notNull(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   likes: many(likes),
@@ -98,6 +107,11 @@ export const insertLikeSchema = createInsertSchema(likes).omit({
   createdAt: true,
 });
 
+export const insertNotificationSchema = createInsertSchema(notifications).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type UpsertUser = z.infer<typeof upsertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -107,3 +121,5 @@ export type InsertProject = z.infer<typeof insertProjectSchema>;
 export type Project = typeof projects.$inferSelect;
 export type InsertLike = z.infer<typeof insertLikeSchema>;
 export type Like = typeof likes.$inferSelect;
+export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+export type Notification = typeof notifications.$inferSelect;
