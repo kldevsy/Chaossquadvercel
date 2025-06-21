@@ -22,18 +22,26 @@ export default function NotificationBell() {
   });
 
   const unreadCount = notifications.filter(n => !viewedNotifications.has(n.id)).length;
+  
+  // Debug logging
+  console.log('Notifications:', notifications.map(n => n.id));
+  console.log('Viewed notifications:', [...viewedNotifications]);
+  console.log('Unread count:', unreadCount);
 
   // Save viewed notifications to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('viewedNotifications', JSON.stringify([...viewedNotifications]));
   }, [viewedNotifications]);
 
-  const handleOpen = () => {
-    setIsOpen(true);
-    // Mark all current notifications as viewed when opening
-    const newViewed = new Set(viewedNotifications);
-    notifications.forEach(n => newViewed.add(n.id));
-    setViewedNotifications(newViewed);
+  const handleOpen = (open: boolean) => {
+    setIsOpen(open);
+    if (open) {
+      // Mark all current notifications as viewed when opening
+      const newViewed = new Set(viewedNotifications);
+      notifications.forEach(n => newViewed.add(n.id));
+      setViewedNotifications(newViewed);
+      console.log('Notifications marked as viewed:', [...newViewed]);
+    }
   };
 
   const getNotificationIcon = (type: string) => {
@@ -74,7 +82,7 @@ export default function NotificationBell() {
   };
 
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover open={isOpen} onOpenChange={handleOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
@@ -199,7 +207,7 @@ export default function NotificationBell() {
               variant="ghost" 
               size="sm" 
               className="w-full text-xs"
-              onClick={() => setIsOpen(false)}
+              onClick={() => handleOpen(false)}
             >
               Fechar
             </Button>
