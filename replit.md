@@ -23,17 +23,24 @@ The application follows a full-stack TypeScript architecture with a clear separa
 - **Styling**: Tailwind CSS with custom CSS variables for theming
 - **Animations**: Framer Motion for smooth transitions and micro-interactions
 - **Theme System**: Dark/light mode support with persistent storage
+- **Admin Panel**: Professional administrative interface for content management
+- **Authentication**: Replit Auth integration with role-based permissions
 
 ### Backend Architecture
 - **API Design**: RESTful endpoints for artist management and discovery
 - **Database Layer**: Drizzle ORM with PostgreSQL for data persistence
-- **Storage Interface**: Abstracted storage layer with in-memory implementation for development
+- **Storage Interface**: Abstracted storage layer with full CRUD operations
+- **Admin API**: Protected admin endpoints for content management with role validation
+- **Authentication**: Secure Replit Auth integration with session management
 - **Development Server**: Vite integration for hot module replacement in development
 
 ### Database Schema
-The application uses two main entities:
-- **Users**: Basic user authentication with username/password
+The application uses several main entities:
+- **Users**: User authentication with Replit Auth integration and admin role permissions
 - **Artists**: Comprehensive artist profiles including name, avatar, description, roles, social links, and music URLs
+- **Projects**: Musical projects with cover images, descriptions, video previews, and collaboration details
+- **Likes**: User interaction system for favoriting artists
+- **Sessions**: Secure session management for authentication
 
 ## Data Flow
 
@@ -80,6 +87,9 @@ Preferred communication style: Simple, everyday language.
 - **June 21, 2025**: Fixed Instagram embed issues - now opens in new tab
 - **June 21, 2025**: Improved video controls - YouTube/Vimeo with audio, MP4 files without controls
 - **June 21, 2025**: Added auto-hide functionality when video preview ends
+- **June 21, 2025**: Created professional admin panel for managing artists and projects
+- **June 21, 2025**: Added user admin permissions system with role-based access control
+- **June 21, 2025**: Fixed like button authentication issues with improved error handling
 
 ## User Preferences
 

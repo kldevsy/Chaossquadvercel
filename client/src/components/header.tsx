@@ -7,6 +7,7 @@ import { ThemeSelector } from "@/components/theme-selector";
 import PlatformStats from "@/components/platform-stats";
 import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/hooks/useAuth";
+import AdminButton from "@/components/admin-button";
 import { Search, Music, Menu, X, User, LogOut } from "lucide-react";
 
 interface HeaderProps {
@@ -179,6 +180,8 @@ export default function Header({ onSearch, searchQuery, totalArtists = 0 }: Head
                       {user.firstName || user.username}
                     </span>
                   </div>
+                  
+                  <AdminButton />
                   
                   <Button 
                     variant="outline" 

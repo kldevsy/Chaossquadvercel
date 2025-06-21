@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import { insertArtistSchema, insertProjectSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -164,6 +165,129 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching user likes:", error);
       res.status(500).json({ message: "Erro ao buscar curtidas" });
+    }
+  });
+
+  // Admin middleware
+  const isAdmin: any = async (req: any, res: any, next: any) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user || !user.isAdmin) {
+        return res.status(403).json({ message: "Acesso negado - Apenas administradores" });
+      }
+      next();
+    } catch (error) {
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  };
+
+  // Admin routes
+  // Create new artist (Admin only)
+  app.post("/api/admin/artists", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const validatedData = insertArtistSchema.parse(req.body);
+      const artist = await storage.createArtist(validatedData);
+      res.status(201).json(artist);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Dados inválidos", errors: error.errors });
+      }
+      console.error("Error creating artist:", error);
+      res.status(500).json({ message: "Erro ao criar artista" });
+    }
+  });
+
+  // Update artist (Admin only)
+  app.put("/api/admin/artists/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "ID inválido" });
+      }
+
+      const validatedData = insertArtistSchema.parse(req.body);
+      const artist = await storage.updateArtist(id, validatedData);
+      if (!artist) {
+        return res.status(404).json({ message: "Artista não encontrado" });
+      }
+      res.json(artist);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Dados inválidos", errors: error.errors });
+      }
+      console.error("Error updating artist:", error);
+      res.status(500).json({ message: "Erro ao atualizar artista" });
+    }
+  });
+
+  // Delete artist (Admin only)
+  app.delete("/api/admin/artists/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "ID inválido" });
+      }
+
+      await storage.deleteArtist(id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting artist:", error);
+      res.status(500).json({ message: "Erro ao deletar artista" });
+    }
+  });
+
+  // Create new project (Admin only)
+  app.post("/api/admin/projects", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const validatedData = insertProjectSchema.parse(req.body);
+      const project = await storage.createProject(validatedData);
+      res.status(201).json(project);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Dados inválidos", errors: error.errors });
+      }
+      console.error("Error creating project:", error);
+      res.status(500).json({ message: "Erro ao criar projeto" });
+    }
+  });
+
+  // Update project (Admin only)
+  app.put("/api/admin/projects/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "ID inválido" });
+      }
+
+      const validatedData = insertProjectSchema.parse(req.body);
+      const project = await storage.updateProject(id, validatedData);
+      if (!project) {
+        return res.status(404).json({ message: "Projeto não encontrado" });
+      }
+      res.json(project);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Dados inválidos", errors: error.errors });
+      }
+      console.error("Error updating project:", error);
+      res.status(500).json({ message: "Erro ao atualizar projeto" });
+    }
+  });
+
+  // Delete project (Admin only)
+  app.delete("/api/admin/projects/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "ID inválido" });
+      }
+
+      await storage.deleteProject(id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting project:", error);
+      res.status(500).json({ message: "Erro ao deletar projeto" });
     }
   });
 

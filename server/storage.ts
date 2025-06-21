@@ -15,6 +15,8 @@ export interface IStorage {
   getArtistsByRole(role: string): Promise<Artist[]>;
   searchArtists(query: string): Promise<Artist[]>;
   createArtist(artist: InsertArtist): Promise<Artist>;
+  updateArtist(id: number, artist: InsertArtist): Promise<Artist | undefined>;
+  deleteArtist(id: number): Promise<void>;
   
   // Project operations
   getAllProjects(): Promise<Project[]>;
@@ -22,6 +24,8 @@ export interface IStorage {
   getProjectsByStatus(status: string): Promise<Project[]>;
   searchProjects(query: string): Promise<Project[]>;
   createProject(project: InsertProject): Promise<Project>;
+  updateProject(id: number, project: InsertProject): Promise<Project | undefined>;
+  deleteProject(id: number): Promise<void>;
   
   // Like operations
   likeArtist(userId: string, artistId: number): Promise<Like>;
@@ -51,6 +55,7 @@ export class DatabaseStorage implements IStorage {
       firstName: null,
       lastName: null,
       profileImageUrl: null,
+      isAdmin: false,
     };
     const [user] = await db.insert(users).values(userData).returning();
     return user;
@@ -101,6 +106,20 @@ export class DatabaseStorage implements IStorage {
     return artist;
   }
 
+  async updateArtist(id: number, insertArtist: InsertArtist): Promise<Artist | undefined> {
+    const [artist] = await db.update(artists)
+      .set(insertArtist)
+      .where(eq(artists.id, id))
+      .returning();
+    return artist || undefined;
+  }
+
+  async deleteArtist(id: number): Promise<void> {
+    await db.update(artists)
+      .set({ isActive: false })
+      .where(eq(artists.id, id));
+  }
+
   // Project operations
   async getAllProjects(): Promise<Project[]> {
     return await db.select().from(projects).where(eq(projects.isActive, true));
@@ -131,6 +150,20 @@ export class DatabaseStorage implements IStorage {
   async createProject(insertProject: InsertProject): Promise<Project> {
     const [project] = await db.insert(projects).values(insertProject).returning();
     return project;
+  }
+
+  async updateProject(id: number, insertProject: InsertProject): Promise<Project | undefined> {
+    const [project] = await db.update(projects)
+      .set(insertProject)
+      .where(eq(projects.id, id))
+      .returning();
+    return project || undefined;
+  }
+
+  async deleteProject(id: number): Promise<void> {
+    await db.update(projects)
+      .set({ isActive: false })
+      .where(eq(projects.id, id));
   }
 
   // Like operations
@@ -256,7 +289,8 @@ export class MemStorage implements IStorage {
         musicUrl: artist.musicUrl || null,
         isActive: artist.isActive ?? true,
         musicalStyles: artist.musicalStyles || [],
-        artistTypes: artist.artistTypes || []
+        artistTypes: artist.artistTypes || [],
+        likesCount: artist.likesCount ?? 0
       };
       this.artists.set(id, newArtist);
     });
@@ -325,6 +359,7 @@ export class MemStorage implements IStorage {
       firstName: null,
       lastName: null,
       profileImageUrl: null,
+      isAdmin: false,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -339,6 +374,7 @@ export class MemStorage implements IStorage {
       firstName: userData.firstName || null,
       lastName: userData.lastName || null,
       profileImageUrl: userData.profileImageUrl || null,
+      isAdmin: userData.isAdmin ?? false,
       createdAt: userData.createdAt || new Date(),
       updatedAt: new Date()
     };
@@ -428,6 +464,55 @@ export class MemStorage implements IStorage {
     return project;
   }
 
+  async updateProject(id: number, insertProject: InsertProject): Promise<Project | undefined> {
+    const existingProject = this.projects.get(id);
+    if (!existingProject) return undefined;
+    
+    const updatedProject: Project = {
+      ...existingProject,
+      ...insertProject,
+      id,
+      previewUrl: insertProject.previewUrl || null,
+      previewVideoUrl: insertProject.previewVideoUrl || null,
+      releaseDate: insertProject.releaseDate || null
+    };
+    this.projects.set(id, updatedProject);
+    return updatedProject;
+  }
+
+  async deleteProject(id: number): Promise<void> {
+    const project = this.projects.get(id);
+    if (project) {
+      project.isActive = false;
+      this.projects.set(id, project);
+    }
+  }
+
+  async updateArtist(id: number, insertArtist: InsertArtist): Promise<Artist | undefined> {
+    const existingArtist = this.artists.get(id);
+    if (!existingArtist) return undefined;
+    
+    const updatedArtist: Artist = {
+      ...existingArtist,
+      ...insertArtist,
+      id,
+      musicUrl: insertArtist.musicUrl || null,
+      isActive: insertArtist.isActive ?? true,
+      musicalStyles: insertArtist.musicalStyles || [],
+      artistTypes: insertArtist.artistTypes || []
+    };
+    this.artists.set(id, updatedArtist);
+    return updatedArtist;
+  }
+
+  async deleteArtist(id: number): Promise<void> {
+    const artist = this.artists.get(id);
+    if (artist) {
+      artist.isActive = false;
+      this.artists.set(id, artist);
+    }
+  }
+
   // Like operations
   async likeArtist(userId: string, artistId: number): Promise<Like> {
     const id = this.currentLikeId++;
@@ -454,4 +539,4 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
