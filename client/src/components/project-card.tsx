@@ -26,12 +26,12 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
   const getEmbedUrl = (url: string) => {
     if (!url) return null;
 
-    // YouTube
+    // YouTube - autoplay with mute initially, user can unmute
     if (url.includes('youtube.com/watch') || url.includes('youtu.be/')) {
       const videoId = url.includes('youtu.be/') 
         ? url.split('youtu.be/')[1].split('?')[0]
         : url.split('v=')[1]?.split('&')[0];
-      return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&loop=1&playlist=${videoId}&enablejsapi=1&start=0&end=30`;
+      return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&loop=0&enablejsapi=1&modestbranding=1&rel=0&showinfo=0&start=0&end=60`;
     }
 
     // Instagram - needs special handling
@@ -80,7 +80,7 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
     
     if (!embedUrl) return null;
 
-    // Special handling for YouTube - show preview with play button
+    // Special handling for YouTube - autoplay with better configuration
     if (url.includes('youtube.com/') || url.includes('youtu.be/')) {
       return (
         <div className="w-full h-full relative">
@@ -88,14 +88,25 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
             src={embedUrl}
             className="w-full h-full"
             frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
+            onLoad={() => {
+              // Auto-hide after 60 seconds
+              setTimeout(() => {
+                setShowVideo(false);
+              }, 60000);
+            }}
           />
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="bg-red-600/90 backdrop-blur-sm rounded-lg px-4 py-2 text-white text-sm font-medium">
-              YouTube Preview - Clique para interagir
+          <motion.div 
+            className="absolute top-3 left-3 z-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 2 }}
+          >
+            <div className="bg-red-600/90 backdrop-blur-sm rounded-lg px-3 py-1 text-white text-xs font-medium">
+              Clique no 🔊 para ativar áudio
             </div>
-          </div>
+          </motion.div>
         </div>
       );
     }
