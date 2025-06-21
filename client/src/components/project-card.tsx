@@ -20,18 +20,20 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
   const { theme } = useTheme();
   const [showVideo, setShowVideo] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
+  const [youtubePlayerReady, setYoutubePlayerReady] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   // Function to convert video URLs to embed format
   const getEmbedUrl = (url: string) => {
     if (!url) return null;
 
-    // YouTube - autoplay with mute initially, user can unmute
+    // YouTube - use thumbnail for preview
     if (url.includes('youtube.com/watch') || url.includes('youtu.be/')) {
       const videoId = url.includes('youtu.be/') 
         ? url.split('youtu.be/')[1].split('?')[0]
         : url.split('v=')[1]?.split('&')[0];
-      return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&loop=0&enablejsapi=1&modestbranding=1&rel=0&showinfo=0&start=0&end=60`;
+      return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
     }
 
     // Instagram - needs special handling
@@ -80,33 +82,28 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
     
     if (!embedUrl) return null;
 
-    // Special handling for YouTube - autoplay with better configuration
+    // Special handling for YouTube - show thumbnail with play overlay
     if (url.includes('youtube.com/') || url.includes('youtu.be/')) {
       return (
-        <div className="w-full h-full relative">
-          <iframe
+        <div className="w-full h-full relative bg-black">
+          <img
             src={embedUrl}
-            className="w-full h-full"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-            onLoad={() => {
-              // Auto-hide after 60 seconds
-              setTimeout(() => {
-                setShowVideo(false);
-              }, 60000);
+            alt="YouTube Preview"
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              // Fallback to medium quality thumbnail
+              const target = e.target as HTMLImageElement;
+              target.src = embedUrl.replace('maxresdefault', 'mqdefault');
             }}
           />
-          <motion.div 
-            className="absolute top-3 left-3 z-10"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 2 }}
-          >
-            <div className="bg-red-600/90 backdrop-blur-sm rounded-lg px-3 py-1 text-white text-xs font-medium">
-              Clique no 🔊 para ativar áudio
+          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+            <div className="text-center text-white">
+              <div className="w-16 h-16 bg-red-600/90 rounded-full flex items-center justify-center mb-3 mx-auto backdrop-blur-sm">
+                <div className="w-0 h-0 border-l-[12px] border-l-white border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent ml-1"></div>
+              </div>
+              <div className="text-sm font-medium">Clique para assistir no YouTube</div>
             </div>
-          </motion.div>
+          </div>
         </div>
       );
     }
@@ -263,8 +260,10 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
   const handleClick = useCallback(() => {
     if (!project.previewVideoUrl) return;
 
-    // For Twitter/X and Instagram, open in new tab instead of embedding
-    if (project.previewVideoUrl.includes('twitter.com/') || 
+    // For YouTube, Twitter/X and Instagram, open in new tab instead of embedding
+    if (project.previewVideoUrl.includes('youtube.com/') || 
+        project.previewVideoUrl.includes('youtu.be/') ||
+        project.previewVideoUrl.includes('twitter.com/') || 
         project.previewVideoUrl.includes('x.com/') ||
         project.previewVideoUrl.includes('instagram.com/')) {
       window.open(project.previewVideoUrl, '_blank');
