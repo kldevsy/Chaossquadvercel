@@ -259,7 +259,7 @@ export class DatabaseStorage implements IStorage {
         title: insertNotification.title,
         message: insertNotification.message,
         type: insertNotification.type || "info",
-        isActive: insertNotification.isActive ?? true,
+        isActive: true,
         createdAt: new Date().toISOString(),
       })
       .returning();

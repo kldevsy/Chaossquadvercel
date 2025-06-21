@@ -110,8 +110,7 @@ export const insertLikeSchema = createInsertSchema(likes).omit({
 export const insertNotificationSchema = createInsertSchema(notifications).omit({
   id: true,
   createdAt: true,
-}).extend({
-  type: z.string().default("info"),
+  isActive: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

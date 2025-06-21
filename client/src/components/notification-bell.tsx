@@ -16,7 +16,16 @@ export default function NotificationBell() {
     refetchInterval: 30000, // Refetch every 30 seconds
   });
 
-  const unreadCount = notifications.length;
+  const [viewedNotifications, setViewedNotifications] = useState<Set<number>>(new Set());
+  const unreadCount = notifications.filter(n => !viewedNotifications.has(n.id)).length;
+
+  const handleOpen = () => {
+    setIsOpen(true);
+    // Mark all current notifications as viewed when opening
+    const newViewed = new Set(viewedNotifications);
+    notifications.forEach(n => newViewed.add(n.id));
+    setViewedNotifications(newViewed);
+  };
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
