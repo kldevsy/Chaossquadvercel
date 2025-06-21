@@ -118,6 +118,44 @@ export default function ExpandableArtistCard({ artist, isPlaying, onPlay, onPaus
                       </motion.div>
                     </Button>
                   </motion.div>
+                  
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <Button
+                      size="sm"
+                      variant={liked ? "default" : "ghost"}
+                      onClick={() => toggleLike(artist.id)}
+                      disabled={isLiking}
+                      className={`w-8 h-8 p-0 transition-all duration-300 relative overflow-hidden group ${
+                        liked 
+                          ? "bg-red-500 hover:bg-red-600 text-white" 
+                          : "hover:bg-red-50 dark:hover:bg-red-950 text-red-500"
+                      }`}
+                    >
+                      <motion.div
+                        animate={{ 
+                          scale: liked ? [1, 1.4, 1] : 1,
+                          rotate: liked ? [0, -20, 20, 0] : 0
+                        }}
+                        transition={{ 
+                          duration: liked ? 1 : 0.3,
+                          ease: "easeInOut"
+                        }}
+                        whileHover={{ scale: 1.2, rotate: 5 }}
+                        whileTap={{ scale: 0.7 }}
+                        className="relative z-10"
+                      >
+                        <Heart 
+                          className={`w-4 h-4 transition-all duration-300 ${
+                            liked ? 'fill-current text-white' : 'text-red-500'
+                          }`} 
+                        />
+                      </motion.div>
+                    </Button>
+                  </motion.div>
+                  
                   <motion.div
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
