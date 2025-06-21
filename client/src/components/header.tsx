@@ -131,7 +131,7 @@ export default function Header({ onSearch, searchQuery, totalArtists = 0 }: Head
                   onChange={(e) => onSearch(e.target.value)}
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setIsSearchFocused(false)}
-                  className="w-72 pl-10 pr-4 h-10 bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground/70 transition-all duration-300 focus:border-primary/50 focus:shadow-lg focus:shadow-primary/20"
+                  className="search-input w-72 pl-10 pr-4 h-10 bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl text-sm transition-all duration-300 focus:border-primary/50 focus:shadow-lg focus:shadow-primary/20"
                 />
                 
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />

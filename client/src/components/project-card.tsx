@@ -425,23 +425,32 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
               {project.genres.map((genre, index) => (
                 <motion.div
                   key={genre}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
+                  initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                  animate={{ 
+                    opacity: 1, 
+                    scale: 1, 
+                    y: 0,
+                    boxShadow: `0 0 0px ${getThemeColor('primary')}00`
+                  }}
                   transition={{ 
-                    duration: 0.3, 
-                    delay: index * 0.1,
+                    duration: 0.5, 
+                    delay: index * 0.15,
                     type: "spring",
-                    stiffness: 200 
+                    stiffness: 300,
+                    damping: 20
                   }}
                   whileHover={{ 
-                    scale: 1.05,
-                    boxShadow: `0 0 15px ${getThemeColor('primary')}40`
+                    scale: 1.1,
+                    y: -3,
+                    boxShadow: `0 8px 25px ${getThemeColor('primary')}40`,
+                    transition: { duration: 0.2 }
                   }}
                   whileTap={{ scale: 0.95 }}
+                  className="cursor-pointer"
                 >
                   <Badge
                     variant="outline"
-                    className="text-xs relative overflow-hidden transition-all duration-300 hover:shadow-lg"
+                    className="text-xs relative overflow-hidden transition-all duration-500 hover:shadow-lg border-2"
                     style={{
                       backgroundColor: `${getThemeColor('primary')}15`,
                       color: getThemeColor('primary'),
@@ -449,14 +458,32 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
                     }}
                   >
                     <motion.div
-                      className="absolute inset-0 bg-gradient-to-r opacity-0 hover:opacity-20"
+                      className="absolute inset-0 bg-gradient-to-r opacity-0"
                       style={{
-                        background: `linear-gradient(45deg, ${getThemeColor('primary')}20, ${getThemeColor('primary')}40)`
+                        background: `linear-gradient(45deg, ${getThemeColor('primary')}30, ${getThemeColor('primary')}60)`
                       }}
-                      whileHover={{ opacity: 0.2 }}
-                      transition={{ duration: 0.3 }}
+                      whileHover={{ 
+                        opacity: 0.3,
+                        transition: { duration: 0.3 }
+                      }}
                     />
-                    <span className="relative z-10">{genre}</span>
+                    <motion.div
+                      className="absolute inset-0 opacity-0"
+                      style={{
+                        background: `radial-gradient(circle, ${getThemeColor('primary')}20 0%, transparent 70%)`
+                      }}
+                      animate={{
+                        opacity: [0, 0.4, 0],
+                        scale: [1, 1.2, 1]
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: index * 0.3
+                      }}
+                    />
+                    <span className="relative z-10 font-medium">{genre}</span>
                   </Badge>
                 </motion.div>
               ))}

@@ -146,29 +146,38 @@ export default function ExpandableArtistCard({ artist, isPlaying, onPlay, onPaus
                 {artist.roles.map((role, index) => (
                   <motion.div
                     key={role}
-                    initial={{ opacity: 0, scale: 0.8, x: -10 }}
-                    animate={{ opacity: 1, scale: 1, x: 0 }}
+                    initial={{ opacity: 0, scale: 0.8, x: -15, rotate: -5 }}
+                    animate={{ 
+                      opacity: 1, 
+                      scale: 1, 
+                      x: 0, 
+                      rotate: 0,
+                      boxShadow: `0 0 0px ${getThemeColor('primary')}00`
+                    }}
                     transition={{ 
-                      duration: 0.4, 
-                      delay: index * 0.1,
+                      duration: 0.6, 
+                      delay: index * 0.12,
                       type: "spring",
-                      stiffness: 300,
-                      damping: 20
+                      stiffness: 350,
+                      damping: 25
                     }}
                     whileHover={{ 
-                      scale: 1.1,
-                      y: -2,
-                      boxShadow: `0 8px 25px ${getThemeColor('primary')}30`
+                      scale: 1.15,
+                      y: -4,
+                      rotate: 2,
+                      boxShadow: `0 12px 30px ${getThemeColor('primary')}40`,
+                      transition: { duration: 0.2 }
                     }}
-                    whileTap={{ scale: 0.95 }}
+                    whileTap={{ scale: 0.9, rotate: -1 }}
                     onClick={() => {
                       // Trigger role filter
                       window.dispatchEvent(new CustomEvent('filterByRole', { detail: role }));
                     }}
+                    className="cursor-pointer"
                   >
                     <Badge
                       variant={getBadgeVariant(index)}
-                      className="text-xs font-medium cursor-pointer relative overflow-hidden transition-all duration-300 hover:shadow-lg"
+                      className="text-xs font-medium relative overflow-hidden transition-all duration-500 hover:shadow-xl border-2"
                       style={{
                         backgroundColor: `${getThemeColor('primary')}20`,
                         color: getThemeColor('primary'),
@@ -178,12 +187,46 @@ export default function ExpandableArtistCard({ artist, isPlaying, onPlay, onPaus
                       <motion.div
                         className="absolute inset-0 bg-gradient-to-r opacity-0"
                         style={{
-                          background: `linear-gradient(45deg, ${getThemeColor('primary')}20, ${getThemeColor('primary')}50)`
+                          background: `linear-gradient(45deg, ${getThemeColor('primary')}30, ${getThemeColor('primary')}70)`
                         }}
-                        whileHover={{ opacity: 0.3 }}
-                        transition={{ duration: 0.3 }}
+                        whileHover={{ 
+                          opacity: 0.4,
+                          transition: { duration: 0.3 }
+                        }}
                       />
-                      <span className="relative z-10">{role}</span>
+                      <motion.div
+                        className="absolute inset-0 opacity-0"
+                        style={{
+                          background: `radial-gradient(circle at center, ${getThemeColor('primary')}30 0%, transparent 60%)`
+                        }}
+                        animate={{
+                          opacity: [0, 0.5, 0],
+                          scale: [0.8, 1.3, 0.8]
+                        }}
+                        transition={{
+                          duration: 2.5,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                          delay: index * 0.4
+                        }}
+                      />
+                      <motion.div
+                        className="absolute top-0 left-0 w-full h-full opacity-0"
+                        style={{
+                          background: `linear-gradient(90deg, transparent, ${getThemeColor('primary')}40, transparent)`
+                        }}
+                        animate={{
+                          x: ['-100%', '100%'],
+                          opacity: [0, 0.8, 0]
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                          delay: index * 0.5
+                        }}
+                      />
+                      <span className="relative z-10 font-semibold">{role}</span>
                     </Badge>
                   </motion.div>
                 ))}
