@@ -2,8 +2,10 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Play, Pause, Music, Youtube, Instagram, Calendar, Users } from "lucide-react";
+import { Play, Pause, Music, Youtube, Instagram, Calendar, Users, Heart } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
+import { useLikes } from "@/hooks/useLikes";
+import { useAuth } from "@/hooks/useAuth";
 import type { Artist } from "@shared/schema";
 
 interface ArtistCardProps {
@@ -72,6 +74,10 @@ const getRoleColors = (theme: string) => {
 };
 
 export default function ArtistCard({ artist, isPlaying, onPlay, onPause }: ArtistCardProps) {
+  const { isAuthenticated } = useAuth();
+  const { isArtistLiked, toggleLike, isLiking } = useLikes();
+  
+  const liked = isAuthenticated && isArtistLiked(artist.id);
   const { theme } = useTheme();
   const roleColors = getRoleColors(theme);
 
@@ -245,14 +251,14 @@ export default function ArtistCard({ artist, isPlaying, onPlay, onPause }: Artis
             </div>
           </div>
 
-          {/* Play Button */}
-          <div className="flex justify-center">
+          {/* Action Buttons */}
+          <div className="flex gap-3 justify-center">
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               <Button
-                className={`rounded-full px-6 py-2 font-medium transition-all duration-300 ${
+                className={`flex-1 rounded-full px-6 py-2 font-medium transition-all duration-300 ${
                   isPlaying 
                     ? "bg-primary/20 text-primary border border-primary/30 hover:bg-primary/30" 
                     : "bg-gradient-to-r from-primary to-secondary text-white hover:from-primary/90 hover:to-secondary/90 shadow-md hover:shadow-lg"
@@ -270,6 +276,26 @@ export default function ArtistCard({ artist, isPlaying, onPlay, onPause }: Artis
                     Tocar
                   </>
                 )}
+              </Button>
+            </motion.div>
+            
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Button
+                onClick={() => toggleLike(artist.id)}
+                disabled={isLiking}
+                variant={liked ? "default" : "outline"}
+                className={`rounded-full px-4 py-2 transition-all duration-300 ${
+                  liked 
+                    ? "bg-red-500 hover:bg-red-600 text-white border-red-500" 
+                    : "border-red-400 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
+                }`}
+              >
+                <Heart 
+                  className={`w-4 h-4 ${liked ? 'fill-current' : ''}`} 
+                />
               </Button>
             </motion.div>
           </div>

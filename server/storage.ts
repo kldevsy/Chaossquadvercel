@@ -1,36 +1,185 @@
-import { users, artists, projects, type User, type InsertUser, type Artist, type InsertArtist, type Project, type InsertProject } from "@shared/schema";
+import { users, artists, projects, likes, type User, type UpsertUser, type InsertUser, type Artist, type InsertArtist, type Project, type InsertProject, type Like, type InsertLike } from "@shared/schema";
+import { db } from "./db";
+import { eq, and } from "drizzle-orm";
 
 export interface IStorage {
-  getUser(id: number): Promise<User | undefined>;
+  // User operations
+  getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  upsertUser(user: UpsertUser): Promise<User>;
+  
+  // Artist operations
   getAllArtists(): Promise<Artist[]>;
   getArtist(id: number): Promise<Artist | undefined>;
   getArtistsByRole(role: string): Promise<Artist[]>;
   searchArtists(query: string): Promise<Artist[]>;
   createArtist(artist: InsertArtist): Promise<Artist>;
+  
+  // Project operations
   getAllProjects(): Promise<Project[]>;
   getProject(id: number): Promise<Project | undefined>;
   getProjectsByStatus(status: string): Promise<Project[]>;
   searchProjects(query: string): Promise<Project[]>;
   createProject(project: InsertProject): Promise<Project>;
+  
+  // Like operations
+  likeArtist(userId: string, artistId: number): Promise<Like>;
+  unlikeArtist(userId: string, artistId: number): Promise<void>;
+  getUserLikes(userId: string): Promise<Like[]>;
+  isArtistLiked(userId: string, artistId: number): Promise<boolean>;
 }
 
+export class DatabaseStorage implements IStorage {
+  // User operations
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const userId = Date.now().toString();
+    const userData = {
+      id: userId,
+      ...insertUser,
+      email: null,
+      firstName: null,
+      lastName: null,
+      profileImageUrl: null,
+    };
+    const [user] = await db.insert(users).values(userData).returning();
+    return user;
+  }
+
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return user;
+  }
+
+  // Artist operations
+  async getAllArtists(): Promise<Artist[]> {
+    return await db.select().from(artists).where(eq(artists.isActive, true));
+  }
+
+  async getArtist(id: number): Promise<Artist | undefined> {
+    const [artist] = await db.select().from(artists).where(eq(artists.id, id));
+    return artist || undefined;
+  }
+
+  async getArtistsByRole(role: string): Promise<Artist[]> {
+    const allArtists = await this.getAllArtists();
+    return allArtists.filter(artist => artist.roles.includes(role));
+  }
+
+  async searchArtists(query: string): Promise<Artist[]> {
+    const allArtists = await this.getAllArtists();
+    const lowercaseQuery = query.toLowerCase();
+    return allArtists.filter(artist =>
+      artist.name.toLowerCase().includes(lowercaseQuery) ||
+      artist.description.toLowerCase().includes(lowercaseQuery) ||
+      artist.roles.some(role => role.toLowerCase().includes(lowercaseQuery))
+    );
+  }
+
+  async createArtist(insertArtist: InsertArtist): Promise<Artist> {
+    const [artist] = await db.insert(artists).values(insertArtist).returning();
+    return artist;
+  }
+
+  // Project operations
+  async getAllProjects(): Promise<Project[]> {
+    return await db.select().from(projects).where(eq(projects.isActive, true));
+  }
+
+  async getProject(id: number): Promise<Project | undefined> {
+    const [project] = await db.select().from(projects).where(eq(projects.id, id));
+    return project || undefined;
+  }
+
+  async getProjectsByStatus(status: string): Promise<Project[]> {
+    return await db.select().from(projects).where(and(
+      eq(projects.status, status),
+      eq(projects.isActive, true)
+    ));
+  }
+
+  async searchProjects(query: string): Promise<Project[]> {
+    const allProjects = await this.getAllProjects();
+    const lowercaseQuery = query.toLowerCase();
+    return allProjects.filter(project =>
+      project.name.toLowerCase().includes(lowercaseQuery) ||
+      project.description.toLowerCase().includes(lowercaseQuery) ||
+      project.genres.some(genre => genre.toLowerCase().includes(lowercaseQuery))
+    );
+  }
+
+  async createProject(insertProject: InsertProject): Promise<Project> {
+    const [project] = await db.insert(projects).values(insertProject).returning();
+    return project;
+  }
+
+  // Like operations
+  async likeArtist(userId: string, artistId: number): Promise<Like> {
+    const [like] = await db.insert(likes).values({
+      userId,
+      artistId,
+    }).returning();
+    return like;
+  }
+
+  async unlikeArtist(userId: string, artistId: number): Promise<void> {
+    await db.delete(likes).where(and(
+      eq(likes.userId, userId),
+      eq(likes.artistId, artistId)
+    ));
+  }
+
+  async getUserLikes(userId: string): Promise<Like[]> {
+    return await db.select().from(likes).where(eq(likes.userId, userId));
+  }
+
+  async isArtistLiked(userId: string, artistId: number): Promise<boolean> {
+    const [like] = await db.select().from(likes).where(and(
+      eq(likes.userId, userId),
+      eq(likes.artistId, artistId)
+    )).limit(1);
+    return !!like;
+  }
+}
+
+// Keep MemStorage for fallback/development
 export class MemStorage implements IStorage {
-  private users: Map<number, User>;
+  private users: Map<string, User>;
   private artists: Map<number, Artist>;
   private projects: Map<number, Project>;
-  private currentUserId: number;
+  private likes: Map<string, Like>;
   private currentArtistId: number;
   private currentProjectId: number;
+  private currentLikeId: number;
 
   constructor() {
     this.users = new Map();
     this.artists = new Map();
     this.projects = new Map();
-    this.currentUserId = 1;
+    this.likes = new Map();
     this.currentArtistId = 1;
     this.currentProjectId = 1;
+    this.currentLikeId = 1;
     
     // Initialize with sample data
     this.initializeArtists();
@@ -71,7 +220,6 @@ export class MemStorage implements IStorage {
         musicalStyles: ["trap", "New Jazz", "detroit"],
         artistTypes: ["Geek", "Autoral"]
       }
-      
     ];
 
     sampleArtists.forEach(artist => {
@@ -88,7 +236,51 @@ export class MemStorage implements IStorage {
     });
   }
 
-  async getUser(id: number): Promise<User | undefined> {
+  private initializeProjects() {
+    const sampleProjects: InsertProject[] = [
+      {
+        name: "Cypher Geek Vol. 1",
+        cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop",
+        description: "Primeiro volume da cypher geek com os melhores MCs do cenário",
+        genres: ["Hip-Hop", "Geek Rap"],
+        collaborators: ["1", "2"],
+        previewUrl: "https://yhdtpoqjntehiruphsjd.supabase.co/storage/v1/object/public/teste//klzinn_estilo_rengoku.mp3",
+        status: "finalizado",
+        releaseDate: "2024-03-15",
+        createdAt: new Date().toISOString(),
+        isActive: true
+      },
+      {
+        name: "Trap dos Animes",
+        cover: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=400&fit=crop",
+        description: "EP colaborativo com beats inspirados em animes clássicos",
+        genres: ["Trap", "Anime", "Beat"],
+        collaborators: ["1"],
+        previewUrl: "https://yhdtpoqjntehiruphsjd.supabase.co/storage/v1/object/public/itachi89//ASSASINO_DE_SHAMANS(1).mp3",
+        previewVideoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        status: "em_desenvolvimento",
+        createdAt: new Date().toISOString(),
+        isActive: true
+      }
+    ];
+
+    sampleProjects.forEach(project => {
+      const id = this.currentProjectId++;
+      const newProject: Project = { 
+        ...project, 
+        id,
+        status: project.status || "em_desenvolvimento",
+        isActive: project.isActive ?? true,
+        previewUrl: project.previewUrl || null,
+        previewVideoUrl: project.previewVideoUrl || null,
+        releaseDate: project.releaseDate || null
+      };
+      this.projects.set(id, newProject);
+    });
+  }
+
+  // User operations
+  async getUser(id: string): Promise<User | undefined> {
     return this.users.get(id);
   }
 
@@ -99,12 +291,36 @@ export class MemStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentUserId++;
-    const user: User = { ...insertUser, id };
+    const id = Date.now().toString();
+    const user: User = { 
+      id,
+      ...insertUser,
+      email: null,
+      firstName: null,
+      lastName: null,
+      profileImageUrl: null,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
     this.users.set(id, user);
     return user;
   }
 
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const user: User = {
+      ...userData,
+      email: userData.email || null,
+      firstName: userData.firstName || null,
+      lastName: userData.lastName || null,
+      profileImageUrl: userData.profileImageUrl || null,
+      createdAt: userData.createdAt || new Date(),
+      updatedAt: new Date()
+    };
+    this.users.set(userData.id, user);
+    return user;
+  }
+
+  // Artist operations
   async getAllArtists(): Promise<Artist[]> {
     return Array.from(this.artists.values()).filter(artist => artist.isActive);
   }
@@ -122,11 +338,11 @@ export class MemStorage implements IStorage {
   async searchArtists(query: string): Promise<Artist[]> {
     const lowercaseQuery = query.toLowerCase();
     return Array.from(this.artists.values()).filter(
-      artist => 
-        artist.isActive && 
+      artist =>
+        artist.isActive &&
         (artist.name.toLowerCase().includes(lowercaseQuery) ||
-         artist.description.toLowerCase().includes(lowercaseQuery) ||
-         artist.roles.some(role => role.toLowerCase().includes(lowercaseQuery)))
+        artist.description.toLowerCase().includes(lowercaseQuery) ||
+        artist.roles.some(role => role.toLowerCase().includes(lowercaseQuery)))
     );
   }
 
@@ -144,64 +360,7 @@ export class MemStorage implements IStorage {
     return artist;
   }
 
-  private initializeProjects() {
-    const sampleProjects: InsertProject[] = [
-      {
-        name: "estilo Itachi 🔴",
-        cover: "https://i.pinimg.com/originals/e2/ee/ec/e2eeec1c8f1ba8c9e347a023a2de7839.gif",
-        description: "Álbum colaborativo de trap geek sobre Itachi de Naruto",
-        genres: ["Trap", "Wave", "geek"],
-        collaborators: ["1", "2"], // klzinn e MC Nerdcore
-        previewUrl: "https://yhdtpoqjntehiruphsjd.supabase.co/storage/v1/object/public/itachi89//estilo_Itachi.mp3",
-        previewVideoUrl: null,
-        status: "em_desenvolvimento",
-        releaseDate: null,
-        createdAt: "2025-06-15",
-        isActive: true
-      },
-      {
-        name: "estilo rengoku🔥",
-        cover: "https://img.wattpad.com/46b448131f3077d9264514402e57f502aafb656e/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f38656a79746975396a4f31414f513d3d2d313139333734373735382e313665656166326334303463353839393333383934323039383034332e676966",
-        description: "som do rengoku de demon Slayer",
-        genres: ["trap", "Geek"],
-        collaborators: ["1"], // MC Nerdcore e Beatmaker Otaku
-        previewUrl: null,
-        previewVideoUrl: "https://yhdtpoqjntehiruphsjd.supabase.co/storage/v1/object/public/itachi89//Estilo_Rengoku_%20Style%20Trap%20_%20Prod.%20Eopivete%20_%20klzinn(1080P_HD).mp4",
-        status: "finalizado",
-        releaseDate: "2024-02-20",
-        createdAt: "2023-12-01",
-        isActive: true
-      },
-      {
-        name: "caos!",
-        cover: "https://cdn.discordapp.com/attachments/979267903989899264/1385800156334784512/IMG-20250617-WA01321.jpg?ex=68576278&is=685610f8&hm=b37fa9b426a06442ccf52b6e60f4cdce748021bcbe8d49b49d6dc38b41b7a629&",
-        description: "primeiro projeto da chaos squad!!! que comece o caos",
-        genres: ["caos", "hard"],
-        collaborators: ["2"], // Synthwave Gamer
-        previewUrl: "",
-        previewVideoUrl: "https://yhdtpoqjntehiruphsjd.supabase.co/storage/v1/object/public/itachi89//VID-20250617-WA0150.mp4",
-        status: "em_desenvolvimento",
-        releaseDate: "2024-01-10",
-        createdAt: "2023-11-15",
-        isActive: true
-      }
-    ];
-
-    sampleProjects.forEach(project => {
-      const id = this.currentProjectId++;
-      const newProject: Project = { 
-        ...project, 
-        id,
-        previewUrl: project.previewUrl || null,
-        previewVideoUrl: project.previewVideoUrl || null,
-        releaseDate: project.releaseDate || null,
-        isActive: project.isActive ?? true,
-        status: project.status || "em_desenvolvimento"
-      };
-      this.projects.set(id, newProject);
-    });
-  }
-
+  // Project operations
   async getAllProjects(): Promise<Project[]> {
     return Array.from(this.projects.values()).filter(project => project.isActive);
   }
@@ -220,10 +379,10 @@ export class MemStorage implements IStorage {
     const lowercaseQuery = query.toLowerCase();
     return Array.from(this.projects.values()).filter(
       project =>
-        project.isActive && 
+        project.isActive &&
         (project.name.toLowerCase().includes(lowercaseQuery) ||
-         project.description.toLowerCase().includes(lowercaseQuery) ||
-         project.genres.some(genre => genre.toLowerCase().includes(lowercaseQuery)))
+        project.description.toLowerCase().includes(lowercaseQuery) ||
+        project.genres.some(genre => genre.toLowerCase().includes(lowercaseQuery)))
     );
   }
 
@@ -232,14 +391,39 @@ export class MemStorage implements IStorage {
     const project: Project = { 
       ...insertProject, 
       id,
+      status: insertProject.status || "em_desenvolvimento",
+      isActive: insertProject.isActive ?? true,
       previewUrl: insertProject.previewUrl || null,
       previewVideoUrl: insertProject.previewVideoUrl || null,
-      releaseDate: insertProject.releaseDate || null,
-      isActive: insertProject.isActive ?? true,
-      status: insertProject.status || "em_desenvolvimento"
+      releaseDate: insertProject.releaseDate || null
     };
     this.projects.set(id, project);
     return project;
+  }
+
+  // Like operations
+  async likeArtist(userId: string, artistId: number): Promise<Like> {
+    const id = this.currentLikeId++;
+    const like: Like = {
+      id,
+      userId,
+      artistId,
+      createdAt: new Date()
+    };
+    this.likes.set(`${userId}-${artistId}`, like);
+    return like;
+  }
+
+  async unlikeArtist(userId: string, artistId: number): Promise<void> {
+    this.likes.delete(`${userId}-${artistId}`);
+  }
+
+  async getUserLikes(userId: string): Promise<Like[]> {
+    return Array.from(this.likes.values()).filter(like => like.userId === userId);
+  }
+
+  async isArtistLiked(userId: string, artistId: number): Promise<boolean> {
+    return this.likes.has(`${userId}-${artistId}`);
   }
 }
 

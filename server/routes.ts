@@ -1,9 +1,24 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { setupAuth, isAuthenticated } from "./replitAuth";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Auth middleware
+  await setupAuth(app);
+
+  // Auth routes
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
   // Get all artists
   app.get("/api/artists", async (req, res) => {
     try {
@@ -96,6 +111,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(projects);
     } catch (error) {
       res.status(500).json({ message: "Erro ao buscar projetos" });
+    }
+  });
+
+  // Like/Unlike artist routes
+  app.post("/api/artists/:id/like", isAuthenticated, async (req: any, res) => {
+    try {
+      const artistId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      
+      if (isNaN(artistId)) {
+        return res.status(400).json({ message: "ID inválido" });
+      }
+
+      // Check if already liked
+      const isLiked = await storage.isArtistLiked(userId, artistId);
+      if (isLiked) {
+        return res.status(400).json({ message: "Artista já curtido" });
+      }
+
+      const like = await storage.likeArtist(userId, artistId);
+      res.status(201).json(like);
+    } catch (error) {
+      console.error("Error liking artist:", error);
+      res.status(500).json({ message: "Erro ao curtir artista" });
+    }
+  });
+
+  app.delete("/api/artists/:id/like", isAuthenticated, async (req: any, res) => {
+    try {
+      const artistId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      
+      if (isNaN(artistId)) {
+        return res.status(400).json({ message: "ID inválido" });
+      }
+
+      await storage.unlikeArtist(userId, artistId);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error unliking artist:", error);
+      res.status(500).json({ message: "Erro ao descurtir artista" });
+    }
+  });
+
+  // Get user's liked artists
+  app.get("/api/user/likes", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const likes = await storage.getUserLikes(userId);
+      res.json(likes);
+    } catch (error) {
+      console.error("Error fetching user likes:", error);
+      res.status(500).json({ message: "Erro ao buscar curtidas" });
+    }
+  });
+
+  // Check if artist is liked
+  app.get("/api/artists/:id/liked", isAuthenticated, async (req: any, res) => {
+    try {
+      const artistId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      
+      if (isNaN(artistId)) {
+        return res.status(400).json({ message: "ID inválido" });
+      }
+
+      const isLiked = await storage.isArtistLiked(userId, artistId);
+      res.json({ isLiked });
+    } catch (error) {
+      console.error("Error checking if artist is liked:", error);
+      res.status(500).json({ message: "Erro ao verificar curtida" });
     }
   });
 

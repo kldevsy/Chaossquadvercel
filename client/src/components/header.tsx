@@ -2,10 +2,12 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ThemeSelector } from "@/components/theme-selector";
 import PlatformStats from "@/components/platform-stats";
 import { useTheme } from "@/components/theme-provider";
-import { Search, Music, Menu, X } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { Search, Music, Menu, X, User, LogOut } from "lucide-react";
 
 interface HeaderProps {
   onSearch: (query: string) => void;
@@ -17,6 +19,7 @@ export default function Header({ onSearch, searchQuery, totalArtists = 0 }: Head
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const { theme } = useTheme();
+  const { user, isAuthenticated } = useAuth();
 
   return (
     <motion.header 
@@ -159,21 +162,46 @@ export default function Header({ onSearch, searchQuery, totalArtists = 0 }: Head
               <PlatformStats totalArtists={totalArtists} />
             </motion.div>
 
-            {/* Theme Selector */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.6, duration: 0.5 }}
-            >
+            {/* User Section & Actions */}
+            <div className="flex items-center space-x-4">
               <ThemeSelector />
-            </motion.div>
-
-            {/* Mobile Menu Button */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.7, duration: 0.5 }}
-            >
+              
+              {isAuthenticated && user ? (
+                <div className="flex items-center gap-3">
+                  <div className="hidden sm:flex items-center gap-2">
+                    <Avatar className="w-8 h-8">
+                      <AvatarImage src={user.profileImageUrl || undefined} />
+                      <AvatarFallback>
+                        <User className="w-4 h-4" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm font-medium">
+                      {user.firstName || user.username}
+                    </span>
+                  </div>
+                  
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => window.location.href = "/api/logout"}
+                    className="gap-2"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span className="hidden sm:inline">Sair</span>
+                  </Button>
+                </div>
+              ) : (
+                <Button 
+                  size="sm" 
+                  onClick={() => window.location.href = "/api/login"}
+                  className="gap-2"
+                >
+                  <User className="w-4 h-4" />
+                  <span className="hidden sm:inline">Entrar</span>
+                </Button>
+              )}
+              
+              {/* Mobile Menu Button */}
               <Button
                 variant="outline"
                 size="icon"
@@ -187,7 +215,7 @@ export default function Header({ onSearch, searchQuery, totalArtists = 0 }: Head
                   {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
                 </motion.div>
               </Button>
-            </motion.div>
+            </div>
           </div>
         </div>
 
