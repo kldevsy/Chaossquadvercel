@@ -22,11 +22,6 @@ export default function NotificationBell() {
   });
 
   const unreadCount = notifications.filter(n => !viewedNotifications.has(n.id)).length;
-  
-  // Debug logging
-  console.log('Notifications:', notifications.map(n => n.id));
-  console.log('Viewed notifications:', [...viewedNotifications]);
-  console.log('Unread count:', unreadCount);
 
   // Save viewed notifications to localStorage whenever it changes
   useEffect(() => {
@@ -40,7 +35,6 @@ export default function NotificationBell() {
       const newViewed = new Set(viewedNotifications);
       notifications.forEach(n => newViewed.add(n.id));
       setViewedNotifications(newViewed);
-      console.log('Notifications marked as viewed:', [...newViewed]);
     }
   };
 

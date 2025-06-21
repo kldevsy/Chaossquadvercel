@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "light" | "dark" | "black" | "green" | "red" | "purple" | "blue" | "orange" | "pink" | "cyan" | "yellow" | "indigo" | "emerald" | "rose" | "neon" | "gold" | "custom";
+type Theme = "light" | "dark" | "black" | "green" | "red" | "purple" | "blue" | "orange" | "pink" | "cyan" | "yellow" | "indigo" | "emerald" | "rose" | "neon" | "gold" | "custom" | "matrix" | "cosmos" | "ocean" | "fire" | "aurora";
 
 type ThemeProviderProps = {
   children: React.ReactNode;
@@ -125,6 +125,36 @@ const availableThemes = [
     label: "Custom",
     description: "Personalizável profissional",
     colors: { primary: "#3b82f6", secondary: "#1d4ed8", accent: "#1e40af" }
+  },
+  {
+    name: "matrix" as Theme,
+    label: "Matrix",
+    description: "Código digital verde com chuva de matriz",
+    colors: { primary: "#00ff41", secondary: "#00cc33", accent: "#008f11" }
+  },
+  {
+    name: "cosmos" as Theme,
+    label: "Cosmos",
+    description: "Universo profundo com estrelas cadentes",
+    colors: { primary: "#6366f1", secondary: "#8b5cf6", accent: "#ec4899" }
+  },
+  {
+    name: "ocean" as Theme,
+    label: "Ocean",
+    description: "Ondas do oceano com bioluminescência",
+    colors: { primary: "#06b6d4", secondary: "#0891b2", accent: "#0e7490" }
+  },
+  {
+    name: "fire" as Theme,
+    label: "Fire",
+    description: "Chamas dançantes em movimento",
+    colors: { primary: "#f97316", secondary: "#ea580c", accent: "#dc2626" }
+  },
+  {
+    name: "aurora" as Theme,
+    label: "Aurora",
+    description: "Aurora boreal com luzes dançantes",
+    colors: { primary: "#10b981", secondary: "#8b5cf6", accent: "#06b6d4" }
   }
 ];
 
