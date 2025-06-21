@@ -72,7 +72,24 @@ The build process separates client-side assets (served statically) from the serv
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes
+
+- **June 21, 2025**: Enhanced project filters with icons and smooth animations
+- **June 21, 2025**: Added previewVideoUrl field for video previews in project cards
+- **June 21, 2025**: Implemented multi-platform video support (YouTube, Vimeo, Instagram, TikTok, Twitter/X, Facebook)
+- **June 21, 2025**: Fixed Instagram embed issues - now opens in new tab
+- **June 21, 2025**: Improved video controls - YouTube/Vimeo with audio, MP4 files without controls
+- **June 21, 2025**: Added auto-hide functionality when video preview ends
+
+## User Preferences
+
+- Communication: Simple, everyday language (Portuguese)
+- Video functionality: Supports hover/click preview with smooth transitions
+- Instagram/Twitter links: Open in new tab instead of embedding
+- Direct video files: No controls, auto-loop, return to cover when ended
+
 ## Changelog
 
 Changelog:
 - June 18, 2025. Initial setup
+- June 21, 2025. Major video preview system implementation

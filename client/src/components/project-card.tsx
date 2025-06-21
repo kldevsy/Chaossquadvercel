@@ -31,7 +31,7 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
       const videoId = url.includes('youtu.be/') 
         ? url.split('youtu.be/')[1].split('?')[0]
         : url.split('v=')[1]?.split('&')[0];
-      return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}`;
+      return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&controls=1&loop=1&playlist=${videoId}&enablejsapi=1`;
     }
 
     // Instagram - needs special handling
@@ -57,7 +57,7 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
     // Vimeo
     if (url.includes('vimeo.com/')) {
       const videoId = url.split('vimeo.com/')[1].split('?')[0];
-      return `https://player.vimeo.com/video/${videoId}?autoplay=1&muted=1&controls=0&loop=1`;
+      return `https://player.vimeo.com/video/${videoId}?autoplay=1&muted=0&controls=1&loop=1`;
     }
 
     // Twitter/X
@@ -105,6 +105,22 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
       );
     }
 
+    // Check if it's a direct video file (MP4, WebM, etc.)
+    if (url.match(/\.(mp4|webm|ogg|mov)(\?.*)?$/i)) {
+      return (
+        <video
+          src={embedUrl}
+          className="w-full h-full object-cover"
+          autoPlay
+          muted
+          loop
+          controls={false}
+          onEnded={() => setShowVideo(false)}
+          onError={() => setShowVideo(false)}
+        />
+      );
+    }
+
     // Default iframe for other platforms
     return (
       <iframe
@@ -113,6 +129,12 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
         frameBorder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
+        onLoad={(e) => {
+          // Auto-hide video after 10 seconds for iframes without duration detection
+          setTimeout(() => {
+            setShowVideo(false);
+          }, 10000);
+        }}
       />
     );
   };

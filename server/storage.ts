@@ -147,26 +147,26 @@ export class MemStorage implements IStorage {
   private initializeProjects() {
     const sampleProjects: InsertProject[] = [
       {
-        name: "Cyber Beats Vol. 1",
-        cover: "https://i.pinimg.com/736x/a2/3f/8e/a23f8e4d7c6b9a8f5e3d2c1b4e7a9f6c.jpg",
-        description: "Álbum colaborativo de trap geek com referências de cyberpunk e anime futurista",
-        genres: ["Trap", "Cyberpunk", "Synthwave"],
+        name: "estilo Itachi 🔴",
+        cover: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRv5Ew41KAM1vjZarpAGJ4c0zuObLkgAErTWQ&s",
+        description: "Álbum colaborativo de trap geek sobre Itachi de Naruto",
+        genres: ["Trap", "Wave", "geek"],
         collaborators: ["1", "2"], // klzinn e MC Nerdcore
-        previewUrl: "https://example.com/preview/cyber-beats-vol1.mp3",
-        previewVideoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        previewUrl: "https://yhdtpoqjntehiruphsjd.supabase.co/storage/v1/object/public/itachi89//estilo_Itachi.mp3",
+        previewVideoUrl: null,
         status: "em_desenvolvimento",
         releaseDate: null,
-        createdAt: "2024-01-15",
+        createdAt: "2025-06-15",
         isActive: true
       },
       {
-        name: "Batalha dos Animes",
-        cover: "https://i.pinimg.com/736x/5d/8a/2c/5d8a2c9e6f1b4a7d3e8c5f9b2a6e4d7c.jpg",
-        description: "EP de rap battle com temas de anime e cultura otaku",
-        genres: ["Rap", "Hip-Hop", "Geek"],
-        collaborators: ["2", "3"], // MC Nerdcore e Beatmaker Otaku
+        name: "estilo rengoku🔥",
+        cover: "https://img.wattpad.com/46b448131f3077d9264514402e57f502aafb656e/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f38656a79746975396a4f31414f513d3d2d313139333734373735382e313665656166326334303463353839393333383934323039383034332e676966",
+        description: "som do rengoku de demon Slayer",
+        genres: ["trap", "Geek"],
+        collaborators: ["1"], // MC Nerdcore e Beatmaker Otaku
         previewUrl: null,
-        previewVideoUrl: "https://vimeo.com/123456789",
+        previewVideoUrl: "https://youtu.be/LyQPnW60kIM?si=rfEvI8KoxfirXhe_",
         status: "finalizado",
         releaseDate: "2024-02-20",
         createdAt: "2023-12-01",
@@ -174,13 +174,13 @@ export class MemStorage implements IStorage {
       },
       {
         name: "caos!",
-        cover: "https://i.pinimg.com/736x/7f/2b/6d/7f2b6d5a8e1c9f3b7a4e2d8c6f1a5b9e.jpg",
-        description: "Trilha sonora inspirada em jogos retrô com elementos de chiptune e synthwave",
+        cover: "https://cdn.discordapp.com/attachments/979267903989899264/1385800156334784512/IMG-20250617-WA01321.jpg?ex=68576278&is=685610f8&hm=b37fa9b426a06442ccf52b6e60f4cdce748021bcbe8d49b49d6dc38b41b7a629&",
+        description: "primeiro projeto da chaos squad!!! que comece o caos",
         genres: ["caos", "hard"],
-        collaborators: ["4"], // Synthwave Gamer
+        collaborators: ["2"], // Synthwave Gamer
         previewUrl: "",
-        previewVideoUrl: "https://www.instagram.com/reel/DLDu9J8vs3R/?igsh=bG8yYWx1M2J6NHI2",
-        status: "lancado",
+        previewVideoUrl: "https://yhdtpoqjntehiruphsjd.supabase.co/storage/v1/object/public/itachi89//VID-20250617-WA0150.mp4",
+        status: "em_desenvolvimento",
         releaseDate: "2024-01-10",
         createdAt: "2023-11-15",
         isActive: true
