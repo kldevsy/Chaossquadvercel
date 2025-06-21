@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,93 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
   const [showVideo, setShowVideo] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Function to convert video URLs to embed format
+  const getEmbedUrl = (url: string) => {
+    if (!url) return null;
+
+    // YouTube
+    if (url.includes('youtube.com/watch') || url.includes('youtu.be/')) {
+      const videoId = url.includes('youtu.be/') 
+        ? url.split('youtu.be/')[1].split('?')[0]
+        : url.split('v=')[1]?.split('&')[0];
+      return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}`;
+    }
+
+    // Instagram
+    if (url.includes('instagram.com/p/') || url.includes('instagram.com/reel/')) {
+      return `${url}embed/`;
+    }
+
+    // TikTok
+    if (url.includes('tiktok.com/')) {
+      const videoId = url.split('/video/')[1]?.split('?')[0];
+      return `https://www.tiktok.com/embed/v2/${videoId}`;
+    }
+
+    // Vimeo
+    if (url.includes('vimeo.com/')) {
+      const videoId = url.split('vimeo.com/')[1].split('?')[0];
+      return `https://player.vimeo.com/video/${videoId}?autoplay=1&muted=1&controls=0&loop=1`;
+    }
+
+    // Twitter/X
+    if (url.includes('twitter.com/') || url.includes('x.com/')) {
+      return url; // Twitter embeds work differently, we'll handle this separately
+    }
+
+    // Facebook
+    if (url.includes('facebook.com/')) {
+      return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&autoplay=true&muted=true`;
+    }
+
+    // Default: assume it's a direct video URL
+    return url;
+  };
+
+  // Function to render video based on platform
+  const renderVideoPreview = (url: string) => {
+    const embedUrl = getEmbedUrl(url);
+    
+    if (!embedUrl) return null;
+
+    // Special handling for Twitter/X
+    if (url.includes('twitter.com/') || url.includes('x.com/')) {
+      return (
+        <div className="w-full h-full flex items-center justify-center bg-black/80">
+          <div className="text-white text-center">
+            <div className="mb-2">🐦</div>
+            <div className="text-xs">Clique para ver no Twitter</div>
+          </div>
+        </div>
+      );
+    }
+
+    // Special handling for Instagram
+    if (url.includes('instagram.com/')) {
+      return (
+        <iframe
+          src={embedUrl}
+          className="w-full h-full"
+          frameBorder="0"
+          scrolling="no"
+          allowTransparency={true}
+          allow="encrypted-media"
+        />
+      );
+    }
+
+    // Default iframe for other platforms
+    return (
+      <iframe
+        src={embedUrl}
+        className="w-full h-full"
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+      />
+    );
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -62,7 +149,7 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
     project.collaborators.includes(artist.id.toString())
   );
 
-  const handleMouseEnter = () => {
+  const handleMouseEnter = useCallback(() => {
     setIsHovering(true);
     if (project.previewVideoUrl && hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
@@ -71,22 +158,37 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
       if (project.previewVideoUrl) {
         setShowVideo(true);
       }
-    }, 800); // 800ms delay before showing video
-  };
+    }, 800);
+  }, [project.previewVideoUrl]);
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
     setIsHovering(false);
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
     }
     setShowVideo(false);
-  };
+  }, []);
 
-  const handleClick = () => {
-    if (project.previewVideoUrl) {
-      setShowVideo(!showVideo);
+  const handleClick = useCallback(() => {
+    if (!project.previewVideoUrl) return;
+
+    // For Twitter/X, open in new tab instead of embedding
+    if (project.previewVideoUrl.includes('twitter.com/') || project.previewVideoUrl.includes('x.com/')) {
+      window.open(project.previewVideoUrl, '_blank');
+      return;
     }
-  };
+
+    setShowVideo(!showVideo);
+  }, [project.previewVideoUrl, showVideo]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <motion.div
@@ -120,13 +222,7 @@ export default function ProjectCard({ project, artists, isPlaying, onPlay, onPau
                 animate={{ opacity: showVideo ? 1 : 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <iframe
-                  src={showVideo ? project.previewVideoUrl : ""}
-                  className="w-full h-full object-cover"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
+                {showVideo && renderVideoPreview(project.previewVideoUrl)}
               </motion.div>
             )}
           </div>

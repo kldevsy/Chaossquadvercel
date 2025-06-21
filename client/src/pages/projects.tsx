@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Music, Wrench, CheckCircle, Rocket } from "lucide-react";
 import Header from "@/components/header";
 import ProjectCard from "@/components/project-card";
 import MusicPlayer from "@/components/music-player";
@@ -62,10 +62,10 @@ export default function Projects() {
   }, [searchQuery, activeFilter]);
 
   const statusFilters = [
-    { key: "todos", label: "🎵 Todos", emoji: "🎵", count: projects.length },
-    { key: "em_desenvolvimento", label: "🔧 Em Desenvolvimento", emoji: "🔧", count: projects.filter(p => p.status === "em_desenvolvimento").length },
-    { key: "finalizado", label: "✅ Finalizado", emoji: "✅", count: projects.filter(p => p.status === "finalizado").length },
-    { key: "lancado", label: "🚀 Lançado", emoji: "🚀", count: projects.filter(p => p.status === "lancado").length }
+    { key: "todos", label: "Todos", icon: Music, count: projects.length },
+    { key: "em_desenvolvimento", label: "Em Desenvolvimento", icon: Wrench, count: projects.filter(p => p.status === "em_desenvolvimento").length },
+    { key: "finalizado", label: "Finalizado", icon: CheckCircle, count: projects.filter(p => p.status === "finalizado").length },
+    { key: "lancado", label: "Lançado", icon: Rocket, count: projects.filter(p => p.status === "lancado").length }
   ];
 
   return (
@@ -117,21 +117,21 @@ export default function Projects() {
                 variant={activeFilter === filter.key ? "default" : "outline"}
                 onClick={() => setActiveFilter(filter.key)}
                 className={`
-                  relative overflow-hidden transition-all duration-300 
+                  relative overflow-hidden transition-all duration-300 border-2
                   ${activeFilter === filter.key 
-                    ? "bg-primary text-primary-foreground shadow-lg transform scale-105" 
-                    : "hover:bg-primary/10 hover:border-primary/50"
+                    ? "bg-primary text-primary-foreground shadow-lg border-primary" 
+                    : "hover:bg-primary/5 hover:border-primary/30 border-border"
                   }
                 `}
               >
                 <motion.div 
                   className="flex items-center gap-2"
                   initial={false}
-                  animate={activeFilter === filter.key ? { x: [0, -2, 2, 0] } : {}}
-                  transition={{ duration: 0.3 }}
+                  animate={activeFilter === filter.key ? { x: [0, -1, 1, 0] } : {}}
+                  transition={{ duration: 0.2 }}
                 >
-                  <span className="text-lg">{filter.emoji}</span>
-                  <span className="font-medium">{filter.label.replace(filter.emoji + " ", "")}</span>
+                  <filter.icon className="w-4 h-4" />
+                  <span className="font-medium">{filter.label}</span>
                   {filter.count > 0 && (
                     <motion.span 
                       className={`
@@ -143,7 +143,7 @@ export default function Projects() {
                       `}
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      transition={{ delay: 0.2, type: "spring" }}
+                      transition={{ delay: 0.1, type: "spring" }}
                     >
                       {filter.count}
                     </motion.span>
@@ -153,9 +153,9 @@ export default function Projects() {
                 {/* Active indicator */}
                 {activeFilter === filter.key && (
                   <motion.div
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-foreground/50"
+                    className="absolute bottom-0 left-0 right-0 h-1 bg-primary-foreground/80 rounded-t-sm"
                     layoutId="activeFilter"
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
                   />
                 )}
               </Button>
