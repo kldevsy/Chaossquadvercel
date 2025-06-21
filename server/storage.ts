@@ -267,7 +267,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteNotification(id: number): Promise<void> {
-    await db.update(notifications).set({ isActive: false }).where(eq(notifications.id, id));
+    await db.delete(notifications).where(eq(notifications.id, id));
   }
   
   // Admin user operations

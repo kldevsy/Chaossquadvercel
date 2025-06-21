@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "light" | "dark" | "black" | "green" | "red" | "purple" | "blue" | "orange" | "pink" | "cyan" | "yellow" | "indigo" | "emerald" | "rose" | "neon" | "gold" | "custom" | "matrix" | "cosmos" | "ocean" | "fire" | "aurora";
+type Theme = "light" | "dark" | "black" | "green" | "red" | "purple" | "blue" | "orange" | "pink" | "cyan" | "yellow" | "indigo" | "emerald" | "rose" | "neon" | "gold" | "matrix" | "cosmos" | "ocean" | "fire" | "aurora" | "custom" ;
 
 type ThemeProviderProps = {
   children: React.ReactNode;

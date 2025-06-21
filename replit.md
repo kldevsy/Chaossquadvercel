@@ -96,6 +96,8 @@ Preferred communication style: Simple, everyday language.
 - **June 21, 2025**: Improved notification bell with hover animations and gradient badges
 - **June 21, 2025**: Fixed admin authentication bug - status preserved between sessions
 - **June 21, 2025**: Added 5 new animated themes: Matrix (digital rain), Cosmos (starfield), Ocean (waves), Fire (flames), Aurora (northern lights)
+- **June 21, 2025**: Fixed Sparkles import error in admin panel
+- **June 21, 2025**: Fixed notification deletion bug - now permanently removes notifications from database
 
 ## User Preferences
 

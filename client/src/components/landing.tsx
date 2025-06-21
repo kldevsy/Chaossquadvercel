@@ -38,11 +38,11 @@ export default function Landing() {
             transition={{ duration: 0.6 }}
           >
             <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              GeeKTunes
+              Chaos Squad
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
               A plataforma definitiva para descobrir e curtir música geek. 
-              Conecte-se com artistas que vivem a cultura pop, games e animes.
+              Conecte-se com artistas que vivem a cultura pop, games e animes autoral e etc....
             </p>
             
             <motion.div
@@ -56,7 +56,7 @@ export default function Landing() {
                 onClick={() => window.location.href = "/api/login"}
                 className="text-lg px-8 py-6"
               >
-                Entrar no GeeKTunes
+                Entrar no Chaos squad 
               </Button>
               <Button 
                 variant="outline" 
@@ -85,7 +85,7 @@ export default function Landing() {
             className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Por que GeeKTunes?
+              Por que chaos squad?
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Uma experiência única para os amantes da cultura geek e música de qualidade
@@ -185,7 +185,7 @@ export default function Landing() {
       {/* Footer */}
       <footer className="py-8 px-4 border-t">
         <div className="container mx-auto text-center text-muted-foreground">
-          <p>&copy; 2025 GeeKTunes. Feito com ❤️ para a comunidade geek.</p>
+          <p>&copy; 2025 Chaos squad. Feito com ❤️ para a comunidade geek.</p>
         </div>
       </footer>
     </div>

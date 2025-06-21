@@ -16,7 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { useAuth } from "@/hooks/useAuth";
-import { Plus, Edit, Trash2, Music, Users, Settings, Save, X, Bell, Send, UserCheck, Crown, Shield } from "lucide-react";
+import { Plus, Edit, Trash2, Music, Users, Settings, Save, X, Bell, Send, UserCheck, Crown, Shield, Sparkles } from "lucide-react";
 import type { Artist, Project, User, Notification } from "@shared/schema";
 
 export default function Admin() {
