@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
 import { useParams } from "wouter";
-import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Play, Pause, Edit, Upload, Music2, Users, ExternalLink, MapPin, Calendar, Star, Award, Headphones, Share2, Download, Plus, X } from "lucide-react";
+import { motion } from "framer-motion";
+import { Heart, Play, Pause, Edit, Upload, Music2, Users, Headphones } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
 import { useLikes } from "@/hooks/useLikes";
 import { useMusicPlayer } from "@/hooks/use-music-player";
+import MusicPlayer from "@/components/music-player";
 import { queryClient } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
 import type { Artist, Project, Track } from "@shared/schema";
@@ -21,11 +22,10 @@ export default function ArtistProfile() {
   const { id } = useParams<{ id: string }>();
   const artistId = parseInt(id || "0");
   const { user } = useAuth();
-  const { likeArtist, unlikeArtist, isLiked } = useLikes();
+  const { toggleLike, isArtistLiked, isLiking } = useLikes();
   const musicPlayer = useMusicPlayer();
   
   // State management
-  const [isLiking, setIsLiking] = useState(false);
   const [liked, setLiked] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isTrackDialogOpen, setIsTrackDialogOpen] = useState(false);
@@ -60,7 +60,7 @@ export default function ArtistProfile() {
     enabled: !!artist,
     select: (projects) => projects.filter(p => 
       p.collaborators?.includes(artist?.name || '') || 
-      p.title?.toLowerCase().includes(artist?.name?.toLowerCase() || '')
+      p.name?.toLowerCase().includes(artist?.name?.toLowerCase() || '')
     ),
   });
 
@@ -88,14 +88,11 @@ export default function ArtistProfile() {
 
   // Check if artist is liked
   useEffect(() => {
-    const checkLiked = async () => {
-      if (user && artistId) {
-        const likedStatus = await isLiked(artistId);
-        setLiked(likedStatus);
-      }
-    };
-    checkLiked();
-  }, [user, artistId, isLiked]);
+    if (user && artistId) {
+      const likedStatus = isArtistLiked(artistId);
+      setLiked(likedStatus);
+    }
+  }, [user, artistId, isArtistLiked]);
 
   const handlePlay = () => {
     if (!artist) return;
@@ -110,21 +107,13 @@ export default function ArtistProfile() {
   const handleLike = async () => {
     if (!user || !artist || isLiking) return;
     
-    setIsLiking(true);
     try {
-      if (liked) {
-        await unlikeArtist(artist.id);
-        setLiked(false);
-        setTotalLikes(prev => Math.max(0, prev - 1));
-      } else {
-        await likeArtist(artist.id);
-        setLiked(true);
-        setTotalLikes(prev => prev + 1);
-      }
+      await toggleLike(artist.id);
+      const newLikedStatus = !liked;
+      setLiked(newLikedStatus);
+      setTotalLikes(prev => newLikedStatus ? prev + 1 : Math.max(0, prev - 1));
     } catch (error) {
       console.error('Error toggling like:', error);
-    } finally {
-      setIsLiking(false);
     }
   };
 
@@ -561,7 +550,7 @@ export default function ArtistProfile() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {artistProjects.map((project) => (
                         <div key={project.id} className="p-4 rounded-lg border hover:bg-accent/50 transition-colors">
-                          <h4 className="font-semibold mb-2">{project.title}</h4>
+                          <h4 className="font-semibold mb-2">{project.name}</h4>
                           <p className="text-sm text-muted-foreground mb-3">{project.description}</p>
                           <Badge variant="secondary">{project.status}</Badge>
                         </div>
@@ -604,9 +593,9 @@ export default function ArtistProfile() {
       </div>
 
       {/* Music Player */}
-      <musicPlayer.MusicPlayer
-        isVisible={musicPlayer.isVisible}
-        isMinimized={musicPlayer.isMinimized}
+      <MusicPlayer
+        isVisible={musicPlayer.isPlayerVisible}
+        isMinimized={musicPlayer.isPlayerMinimized}
         currentArtist={musicPlayer.currentArtist}
         isPlaying={musicPlayer.isPlaying}
         currentTime={musicPlayer.currentTime}
