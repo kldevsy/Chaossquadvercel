@@ -159,6 +159,15 @@ export default function ArtistProfile() {
   const liked = user && isArtistLiked(artist.id);
   const totalLikes = artist.likesCount || 0;
   const isOwner = user && artist && user.id === artist.userId;
+  
+  // Debug log
+  console.log('Debug isOwner:', {
+    user: user?.id,
+    artist: artist?.userId,
+    isOwner,
+    userExists: !!user,
+    artistExists: !!artist
+  });
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -174,8 +183,12 @@ export default function ArtistProfile() {
             Voltar
           </Button>
           
-          {isOwner && (
+          {/* Debug: Show for all users temporarily */}
+          {user && (
             <div className="flex gap-2">
+              <span className="text-xs text-muted-foreground mr-2">
+                Debug: User: {user.id}, Artist: {artist?.userId}, isOwner: {isOwner ? 'true' : 'false'}
+              </span>
               <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                 <DialogTrigger asChild>
                   <Button variant="outline" size="sm">
