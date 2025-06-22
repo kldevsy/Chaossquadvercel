@@ -15,7 +15,7 @@ export default function Landing() {
             className="flex items-center gap-2"
           >
             <Music className="w-8 h-8 text-primary" />
-            <span className="text-2xl font-bold">GeeKTunes</span>
+            <span className="text-2xl font-bold">Chaos squad</span>
           </motion.div>
           
           <motion.div

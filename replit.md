@@ -119,6 +119,8 @@ Preferred communication style: Simple, everyday language.
 - **June 22, 2025**: Added smooth animations, hover effects, and improved visual hierarchy
 - **June 22, 2025**: Enhanced message bubbles with gradient backgrounds and better spacing
 - **June 22, 2025**: Improved mentions dropdown with better styling and animations
+- **June 22, 2025**: Reduced message spacing for more fluid conversation flow
+- **June 22, 2025**: Fixed chat input text visibility issue - text now always visible
 
 ## User Preferences
 

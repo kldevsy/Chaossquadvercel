@@ -10,6 +10,15 @@
   background-size: 50px 50px;
 }
 
+/* Garante visibilidade do texto em inputs */
+input[type="text"], textarea {
+  color: hsl(var(--foreground)) !important;
+}
+
+input[type="text"]:focus, textarea:focus {
+  color: hsl(var(--foreground)) !important;
+}
+
 :root {
   --background: hsl(0, 0%, 98%);
   --foreground: hsl(222, 84%, 4.9%);
