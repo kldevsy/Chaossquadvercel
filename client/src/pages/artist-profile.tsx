@@ -39,7 +39,7 @@ export default function ArtistProfile() {
   const { isArtistLiked, toggleLike, isLiking } = useLikes();
   
   const { data: artist, isLoading } = useQuery<Artist>({
-    queryKey: ["/api/artists", artistId],
+    queryKey: [`/api/artists/${artistId}`],
     enabled: !!artistId,
   });
 
