@@ -142,10 +142,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update artist
-  app.put("/api/artists/:id", isAuthenticated, async (req, res) => {
+  app.put("/api/artists/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
+      
+      // Verificação direta de autenticação
+      if (!req.isAuthenticated || !req.isAuthenticated()) {
+        return res.status(401).json({ message: "Não autenticado" });
+      }
+      
       const user = (req as any).user;
+      console.log("PUT Artist - Auth check:", {
+        isAuthenticated: req.isAuthenticated(),
+        user: user,
+        userId: user?.id
+      });
+      
+      if (!user) {
+        return res.status(401).json({ message: "Usuário não encontrado na sessão" });
+      }
       
       if (isNaN(id)) {
         return res.status(400).json({ message: "ID inválido" });
@@ -153,14 +168,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Verificar se o usuário é o dono do perfil
       const existingArtist = await storage.getArtist(id);
-      console.log("Auth check:", { 
+      console.log("Ownership check:", { 
         existingArtist: existingArtist?.userId, 
         user: user.id, 
         match: existingArtist?.userId === user.id 
       });
       
       if (!existingArtist || existingArtist.userId !== user.id) {
-        return res.status(403).json({ message: "Não autorizado" });
+        return res.status(403).json({ message: "Não autorizado para editar este perfil" });
       }
 
       console.log("Updating artist with data:", req.body);
@@ -517,14 +532,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/tracks", isAuthenticated, async (req, res) => {
+  app.post("/api/tracks", async (req, res) => {
     try {
+      // Verificação direta de autenticação
+      if (!req.isAuthenticated || !req.isAuthenticated()) {
+        return res.status(401).json({ message: "Não autenticado" });
+      }
+      
       const user = (req as any).user;
-      console.log("POST tracks user:", user);
-      console.log("POST tracks session:", (req as any).session);
+      console.log("POST Tracks - Auth check:", {
+        isAuthenticated: req.isAuthenticated(),
+        user: user,
+        userId: user?.id
+      });
       
       if (!user) {
-        return res.status(401).json({ message: "Usuário não autenticado" });
+        return res.status(401).json({ message: "Usuário não encontrado na sessão" });
       }
 
       // Verificar se o usuário tem um perfil de artista
