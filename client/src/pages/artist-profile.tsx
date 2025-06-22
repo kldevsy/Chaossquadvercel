@@ -42,9 +42,27 @@ export default function ArtistProfile() {
   const [match, params] = useRoute("/artist-profile/:id");
   const artistId = params?.id ? parseInt(params.id) : null;
   
+  // All hooks must be at the top level and in consistent order
   const { data: user } = useAuth();
   const musicPlayer = useMusicPlayer();
   const { isArtistLiked, toggleLike, isLiking } = useLikes();
+  
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isTrackDialogOpen, setIsTrackDialogOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    name: '',
+    description: '',
+    avatar: '',
+    banner: '',
+  });
+  const [trackFormData, setTrackFormData] = useState({
+    title: '',
+    audioUrl: '',
+    coverUrl: '',
+    genre: '',
+    description: '',
+    duration: 0,
+  });
   
   const { data: artist, isLoading } = useQuery<Artist>({
     queryKey: [`/api/artists/${artistId}`],
@@ -59,6 +77,48 @@ export default function ArtistProfile() {
     queryKey: [`/api/artists/${artistId}/tracks`],
     enabled: !!artistId,
   });
+
+  // Update form data when artist data loads
+  useEffect(() => {
+    if (artist) {
+      setEditFormData({
+        name: artist.name || '',
+        description: artist.description || '',
+        avatar: artist.avatar || '',
+        banner: artist.banner || '',
+      });
+    }
+  }, [artist]);
+
+  // Early returns after all hooks
+  if (!match || !artistId) {
+    return <div>Artista não encontrado</div>;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Carregando perfil do artista...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!artist) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Artista não encontrado</h2>
+          <Button onClick={() => window.history.back()}>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Voltar
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   // Filter projects that include this artist
   const artistProjects = projects.filter(project => 
@@ -95,68 +155,10 @@ export default function ArtistProfile() {
     }
   };
 
-  if (!match || !artistId) {
-    return <div>Artista não encontrado</div>;
-  }
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Carregando perfil do artista...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!artist) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Artista não encontrado</h2>
-          <Button onClick={() => window.history.back()}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Voltar
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
   const isPlaying = musicPlayer.currentArtist?.id === artist.id && musicPlayer.isPlaying;
   const liked = user && isArtistLiked(artist.id);
   const totalLikes = artist.likesCount || 0;
   const isOwner = user && artist && user.id === artist.userId;
-
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [isTrackDialogOpen, setIsTrackDialogOpen] = useState(false);
-  const [editFormData, setEditFormData] = useState({
-    name: '',
-    description: '',
-    avatar: '',
-    banner: '',
-  });
-
-  // Update form data when artist data loads
-  useEffect(() => {
-    if (artist) {
-      setEditFormData({
-        name: artist.name || '',
-        description: artist.description || '',
-        avatar: artist.avatar || '',
-        banner: artist.banner || '',
-      });
-    }
-  }, [artist]);
-  const [trackFormData, setTrackFormData] = useState({
-    title: '',
-    audioUrl: '',
-    coverUrl: '',
-    genre: '',
-    description: '',
-    duration: 0,
-  });
 
   return (
     <div className="min-h-screen bg-background text-foreground">
