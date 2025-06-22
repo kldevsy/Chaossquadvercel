@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
@@ -366,23 +366,19 @@ export default function Chat() {
           <div className="border-t border-border/50 p-4">
             <form onSubmit={handleSendMessage} className="flex items-center gap-3">
               <div className="flex-1 relative">
-                <Popover open={showMentions && filteredUsers.length > 0} onOpenChange={setShowMentions}>
-                  <PopoverTrigger asChild>
-                    <Input
-                      ref={inputRef}
-                      value={message}
-                      onChange={handleMessageChange}
-                      placeholder="Digite sua mensagem... (use @ para mencionar usuários)"
-                      className="pr-20 pl-10 bg-background/50 border-border/50 focus:border-primary/50"
-                      maxLength={500}
-                      disabled={!isConnected || sendMessageMutation.isPending}
-                    />
-                  </PopoverTrigger>
-                  <PopoverContent 
-                    className="p-2 w-64" 
-                    align="start"
-                    side="top"
-                  >
+                <Input
+                  ref={inputRef}
+                  value={message}
+                  onChange={handleMessageChange}
+                  placeholder="Digite sua mensagem... (use @ para mencionar usuários)"
+                  className="pr-20 pl-10 bg-background/50 border-border/50 focus:border-primary/50"
+                  maxLength={500}
+                  disabled={!isConnected || sendMessageMutation.isPending}
+                />
+                
+                {/* Mentions Dropdown */}
+                {showMentions && filteredUsers.length > 0 && (
+                  <div className="absolute bottom-full left-0 mb-2 w-64 bg-popover border border-border rounded-lg shadow-lg z-50 p-2">
                     <div className="space-y-2">
                       <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
                         <AtSign className="w-3 h-3" />
@@ -416,8 +412,8 @@ export default function Chat() {
                         </div>
                       )}
                     </div>
-                  </PopoverContent>
-                </Popover>
+                  </div>
+                )}
                 
                 <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
