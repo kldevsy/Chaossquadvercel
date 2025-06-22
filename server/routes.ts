@@ -153,6 +153,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Verificar se o usuário é o dono do perfil
       const existingArtist = await storage.getArtist(id);
+      console.log("Auth check:", { 
+        existingArtist: existingArtist?.userId, 
+        user: user.id, 
+        match: existingArtist?.userId === user.id 
+      });
+      
       if (!existingArtist || existingArtist.userId !== user.id) {
         return res.status(403).json({ message: "Não autorizado" });
       }

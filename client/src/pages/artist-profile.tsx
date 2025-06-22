@@ -164,18 +164,16 @@ export default function ArtistProfile() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Header with back button */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b">
-        <div className="container mx-auto px-4 py-3">
-          <Button
-            variant="ghost"
-            onClick={() => window.history.back()}
-            className="hover:bg-accent rounded-full"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Voltar
-          </Button>
-        </div>
+      {/* Header with back button - positioned above banner */}
+      <div className="absolute top-4 left-4 z-50">
+        <Button
+          variant="outline"
+          onClick={() => window.history.back()}
+          className="bg-background/80 backdrop-blur-sm hover:bg-background/90 rounded-full shadow-lg"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Voltar
+        </Button>
       </div>
 
       {/* Banner Section - estilo Twitter/Discord */}
@@ -185,7 +183,7 @@ export default function ArtistProfile() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
-          className="h-48 md:h-64 relative overflow-hidden"
+          className="h-56 md:h-72 relative overflow-hidden"
           style={{
             background: artist.banner 
               ? `url(${artist.banner}) center/cover no-repeat` 
@@ -409,14 +407,18 @@ export default function ArtistProfile() {
                                 className="w-full"
                                 onClick={async () => {
                                   try {
+                                    console.log('Sending update request:', editFormData);
                                     const response = await fetch(`/api/artists/${artist.id}`, {
                                       method: 'PUT',
-                                      headers: { 'Content-Type': 'application/json' },
+                                      headers: { 
+                                        'Content-Type': 'application/json',
+                                      },
+                                      credentials: 'include',
                                       body: JSON.stringify(editFormData),
                                     });
                                     
                                     if (response.ok) {
-                                      // Invalidate queries to refresh data
+                                      console.log('Profile updated successfully');
                                       window.location.reload();
                                     } else {
                                       const errorData = await response.json();
@@ -426,6 +428,7 @@ export default function ArtistProfile() {
                                     setIsEditDialogOpen(false);
                                   } catch (error) {
                                     console.error('Error updating profile:', error);
+                                    alert('Erro de conexão ao atualizar perfil');
                                   }
                                 }}
                               >
