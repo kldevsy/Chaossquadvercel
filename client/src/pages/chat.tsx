@@ -529,13 +529,15 @@ export default function Chat() {
                     placeholder="Digite sua mensagem... (use @ para mencionar usuários)"
                     className="pr-24 pl-12 py-4 text-base border-2 border-border/30 focus:border-purple-500/50 rounded-2xl shadow-lg transition-all duration-300 chat-input"
                     style={{ 
-                      color: '#000000',
-                      WebkitTextFillColor: '#000000',
-                      MozTextFillColor: '#000000',
-                      caretColor: '#000000',
-                      backgroundColor: '#ffffff',
-                      fontWeight: '500'
-                    }}
+                      color: '#000000 !important',
+                      WebkitTextFillColor: '#000000 !important',
+                      MozTextFillColor: '#000000 !important',
+                      textFillColor: '#000000 !important',
+                      caretColor: '#000000 !important',
+                      backgroundColor: '#ffffff !important',
+                      fontWeight: '700 !important',
+                      textShadow: 'none !important'
+                    } as any}
                     maxLength={500}
                     disabled={!isConnected || sendMessageMutation.isPending}
                   />

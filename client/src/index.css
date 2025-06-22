@@ -32,13 +32,22 @@ input::placeholder, textarea::placeholder {
 .chat-input:focus, 
 .chat-input:active,
 .chat-input:hover,
-.chat-input[data-state="focused"] {
+.chat-input[data-state="focused"],
+.chat-input::placeholder {
   color: #000000 !important;
   -webkit-text-fill-color: #000000 !important;
   -moz-text-fill-color: #000000 !important;
+  text-fill-color: #000000 !important;
   caret-color: #000000 !important;
   background-color: #ffffff !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
+  text-shadow: none !important;
+}
+
+/* Força ainda mais especificamente */
+input.chat-input[type="text"] {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
 }
 
 /* Para modo escuro */
