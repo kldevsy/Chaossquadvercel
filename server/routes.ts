@@ -141,6 +141,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update artist
+  app.put("/api/artists/:id", isAuthenticated, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const user = (req as any).user;
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "ID inválido" });
+      }
+
+      // Verificar se o usuário é o dono do perfil
+      const existingArtist = await storage.getArtist(id);
+      if (!existingArtist || existingArtist.userId !== user.id) {
+        return res.status(403).json({ message: "Não autorizado" });
+      }
+
+      console.log("Updating artist with data:", req.body);
+      const artist = await storage.updateArtist(id, req.body);
+      if (!artist) {
+        return res.status(404).json({ message: "Artista não encontrado" });
+      }
+
+      console.log("Artist updated successfully:", artist);
+      res.json(artist);
+    } catch (error) {
+      console.error("Error updating artist:", error);
+      res.status(500).json({ message: "Erro ao atualizar artista" });
+    }
+  });
+
   // Get all projects
   app.get("/api/projects", async (req, res) => {
     try {

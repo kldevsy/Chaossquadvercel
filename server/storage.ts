@@ -16,7 +16,7 @@ export interface IStorage {
   getArtistsByRole(role: string): Promise<Artist[]>;
   searchArtists(query: string): Promise<Artist[]>;
   createArtist(artist: InsertArtist): Promise<Artist>;
-  updateArtist(id: number, artist: InsertArtist): Promise<Artist | undefined>;
+  updateArtist(id: number, artist: Partial<InsertArtist>): Promise<Artist | undefined>;
   deleteArtist(id: number): Promise<void>;
   
   // Project operations
@@ -132,12 +132,20 @@ export class DatabaseStorage implements IStorage {
     return artist;
   }
 
-  async updateArtist(id: number, insertArtist: InsertArtist): Promise<Artist | undefined> {
-    const [artist] = await db.update(artists)
-      .set(insertArtist)
-      .where(eq(artists.id, id))
-      .returning();
-    return artist || undefined;
+  async updateArtist(id: number, updateData: Partial<InsertArtist>): Promise<Artist | undefined> {
+    try {
+      console.log("Updating artist in database:", { id, updateData });
+      const [artist] = await db
+        .update(artists)
+        .set(updateData)
+        .where(eq(artists.id, id))
+        .returning();
+      console.log("Artist updated in database:", artist);
+      return artist || undefined;
+    } catch (error) {
+      console.error("Error updating artist in database:", error);
+      throw new Error("Failed to update artist");
+    }
   }
 
   async deleteArtist(id: number): Promise<void> {

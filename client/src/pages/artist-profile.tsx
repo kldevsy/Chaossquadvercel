@@ -188,7 +188,7 @@ export default function ArtistProfile() {
           className="h-48 md:h-64 relative overflow-hidden"
           style={{
             background: artist.banner 
-              ? `url(${artist.banner}) center/cover` 
+              ? `url(${artist.banner}) center/cover no-repeat` 
               : `linear-gradient(135deg, 
                   hsl(var(--primary)) 0%, 
                   hsl(var(--primary)) 25%, 
