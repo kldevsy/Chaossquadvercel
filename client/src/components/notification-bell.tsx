@@ -88,10 +88,7 @@ export default function NotificationBell() {
   };
 
   const handleNotificationClick = (notification: Notification) => {
-    console.log('Clicou na notificação:', notification.title, 'Tamanho:', notification.message.length);
-    // Sempre permitir expansão se a mensagem for maior que 50 caracteres
     if (notification.message.length > 50) {
-      console.log('Expandindo notificação');
       setExpandedNotification(notification);
       setIsOpen(false);
     }
