@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { useRoute } from "wouter";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRoute, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -40,12 +40,14 @@ import type { Artist, Project, Track } from "@shared/schema";
 
 export default function ArtistProfile() {
   const [match, params] = useRoute("/artist-profile/:id");
+  const [, setLocation] = useLocation();
   const artistId = params?.id ? parseInt(params.id) : null;
   
   // All hooks must be at the top level and in consistent order
   const { user, isAuthenticated } = useAuth();
   const musicPlayer = useMusicPlayer();
   const { isArtistLiked, toggleLike, isLiking } = useLikes();
+  const queryClient = useQueryClient();
   
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isTrackDialogOpen, setIsTrackDialogOpen] = useState(false);
@@ -111,7 +113,7 @@ export default function ArtistProfile() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-4">Artista não encontrado</h2>
-          <Button onClick={() => window.history.back()}>
+          <Button onClick={() => setLocation("/")}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Voltar
           </Button>
@@ -168,7 +170,7 @@ export default function ArtistProfile() {
       <div className="absolute top-4 left-4 z-50">
         <Button
           variant="outline"
-          onClick={() => window.history.back()}
+          onClick={() => setLocation("/")}
           className="bg-background/80 backdrop-blur-sm hover:bg-background/90 rounded-full shadow-lg"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -494,28 +496,36 @@ export default function ArtistProfile() {
                                 className="w-full"
                                 onClick={async () => {
                                   try {
+                                    const trackData = {
+                                      ...trackFormData,
+                                      artistId: artistId
+                                    };
+                                    
                                     const response = await fetch('/api/tracks', {
                                       method: 'POST',
                                       headers: { 'Content-Type': 'application/json' },
-                                      body: JSON.stringify(trackFormData),
+                                      body: JSON.stringify(trackData),
                                     });
                                     
                                     if (response.ok) {
-                                      window.location.reload();
+                                      // Invalidate the tracks cache to refresh the data
+                                      queryClient.invalidateQueries({ queryKey: [`/api/artists/${artistId}/tracks`] });
+                                      setIsTrackDialogOpen(false);
+                                      setTrackFormData({
+                                        title: '',
+                                        audioUrl: '',
+                                        coverUrl: '',
+                                        genre: '',
+                                        description: '',
+                                        duration: 0,
+                                      });
+                                      console.log('Track criada com sucesso!');
                                     } else {
-                                      console.error('Failed to create track');
+                                      const errorData = await response.text();
+                                      console.error('Erro ao criar track:', errorData);
                                     }
-                                    setIsTrackDialogOpen(false);
-                                    setTrackFormData({
-                                      title: '',
-                                      audioUrl: '',
-                                      coverUrl: '',
-                                      genre: '',
-                                      description: '',
-                                      duration: 0,
-                                    });
                                   } catch (error) {
-                                    console.error('Error creating track:', error);
+                                    console.error('Erro ao criar track:', error);
                                   }
                                 }}
                               >

@@ -209,6 +209,8 @@ export function useMusicPlayer() {
     isPlayerVisible,
     isPlayerMinimized,
     playArtist,
+    play,
+    pause,
     togglePlayPause,
     seek,
     changeVolume,

@@ -534,29 +534,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/tracks", async (req, res) => {
+  app.post("/api/tracks", isAuthenticated, async (req, res) => {
     try {
-      // Verificação direta de autenticação
-      if (!req.isAuthenticated || !req.isAuthenticated()) {
-        return res.status(401).json({ message: "Não autenticado" });
-      }
-      
       const user = (req as any).user;
-      const userId = user?.claims?.sub || user?.id;
+      const userId = user.claims.sub;
       
-      console.log("POST Tracks - Auth check:", {
-        isAuthenticated: req.isAuthenticated(),
-        user: user,
-        userId: userId
-      });
-      
-      if (!user || !userId) {
-        return res.status(401).json({ message: "Usuário não encontrado na sessão" });
-      }
-
       // Verificar se o usuário tem um perfil de artista
       const artistProfile = await storage.getUserArtistProfile(userId);
-      console.log("Artist profile found:", artistProfile);
       
       if (!artistProfile) {
         return res.status(403).json({ message: "Apenas artistas podem criar tracks" });
@@ -567,7 +551,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         artistId: artistProfile.id
       };
 
-      console.log("Creating track with data:", trackData);
       const track = await storage.createTrack(trackData);
       res.status(201).json(track);
     } catch (error) {
