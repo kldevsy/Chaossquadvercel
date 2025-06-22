@@ -697,10 +697,10 @@ export default function Admin() {
                                 <Avatar className="w-6 h-6">
                                   <AvatarImage src={user.profileImageUrl || ""} />
                                   <AvatarFallback className="text-xs">
-                                    {user.username.slice(0, 2).toUpperCase()}
+                                    {(user.firstName || user.username || 'U').slice(0, 2).toUpperCase()}
                                   </AvatarFallback>
                                 </Avatar>
-                                <span>{user.username}</span>
+                                <span>{user.firstName || user.username || 'Usuário'}</span>
                                 {user.isAdmin && <Crown className="w-4 h-4 text-yellow-500" />}
                               </div>
                             </SelectItem>

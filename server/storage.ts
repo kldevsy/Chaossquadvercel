@@ -97,6 +97,11 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
+  async getUserArtistProfile(userId: string): Promise<Artist | undefined> {
+    const [artist] = await db.select().from(artists).where(eq(artists.userId, userId));
+    return artist || undefined;
+  }
+
   // Artist operations
   async getAllArtists(): Promise<Artist[]> {
     return await db.select().from(artists).where(eq(artists.isActive, true));
@@ -450,6 +455,12 @@ export class MemStorage implements IStorage {
     };
     this.users.set(userData.id, user);
     return user;
+  }
+
+  async getUserArtistProfile(userId: string): Promise<Artist | undefined> {
+    return Array.from(this.artists.values()).find(
+      (artist) => artist.userId === userId && artist.isActive,
+    );
   }
 
   // Artist operations
