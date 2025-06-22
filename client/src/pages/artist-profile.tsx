@@ -143,7 +143,7 @@ export default function ArtistProfile() {
         initial={{ opacity: 0, scale: 1.05 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.5, ease: "easeOut" }}
-        className="relative h-[60vh] md:h-[70vh] overflow-hidden"
+        className="relative h-80 md:h-96 overflow-hidden"
       >
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-700"
@@ -162,37 +162,161 @@ export default function ArtistProfile() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/60" />
+        
+        {/* Dynamic Floating Particles */}
+        <div className="absolute inset-0 overflow-hidden">
+          {Array.from({ length: 25 }).map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute rounded-full bg-white/20 backdrop-blur-sm"
+              style={{
+                width: Math.random() * 6 + 2,
+                height: Math.random() * 6 + 2,
+                left: `${Math.random() * 100}%`,
+                top: `${100 + Math.random() * 50}%`,
+              }}
+              animate={{
+                y: [0, -800 - Math.random() * 200],
+                x: [0, (Math.random() - 0.5) * 100],
+                opacity: [0, 0.8, 0],
+                scale: [0.5, 1.5, 0.5],
+                rotate: [0, 360],
+              }}
+              transition={{
+                duration: 8 + Math.random() * 6,
+                repeat: Infinity,
+                delay: Math.random() * 4,
+                ease: "easeOut",
+              }}
+            />
+          ))}
+        </div>
+        
+        {/* Musical Symbols Animation */}
+        <div className="absolute inset-0 pointer-events-none">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <motion.div
+              key={`symbol-${i}`}
+              className="absolute text-white/10 text-2xl md:text-3xl font-bold"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${100 + Math.random() * 20}%`,
+              }}
+              animate={{
+                y: [0, -400 - Math.random() * 100],
+                x: [(Math.random() - 0.5) * 50, (Math.random() - 0.5) * 50],
+                opacity: [0, 0.6, 0],
+                rotate: [0, 180 + Math.random() * 180],
+                scale: [0.8, 1.2, 0.8],
+              }}
+              transition={{
+                duration: 10 + Math.random() * 5,
+                repeat: Infinity,
+                delay: Math.random() * 6,
+                ease: "easeInOut",
+              }}
+            >
+              {['♪', '♫', '♬', '♩', '♭', '♯', '𝄞', '𝄢'][Math.floor(Math.random() * 8)]}
+            </motion.div>
+          ))}
+        </div>
       </motion.div>
 
       {/* Profile Section */}
       <div className="container mx-auto px-6 lg:px-8">
-        <div className="relative -mt-40 md:-mt-48">
+        <div className="relative -mt-32 md:-mt-40">
           <div className="flex flex-col lg:flex-row gap-12 items-start">
             
             {/* Avatar */}
             <motion.div
-              initial={{ scale: 0.3, opacity: 0, y: 150 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              transition={{ duration: 1.2, delay: 0.4 }}
+              initial={{ scale: 0.3, opacity: 0, y: 150, rotateY: -180 }}
+              animate={{ scale: 1, opacity: 1, y: 0, rotateY: 0 }}
+              transition={{ 
+                duration: 1.2, 
+                delay: 0.4,
+                type: "spring",
+                stiffness: 100
+              }}
               className="relative group flex-shrink-0"
             >
-              <div className="absolute -inset-4 bg-gradient-to-r from-purple-600/30 via-pink-600/30 to-blue-600/30 rounded-full blur-3xl group-hover:blur-2xl transition-all duration-700" />
+              {/* Glow Effect */}
+              <motion.div 
+                className="absolute -inset-6 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-blue-500/20 rounded-full blur-2xl"
+                animate={{ 
+                  scale: [1, 1.1, 1],
+                  opacity: [0.5, 0.8, 0.5]
+                }}
+                transition={{ 
+                  duration: 3, 
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
               
               <motion.div
-                whileHover={{ scale: 1.05 }}
-                className="relative p-3 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl"
+                whileHover={{ 
+                  scale: 1.08,
+                  rotateY: [0, 5, -5, 0],
+                  transition: { duration: 0.6 }
+                }}
+                className="relative"
               >
-                <Avatar className="w-48 h-48 md:w-56 md:h-56 border-4 border-white/30 shadow-inner">
+                <Avatar className="w-44 h-44 md:w-52 md:h-52 shadow-2xl ring-2 ring-white/20 ring-offset-4 ring-offset-background/50">
                   <AvatarImage 
                     src={artist.avatar} 
                     alt={artist.name}
-                    className="object-cover transition-all duration-500 group-hover:scale-110"
+                    className="object-cover transition-all duration-500 group-hover:brightness-110"
                   />
-                  <AvatarFallback className="text-5xl md:text-6xl font-bold bg-gradient-to-br from-purple-600 to-pink-600 text-white">
+                  <AvatarFallback className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-purple-600 to-pink-600 text-white">
                     {artist.name?.split(' ').map(n => n[0]).join('').slice(0, 2) || 'A'}
                   </AvatarFallback>
                 </Avatar>
+                
+                {/* Status Indicator */}
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 1.5 }}
+                  className="absolute bottom-2 right-2"
+                >
+                  <motion.div
+                    animate={{ 
+                      scale: [1, 1.2, 1],
+                      boxShadow: [
+                        "0 0 0 0 rgba(34, 197, 94, 0.7)",
+                        "0 0 0 10px rgba(34, 197, 94, 0)",
+                        "0 0 0 0 rgba(34, 197, 94, 0)"
+                      ]
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="w-5 h-5 bg-green-500 rounded-full border-2 border-white"
+                  />
+                </motion.div>
               </motion.div>
+              
+              {/* Floating Elements */}
+              <div className="absolute inset-0 pointer-events-none">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-1 h-1 bg-white/60 rounded-full"
+                    style={{
+                      left: `${20 + i * 8}%`,
+                      top: `${10 + (i % 3) * 30}%`,
+                    }}
+                    animate={{
+                      y: [0, -15, 0],
+                      opacity: [0.3, 1, 0.3],
+                      scale: [1, 1.5, 1],
+                    }}
+                    transition={{
+                      duration: 2 + i * 0.3,
+                      repeat: Infinity,
+                      delay: i * 0.2,
+                    }}
+                  />
+                ))}
+              </div>
             </motion.div>
 
             {/* Artist Info */}
@@ -534,19 +658,73 @@ export default function ArtistProfile() {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
-                        {artistTracks.map((track) => (
-                          <div key={track.id} className="flex items-center gap-4 p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
-                            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                              <Music2 className="w-6 h-6 text-white" />
+                        {artistTracks.map((track, index) => (
+                          <motion.div
+                            key={track.id}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                            whileHover={{ 
+                              scale: 1.02, 
+                              x: 10,
+                              transition: { duration: 0.2 }
+                            }}
+                            className="group relative"
+                          >
+                            <div className="flex items-center gap-4 p-5 rounded-xl bg-gradient-to-r from-white/5 to-white/10 hover:from-white/10 hover:to-white/15 border border-white/10 hover:border-white/30 transition-all duration-300 shadow-lg hover:shadow-xl">
+                              <motion.div 
+                                className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
+                                whileHover={{ rotate: [0, -10, 10, 0] }}
+                                transition={{ duration: 0.5 }}
+                              >
+                                <Music2 className="w-7 h-7 text-white" />
+                                <div className="absolute inset-0 bg-white/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                              </motion.div>
+                              
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-bold text-white text-lg mb-1 truncate group-hover:text-purple-200 transition-colors duration-300">
+                                  {track.title}
+                                </h4>
+                                <p className="text-sm text-white/70 mb-2">{track.genre}</p>
+                                <div className="flex items-center gap-2 text-xs text-white/50">
+                                  <span>3:45</span>
+                                  <span>•</span>
+                                  <span>MP3</span>
+                                </div>
+                              </div>
+                              
+                              <motion.div
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                              >
+                                <Button 
+                                  size="lg" 
+                                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl w-12 h-12 p-0 group-hover:shadow-lg transition-all duration-300"
+                                  onClick={() => {
+                                    if (track.audioUrl) {
+                                      // Create temporary artist object with track audio
+                                      const trackArtist = {
+                                        ...artist,
+                                        musicUrl: track.audioUrl,
+                                        name: `${artist.name} - ${track.title}`
+                                      };
+                                      musicPlayer.playArtist(trackArtist);
+                                    }
+                                  }}
+                                >
+                                  <motion.div
+                                    animate={{ rotate: musicPlayer.isPlaying && musicPlayer.currentArtist?.musicUrl === track.audioUrl ? 360 : 0 }}
+                                    transition={{ duration: 2, repeat: musicPlayer.isPlaying ? Infinity : 0, ease: "linear" }}
+                                  >
+                                    <Play className="w-5 h-5" />
+                                  </motion.div>
+                                </Button>
+                              </motion.div>
                             </div>
-                            <div className="flex-1">
-                              <h4 className="font-semibold text-white">{track.title}</h4>
-                              <p className="text-sm text-white/70">{track.genre}</p>
-                            </div>
-                            <Button size="sm" variant="ghost">
-                              <Play className="w-4 h-4" />
-                            </Button>
-                          </div>
+                            
+                            {/* Animated Background Glow */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-purple-600/0 via-purple-600/5 to-pink-600/0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
+                          </motion.div>
                         ))}
                       </div>
                     </CardContent>
@@ -569,13 +747,113 @@ export default function ArtistProfile() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {artistProjects.map((project) => (
-                          <div key={project.id} className="p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
-                            <h4 className="font-semibold mb-2 text-white">{project.name}</h4>
-                            <p className="text-sm text-white/70 mb-3">{project.description}</p>
-                            <Badge variant="secondary">{project.status}</Badge>
-                          </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {artistProjects.map((project, index) => (
+                          <motion.div
+                            key={project.id}
+                            initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{ 
+                              delay: index * 0.15,
+                              duration: 0.6,
+                              type: "spring",
+                              stiffness: 100
+                            }}
+                            whileHover={{ 
+                              scale: 1.05, 
+                              y: -8,
+                              rotateY: 5,
+                              transition: { duration: 0.3 }
+                            }}
+                            className="group relative overflow-hidden"
+                          >
+                            <div className="relative p-6 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 hover:border-white/40 transition-all duration-300 shadow-lg hover:shadow-2xl">
+                              {/* Animated Background Elements */}
+                              <motion.div 
+                                className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-400/10 to-cyan-400/10 rounded-full blur-2xl"
+                                animate={{ 
+                                  scale: [1, 1.2, 1],
+                                  opacity: [0.5, 0.8, 0.5]
+                                }}
+                                transition={{ 
+                                  duration: 4, 
+                                  repeat: Infinity,
+                                  delay: index * 0.5
+                                }}
+                              />
+                              
+                              <div className="relative z-10 space-y-4">
+                                <div className="flex items-start justify-between">
+                                  <motion.h4 
+                                    className="text-xl font-bold text-white group-hover:text-cyan-300 transition-colors duration-300"
+                                    whileHover={{ x: 5 }}
+                                  >
+                                    {project.name}
+                                  </motion.h4>
+                                  <motion.div
+                                    initial={{ scale: 0.8, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    transition={{ delay: 0.5 + index * 0.1 }}
+                                    whileHover={{ 
+                                      rotate: [0, 10, -10, 0],
+                                      scale: 1.1,
+                                      transition: { duration: 0.5 }
+                                    }}
+                                  >
+                                    <Badge 
+                                      variant="secondary" 
+                                      className="bg-gradient-to-r from-blue-500/20 to-cyan-500/20 text-cyan-300 border-cyan-500/30 px-3 py-1"
+                                    >
+                                      {project.status}
+                                    </Badge>
+                                  </motion.div>
+                                </div>
+                                
+                                <motion.p 
+                                  className="text-white/70 text-sm leading-relaxed"
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  transition={{ delay: 0.3 + index * 0.1 }}
+                                >
+                                  {project.description}
+                                </motion.p>
+                                
+                                <motion.div 
+                                  className="flex items-center gap-2 pt-2"
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: 0.4 + index * 0.1 }}
+                                >
+                                  <div className="flex -space-x-2">
+                                    {Array.from({ length: 3 }).map((_, i) => (
+                                      <motion.div 
+                                        key={i}
+                                        className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 border-2 border-white/20"
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        transition={{ 
+                                          delay: 0.6 + index * 0.1 + i * 0.05,
+                                          type: "spring",
+                                          stiffness: 200
+                                        }}
+                                        whileHover={{ scale: 1.2, z: 10 }}
+                                      />
+                                    ))}
+                                  </div>
+                                  <motion.span 
+                                    className="text-xs text-white/50 ml-2"
+                                    animate={{ opacity: [0.5, 1, 0.5] }}
+                                    transition={{ duration: 2, repeat: Infinity }}
+                                  >
+                                    +2 colaboradores
+                                  </motion.span>
+                                </motion.div>
+                              </div>
+                              
+                              {/* Hover Effect Overlay */}
+                              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/0 via-blue-600/5 to-cyan-600/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
+                            </div>
+                          </motion.div>
                         ))}
                       </div>
                     </CardContent>
