@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Play, Pause, ChevronDown, ChevronUp, Instagram, Youtube, Music2, Heart } from "lucide-react";
+import { Play, Pause, ChevronDown, ChevronUp, Instagram, Youtube, Music2, Heart, User } from "lucide-react";
 import { Artist } from "@shared/schema";
 import { useTheme } from "./theme-provider";
 import { useLikes } from "@/hooks/useLikes";
@@ -174,6 +175,27 @@ export default function ExpandableArtistCard({ artist, isPlaying, onPlay, onPaus
                         </motion.span>
                       </motion.div>
                     )}
+                  </motion.div>
+                  
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <Link href={`/artist/${artist.id}`}>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="w-8 h-8 p-0 hover:bg-blue-500/10 transition-all duration-300 relative overflow-hidden group"
+                      >
+                        <motion.div
+                          className="absolute inset-0 bg-blue-500/20 rounded-md opacity-0 group-hover:opacity-100"
+                          transition={{ duration: 0.3 }}
+                        />
+                        <motion.div className="relative z-10">
+                          <User className="w-4 h-4 text-blue-500" />
+                        </motion.div>
+                      </Button>
+                    </Link>
                   </motion.div>
                   
                   <motion.div

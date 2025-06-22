@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { useAuth } from "@/hooks/useAuth";
 import Home from "@/pages/home";
 import Projects from "@/pages/projects";
+import ArtistProfile from "@/pages/artist-profile";
 import Admin from "@/pages/admin";
 import Landing from "@/components/landing";
 import NotFound from "@/pages/not-found";
@@ -22,6 +23,7 @@ function Router() {
         <>
           <Route path="/" component={Home} />
           <Route path="/projects" component={Projects} />
+          <Route path="/artist/:id" component={ArtistProfile} />
           <Route path="/admin" component={Admin} />
         </>
       )}
