@@ -201,26 +201,62 @@ export default function ArtistProfile() {
           <div className="absolute inset-0 bg-black/30" />
           {/* Animated particles */}
           <div className="absolute inset-0">
-            {Array.from({ length: 20 }).map((_, i) => (
+            {Array.from({ length: 30 }).map((_, i) => (
               <motion.div
                 key={i}
-                className="absolute w-2 h-2 bg-white/20 rounded-full"
+                className="absolute rounded-full"
+                style={{
+                  width: Math.random() * 4 + 2,
+                  height: Math.random() * 4 + 2,
+                  background: `rgba(255, 255, 255, ${Math.random() * 0.3 + 0.1})`
+                }}
                 initial={{
-                  x: Math.random() * window.innerWidth,
+                  x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
                   y: Math.random() * 300,
                   scale: 0
                 }}
                 animate={{
-                  y: [null, -50],
+                  y: [null, -100],
+                  x: [null, Math.random() * 50 - 25],
                   scale: [0, 1, 0],
-                  opacity: [0, 1, 0]
+                  opacity: [0, 1, 0],
+                  rotate: [0, 360]
                 }}
                 transition={{
-                  duration: 3 + Math.random() * 2,
+                  duration: 4 + Math.random() * 3,
                   repeat: Infinity,
-                  delay: Math.random() * 2
+                  delay: Math.random() * 3,
+                  ease: "easeInOut"
                 }}
               />
+            ))}
+          </div>
+          
+          {/* Floating musical notes */}
+          <div className="absolute inset-0 pointer-events-none">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <motion.div
+                key={`note-${i}`}
+                className="absolute text-white/10 text-2xl"
+                initial={{
+                  x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
+                  y: 350,
+                  opacity: 0
+                }}
+                animate={{
+                  y: -50,
+                  opacity: [0, 1, 0],
+                  rotate: [0, 15, -15, 0]
+                }}
+                transition={{
+                  duration: 6 + Math.random() * 2,
+                  repeat: Infinity,
+                  delay: Math.random() * 4,
+                  ease: "easeOut"
+                }}
+              >
+                {['♪', '♫', '♬', '♩'][Math.floor(Math.random() * 4)]}
+              </motion.div>
             ))}
           </div>
           
@@ -598,71 +634,160 @@ export default function ArtistProfile() {
                 <CardContent>
                   {tracks.length > 0 ? (
                     <div className="space-y-4">
-                      {tracks.map((track) => (
+                      {tracks.map((track, index) => (
                         <motion.div
                           key={track.id}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          className="flex items-center gap-4 p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          transition={{ 
+                            duration: 0.4, 
+                            delay: index * 0.1,
+                            type: "spring",
+                            stiffness: 300,
+                            damping: 30
+                          }}
+                          whileHover={{ 
+                            scale: 1.02, 
+                            y: -2,
+                            boxShadow: "0 10px 25px rgba(0,0,0,0.1)"
+                          }}
+                          className="group relative flex items-center gap-4 p-5 rounded-xl border bg-gradient-to-r from-card to-card/80 hover:from-accent/10 hover:to-accent/5 transition-all duration-300 cursor-pointer overflow-hidden"
                         >
+                          {/* Background Pattern */}
+                          <div className="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity">
+                            <div className="w-full h-full bg-gradient-to-r from-primary/20 to-accent/20" />
+                          </div>
+                          
                           {/* Track Cover */}
-                          <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted flex items-center justify-center">
+                          <motion.div 
+                            className="relative w-16 h-16 rounded-xl overflow-hidden bg-gradient-to-br from-muted to-muted/70 flex items-center justify-center shadow-lg"
+                            whileHover={{ scale: 1.1, rotate: 2 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                          >
                             {track.coverUrl ? (
-                              <img 
+                              <motion.img 
                                 src={track.coverUrl} 
                                 alt={track.title}
                                 className="w-full h-full object-cover"
+                                whileHover={{ scale: 1.2 }}
+                                transition={{ duration: 0.3 }}
                               />
                             ) : (
-                              <Music2 className="w-8 h-8 text-muted-foreground" />
+                              <motion.div
+                                className="relative"
+                                whileHover={{ scale: 1.2 }}
+                              >
+                                <Music2 className="w-8 h-8 text-muted-foreground group-hover:text-primary transition-colors" />
+                                <motion.div
+                                  className="absolute inset-0 bg-primary/20 rounded-full"
+                                  initial={{ scale: 0, opacity: 0 }}
+                                  whileHover={{ scale: 1.5, opacity: 1 }}
+                                  transition={{ duration: 0.3 }}
+                                />
+                              </motion.div>
                             )}
-                          </div>
+                            
+                            {/* Shine Effect */}
+                            <motion.div
+                              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12"
+                              initial={{ x: "-100%" }}
+                              whileHover={{ x: "100%" }}
+                              transition={{ duration: 0.6 }}
+                            />
+                          </motion.div>
                           
                           {/* Track Info */}
-                          <div className="flex-1">
-                            <h4 className="font-semibold">{track.title}</h4>
-                            <p className="text-sm text-muted-foreground">{track.genre}</p>
+                          <div className="flex-1 relative z-10">
+                            <motion.h4 
+                              className="font-semibold text-lg group-hover:text-primary transition-colors"
+                              layoutId={`title-${track.id}`}
+                            >
+                              {track.title}
+                            </motion.h4>
+                            <motion.p 
+                              className="text-sm text-muted-foreground group-hover:text-foreground/80 transition-colors"
+                              initial={{ opacity: 0.7 }}
+                              whileHover={{ opacity: 1 }}
+                            >
+                              {track.genre}
+                            </motion.p>
                             {track.description && (
-                              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                              <motion.p 
+                                className="text-xs text-muted-foreground mt-1 line-clamp-2 group-hover:text-foreground/60 transition-colors"
+                                initial={{ opacity: 0.6 }}
+                                whileHover={{ opacity: 0.8 }}
+                              >
                                 {track.description}
-                              </p>
+                              </motion.p>
                             )}
                           </div>
                           
                           {/* Track Actions */}
-                          <div className="flex items-center gap-2">
+                          <motion.div 
+                            className="flex items-center gap-2 relative z-10"
+                            initial={{ opacity: 0.8 }}
+                            whileHover={{ opacity: 1 }}
+                          >
                             {track.audioUrl && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => {
-                                  // Create a temporary audio element to play the track
-                                  const audio = new Audio(track.audioUrl);
-                                  audio.play().catch(() => {
-                                    console.log("Audio playback failed");
-                                  });
-                                }}
+                              <motion.div
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.95 }}
                               >
-                                <Play className="w-4 h-4" />
-                              </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="bg-primary/10 border-primary/20 hover:bg-primary hover:text-primary-foreground shadow-lg hover:shadow-primary/25 transition-all duration-300"
+                                  onClick={() => {
+                                    // Create a temporary audio element to play the track
+                                    const audio = new Audio(track.audioUrl);
+                                    audio.volume = 0.7;
+                                    audio.play().then(() => {
+                                      console.log("Playing track:", track.title);
+                                    }).catch((error) => {
+                                      console.error("Audio playback failed:", error);
+                                      // Try to open in new tab as fallback
+                                      window.open(track.audioUrl, '_blank');
+                                    });
+                                  }}
+                                >
+                                  <motion.div
+                                    animate={{ rotate: [0, 360] }}
+                                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                                    className="w-4 h-4"
+                                  >
+                                    <Play className="w-4 h-4" />
+                                  </motion.div>
+                                </Button>
+                              </motion.div>
                             )}
                             
                             {track.audioUrl && (
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                asChild
+                              <motion.div
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.95 }}
                               >
-                                <a
-                                  href={track.audioUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="hover:bg-accent/50 transition-all duration-300"
+                                  asChild
                                 >
-                                  <Download className="w-4 h-4" />
-                                </a>
-                              </Button>
+                                  <a
+                                    href={track.audioUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    <motion.div
+                                      whileHover={{ y: -2 }}
+                                      transition={{ type: "spring", stiffness: 400 }}
+                                    >
+                                      <Download className="w-4 h-4" />
+                                    </motion.div>
+                                  </a>
+                                </Button>
+                              </motion.div>
                             )}
-                          </div>
+                          </motion.div>
                         </motion.div>
                       ))}
                     </div>
@@ -707,36 +832,81 @@ export default function ArtistProfile() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.7 }}
             >
-              <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20">
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Star className="w-5 h-5 text-yellow-500" />
-                    Estatísticas
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Curtidas */}
+              <Card className="relative bg-gradient-to-br from-card/90 to-card/30 backdrop-blur-lg border-primary/30 shadow-xl overflow-hidden">
+                {/* Background glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-50" />
+                <div className="absolute -top-10 -right-10 w-20 h-20 bg-primary/10 rounded-full blur-xl" />
+                <div className="absolute -bottom-10 -left-10 w-20 h-20 bg-accent/10 rounded-full blur-xl" />
+                
+                <CardHeader className="pb-4 relative z-10">
                   <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    className="flex items-center gap-4 p-3 rounded-lg bg-red-500/5 hover:bg-red-500/10 transition-colors cursor-pointer group"
+                    className="flex items-center gap-2"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ type: "spring", stiffness: 300 }}
                   >
                     <motion.div
-                      className="p-2 rounded-full bg-red-500/10 group-hover:bg-red-500/20 transition-colors"
-                      whileHover={{ rotate: 360 }}
-                      transition={{ duration: 0.6 }}
+                      animate={{ rotate: [0, 360] }}
+                      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                     >
-                      <Heart className="w-5 h-5 text-red-500" />
+                      <Star className="w-5 h-5 text-yellow-500" />
                     </motion.div>
-                    <div className="flex-1">
-                      <p className="text-sm text-muted-foreground">Curtidas</p>
+                    <CardTitle className="text-lg bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+                      Estatísticas
+                    </CardTitle>
+                  </motion.div>
+                </CardHeader>
+                <CardContent className="space-y-6 relative z-10">
+                  {/* Curtidas */}
+                  <motion.div
+                    whileHover={{ scale: 1.03, x: 5 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="relative flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-red-500/10 to-red-500/5 hover:from-red-500/20 hover:to-red-500/10 border border-red-500/20 hover:border-red-500/30 transition-all duration-300 cursor-pointer group overflow-hidden"
+                  >
+                    {/* Glow effect */}
+                    <div className="absolute inset-0 bg-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    
+                    <motion.div
+                      className="relative p-3 rounded-xl bg-gradient-to-br from-red-500/20 to-red-500/10 group-hover:from-red-500/30 group-hover:to-red-500/20 transition-all duration-300 shadow-lg"
+                      whileHover={{ rotate: [0, -10, 10, 0], scale: 1.1 }}
+                      transition={{ duration: 0.5, type: "spring" }}
+                    >
+                      <Heart className="w-6 h-6 text-red-500" />
+                    </motion.div>
+                    <div className="flex-1 relative z-10">
+                      <p className="text-sm text-muted-foreground group-hover:text-red-400 transition-colors">Curtidas</p>
                       <motion.p 
-                        className="text-2xl font-bold text-red-500"
+                        className="text-3xl font-bold bg-gradient-to-r from-red-500 to-red-400 bg-clip-text text-transparent"
                         initial={{ scale: 1 }}
-                        animate={{ scale: [1, 1.1, 1] }}
-                        transition={{ duration: 2, repeat: Infinity }}
+                        animate={{ scale: [1, 1.05, 1] }}
+                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                       >
                         {totalLikes}
                       </motion.p>
+                    </div>
+                    
+                    {/* Floating hearts */}
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-30 transition-opacity">
+                      {Array.from({ length: 3 }).map((_, i) => (
+                        <motion.div
+                          key={i}
+                          className="absolute text-red-500/50"
+                          initial={{ y: 0, opacity: 0, scale: 0 }}
+                          whileHover={{ 
+                            y: -20, 
+                            opacity: [0, 1, 0], 
+                            scale: [0, 1, 0],
+                            x: Math.random() * 20 - 10
+                          }}
+                          transition={{ 
+                            duration: 1.5, 
+                            delay: i * 0.2,
+                            repeat: Infinity,
+                            repeatDelay: 2
+                          }}
+                        >
+                          ♥
+                        </motion.div>
+                      ))}
                     </div>
                   </motion.div>
 
