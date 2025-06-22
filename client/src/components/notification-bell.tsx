@@ -211,31 +211,56 @@ export default function NotificationBell() {
                                 {notification.title}
                               </h4>
                               <div className="mt-1">
-                                <p className={`text-xs text-muted-foreground ${isExpanded ? '' : 'line-clamp-2'}`}>
-                                  {displayMessage}
-                                </p>
-                                {isLongMessage && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-auto p-0 mt-1 text-xs text-primary hover:bg-transparent"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      toggleInlineExpansion(notification.id);
-                                    }}
+                                <motion.div
+                                  initial={false}
+                                  animate={{
+                                    height: isExpanded ? 'auto' : 'auto',
+                                    opacity: 1
+                                  }}
+                                  transition={{
+                                    duration: 0.3,
+                                    ease: "easeInOut"
+                                  }}
+                                  style={{ overflow: 'hidden' }}
+                                >
+                                  <motion.p 
+                                    className={`text-xs text-muted-foreground ${isExpanded ? '' : 'line-clamp-2'}`}
+                                    layout
+                                    transition={{ duration: 0.3 }}
                                   >
-                                    {isExpanded ? (
-                                      <>
-                                        <ChevronUp className="w-3 h-3 mr-1" />
-                                        Ler menos
-                                      </>
-                                    ) : (
-                                      <>
-                                        <ChevronDown className="w-3 h-3 mr-1" />
-                                        Ler mais
-                                      </>
-                                    )}
-                                  </Button>
+                                    {displayMessage}
+                                  </motion.p>
+                                </motion.div>
+                                {isLongMessage && (
+                                  <motion.div
+                                    initial={{ opacity: 0, y: -5 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.1, duration: 0.2 }}
+                                  >
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-auto p-0 mt-1 text-xs text-primary hover:bg-transparent"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        toggleInlineExpansion(notification.id);
+                                      }}
+                                    >
+                                      <motion.div
+                                        className="flex items-center"
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                      >
+                                        <motion.div
+                                          animate={{ rotate: isExpanded ? 180 : 0 }}
+                                          transition={{ duration: 0.2 }}
+                                        >
+                                          <ChevronDown className="w-3 h-3 mr-1" />
+                                        </motion.div>
+                                        {isExpanded ? 'Ler menos' : 'Ler mais'}
+                                      </motion.div>
+                                    </Button>
+                                  </motion.div>
                                 )}
                               </div>
                               <div className="flex items-center justify-between mt-2">
