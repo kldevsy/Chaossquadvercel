@@ -43,6 +43,12 @@ export default function Chat() {
     enabled: isAuthenticated,
   });
 
+  // Fetch artists to get artist profiles
+  const { data: artists = [] } = useQuery({
+    queryKey: ["/api/artists"],
+    enabled: isAuthenticated,
+  });
+
   // Connect to WebSocket
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -189,6 +195,16 @@ export default function Chat() {
       .join("")
       .toUpperCase()
       .slice(0, 2);
+  };
+
+  // Get user display info (name from artist profile if available)
+  const getUserDisplayInfo = (userId: string, username: string) => {
+    const artist = artists.find(a => a.userId === userId);
+    return {
+      displayName: artist?.name || username,
+      avatar: artist?.avatar || null,
+      isArtist: !!artist
+    };
   };
 
   // Render message with mentions highlighted
@@ -384,28 +400,37 @@ export default function Chat() {
                         <AtSign className="w-3 h-3" />
                         Mencionar usuário
                       </div>
-                      {filteredUsers.map((filteredUser) => (
-                        <div
-                          key={filteredUser.id}
-                          className="flex items-center gap-2 p-2 rounded-lg hover:bg-muted cursor-pointer transition-colors"
-                          onClick={() => handleMentionSelect(filteredUser)}
-                        >
-                          <Avatar className="w-6 h-6">
-                            <AvatarImage src={filteredUser.profileImageUrl || undefined} />
-                            <AvatarFallback className="text-xs">
-                              {getInitials(filteredUser.username)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-1">
-                              <span className="text-sm font-medium">{filteredUser.username}</span>
-                              {filteredUser.isAdmin && (
-                                <Crown className="w-3 h-3 text-yellow-500" />
+                      {filteredUsers.map((filteredUser) => {
+                        const userDisplayInfo = getUserDisplayInfo(filteredUser.id, filteredUser.username);
+                        return (
+                          <div
+                            key={filteredUser.id}
+                            className="flex items-center gap-2 p-2 rounded-lg hover:bg-muted cursor-pointer transition-colors"
+                            onClick={() => handleMentionSelect(filteredUser)}
+                          >
+                            <Avatar className="w-6 h-6">
+                              <AvatarImage src={userDisplayInfo.avatar || filteredUser.profileImageUrl || undefined} />
+                              <AvatarFallback className="text-xs">
+                                {getInitials(userDisplayInfo.displayName)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-1">
+                                <span className="text-sm font-medium">{userDisplayInfo.displayName}</span>
+                                {userDisplayInfo.isArtist && (
+                                  <Music className="w-3 h-3 text-purple-500" />
+                                )}
+                                {filteredUser.isAdmin && (
+                                  <Crown className="w-3 h-3 text-yellow-500" />
+                                )}
+                              </div>
+                              {userDisplayInfo.displayName !== filteredUser.username && (
+                                <div className="text-xs text-muted-foreground">@{filteredUser.username}</div>
                               )}
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                       {filteredUsers.length === 0 && mentionSearch && (
                         <div className="p-2 text-xs text-muted-foreground text-center">
                           Nenhum usuário encontrado

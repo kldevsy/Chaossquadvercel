@@ -111,6 +111,10 @@ Preferred communication style: Simple, everyday language.
 - **June 22, 2025**: Moved chat button from tab filters to header navigation
 - **June 22, 2025**: Implemented @mentions system with user autocomplete and highlight
 - **June 22, 2025**: Added public users endpoint for mention functionality
+- **June 22, 2025**: Fixed chat input blocking issue and improved mentions dropdown
+- **June 22, 2025**: Enhanced chat to show artist names and avatars when users have artist profiles
+- **June 22, 2025**: Added artist badges in chat for users with linked artist accounts
+- **June 22, 2025**: Fixed console unhandled rejection warnings
 
 ## User Preferences
 
