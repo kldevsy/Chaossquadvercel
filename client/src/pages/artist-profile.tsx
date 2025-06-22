@@ -137,457 +137,480 @@ export default function ArtistProfile() {
   }
 
   return (
-    <>
-      <div className="min-h-screen bg-background">
-        {/* Enhanced Hero Banner */}
-        <motion.div
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
-          className="h-80 md:h-96 relative overflow-hidden"
+    <div className="min-h-screen bg-background">
+      {/* Hero Section */}
+      <motion.div
+        initial={{ opacity: 0, scale: 1.05 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1.5, ease: "easeOut" }}
+        className="relative h-[60vh] md:h-[70vh] overflow-hidden"
+      >
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-700"
           style={{
-            background: artist.banner 
-              ? `url(${artist.banner}) center/cover no-repeat` 
+            backgroundImage: artist.banner 
+              ? `url(${artist.banner})` 
               : `linear-gradient(135deg, 
-                  hsl(var(--primary)) 0%, 
-                  hsl(var(--primary)/0.8) 25%, 
-                  hsl(var(--secondary)/0.9) 50%, 
-                  hsl(var(--accent)/0.7) 75%, 
-                  hsl(var(--primary)/0.6) 100%)`
+                  hsl(220 70% 15%) 0%, 
+                  hsl(280 60% 20%) 25%, 
+                  hsl(240 80% 25%) 50%, 
+                  hsl(300 50% 18%) 75%, 
+                  hsl(260 65% 12%) 100%)`
           }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-transparent to-accent/20" />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/40" />
-          <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
-        </motion.div>
+        />
+        
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/60" />
+      </motion.div>
 
-        {/* Profile Content */}
-        <div className="container mx-auto px-6">
-          <div className="relative -mt-32 md:-mt-40">
-            <div className="flex flex-col md:flex-row gap-8 items-start">
-              {/* Artist Avatar */}
+      {/* Profile Section */}
+      <div className="container mx-auto px-6 lg:px-8">
+        <div className="relative -mt-40 md:-mt-48">
+          <div className="flex flex-col lg:flex-row gap-12 items-start">
+            
+            {/* Avatar */}
+            <motion.div
+              initial={{ scale: 0.3, opacity: 0, y: 150 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              transition={{ duration: 1.2, delay: 0.4 }}
+              className="relative group flex-shrink-0"
+            >
+              <div className="absolute -inset-4 bg-gradient-to-r from-purple-600/30 via-pink-600/30 to-blue-600/30 rounded-full blur-3xl group-hover:blur-2xl transition-all duration-700" />
+              
               <motion.div
-                initial={{ scale: 0.5, opacity: 0, y: 100 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.3 }}
-                className="relative group"
+                whileHover={{ scale: 1.05 }}
+                className="relative p-3 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/40 to-accent/40 rounded-full blur-xl scale-110 group-hover:scale-125 transition-transform duration-500" />
-                
-                <motion.div
-                  whileHover={{ scale: 1.05, rotate: 2 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                  className="relative"
-                >
-                  <Avatar className="w-40 h-40 md:w-48 md:h-48 border-4 border-white/20 shadow-2xl ring-4 ring-primary/20 ring-offset-4 ring-offset-transparent">
-                    <AvatarImage 
-                      src={artist.avatar} 
-                      alt={artist.name}
-                      className="object-cover transition-all duration-300 group-hover:scale-110"
-                    />
-                    <AvatarFallback className="text-4xl md:text-5xl bg-gradient-to-br from-primary to-accent text-white">
-                      {artist.name?.split(' ').map(n => n[0]).join('').slice(0, 2) || 'A'}
-                    </AvatarFallback>
-                  </Avatar>
-                </motion.div>
+                <Avatar className="w-48 h-48 md:w-56 md:h-56 border-4 border-white/30 shadow-inner">
+                  <AvatarImage 
+                    src={artist.avatar} 
+                    alt={artist.name}
+                    className="object-cover transition-all duration-500 group-hover:scale-110"
+                  />
+                  <AvatarFallback className="text-5xl md:text-6xl font-bold bg-gradient-to-br from-purple-600 to-pink-600 text-white">
+                    {artist.name?.split(' ').map(n => n[0]).join('').slice(0, 2) || 'A'}
+                  </AvatarFallback>
+                </Avatar>
               </motion.div>
+            </motion.div>
 
-              {/* Artist Info */}
-              <div className="flex-1 pt-4 md:pt-8 space-y-6">
-                <motion.div
-                  initial={{ opacity: 0, x: -30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: 0.4 }}
-                  className="relative p-8 rounded-3xl bg-gradient-to-br from-background/40 to-background/10 backdrop-blur-2xl border border-white/10 shadow-2xl"
-                >
-                  <div className="relative z-10 space-y-6">
-                    <div>
+            {/* Artist Info */}
+            <div className="flex-1 pt-8 md:pt-12 space-y-8">
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
+                className="relative overflow-hidden"
+              >
+                <div className="relative p-10 md:p-12 rounded-3xl bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-2xl border border-white/20 shadow-2xl">
+                  
+                  <div className="relative z-10 space-y-8">
+                    <div className="space-y-4">
                       <motion.h1 
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.6, delay: 0.7 }}
-                        className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent leading-tight mb-4"
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.8 }}
+                        className="text-5xl md:text-7xl lg:text-8xl font-black bg-gradient-to-r from-white via-purple-100 to-pink-100 bg-clip-text text-transparent leading-none tracking-tight"
                       >
                         {artist.name}
                       </motion.h1>
-                      <motion.p 
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.9 }}
-                        className="text-xl text-white/80 leading-relaxed max-w-3xl"
-                      >
-                        {artist.description}
-                      </motion.p>
+                      
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: "100%" }}
+                        transition={{ duration: 1, delay: 1 }}
+                        className="h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 rounded-full shadow-lg"
+                      />
                     </div>
+
+                    <motion.p 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.8, delay: 1.1 }}
+                      className="text-xl md:text-2xl text-white/90 leading-relaxed font-light max-w-4xl"
+                    >
+                      {artist.description}
+                    </motion.p>
 
                     {/* Roles */}
                     {artist.roles && artist.roles.length > 0 && (
-                      <div className="flex flex-wrap gap-3">
-                        {artist.roles.map((role, index) => (
-                          <motion.div
-                            key={index}
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: 0.6 + index * 0.1 }}
-                          >
-                            <Badge variant="secondary" className="px-4 py-2 rounded-full bg-white/20 text-white border-white/30">
-                              {role}
-                            </Badge>
-                          </motion.div>
-                        ))}
-                      </div>
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 1.3 }}
+                        className="space-y-4"
+                      >
+                        <h3 className="text-lg font-semibold text-white/80 tracking-wide uppercase">Especialidades</h3>
+                        <div className="flex flex-wrap gap-3">
+                          {artist.roles.map((role, index) => (
+                            <motion.div
+                              key={index}
+                              initial={{ opacity: 0, scale: 0.5 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              transition={{ delay: 1.4 + index * 0.1 }}
+                              whileHover={{ scale: 1.05, y: -2 }}
+                            >
+                              <div className="px-6 py-3 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 backdrop-blur-sm border border-white/30 text-white font-medium text-sm tracking-wide shadow-lg">
+                                {role}
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </motion.div>
                     )}
                   </div>
-                </motion.div>
+                </div>
+              </motion.div>
 
-                {/* Stats and Action Buttons */}
+              {/* Stats */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.5 }}
+                className="space-y-8"
+              >
+                <div className="grid grid-cols-3 gap-6">
+                  {[
+                    { 
+                      icon: Heart, 
+                      value: totalLikes, 
+                      label: "Curtidas", 
+                      color: "from-red-500 to-pink-500",
+                      bgColor: "from-red-500/10 to-pink-500/10"
+                    },
+                    { 
+                      icon: Music2, 
+                      value: artistProjects.length, 
+                      label: "Projetos", 
+                      color: "from-blue-500 to-cyan-500",
+                      bgColor: "from-blue-500/10 to-cyan-500/10"
+                    },
+                    { 
+                      icon: Users, 
+                      value: artist.roles?.length || 0, 
+                      label: "Funções", 
+                      color: "from-green-500 to-emerald-500",
+                      bgColor: "from-green-500/10 to-emerald-500/10"
+                    }
+                  ].map((stat, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20, scale: 0.8 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ delay: 1.6 + index * 0.1 }}
+                      whileHover={{ scale: 1.05, y: -5 }}
+                      className="group cursor-pointer"
+                    >
+                      <div className={`relative p-6 rounded-2xl bg-gradient-to-br ${stat.bgColor} backdrop-blur-sm border border-white/20 hover:border-white/40 transition-all duration-300 shadow-lg hover:shadow-xl`}>
+                        <div className="flex flex-col items-center text-center space-y-3">
+                          <div className={`p-3 rounded-full bg-gradient-to-r ${stat.color} group-hover:scale-110 transition-transform duration-300`}>
+                            <stat.icon className="w-6 h-6 text-white" />
+                          </div>
+                          <div>
+                            <div className="text-2xl font-bold text-white">
+                              {stat.value}
+                            </div>
+                            <div className="text-sm text-white/70 font-medium tracking-wide">
+                              {stat.label}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Action Buttons */}
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.8 }}
-                  className="space-y-4"
+                  transition={{ delay: 1.9 }}
+                  className="flex flex-wrap gap-4 pt-4"
                 >
-                  {/* Stats */}
-                  <div className="flex gap-6 text-sm">
-                    <motion.div 
-                      className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                  {artist.musicUrl && (
+                    <motion.div
                       whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
-                      <Heart className="w-4 h-4 text-red-500" />
-                      <span className="font-semibold">{totalLikes}</span>
-                      <span>curtidas</span>
-                    </motion.div>
-                    <motion.div 
-                      className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                      whileHover={{ scale: 1.05 }}
-                    >
-                      <Music2 className="w-4 h-4 text-blue-500" />
-                      <span className="font-semibold">{artistProjects.length}</span>
-                      <span>projetos</span>
-                    </motion.div>
-                    <motion.div 
-                      className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                      whileHover={{ scale: 1.05 }}
-                    >
-                      <Users className="w-4 h-4 text-green-500" />
-                      <span className="font-semibold">{artist.roles?.length || 0}</span>
-                      <span>funções</span>
-                    </motion.div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1 }}
-                    className="flex flex-wrap gap-3 pt-2"
-                  >
-                    {artist.musicUrl && (
                       <Button
                         onClick={handlePlay}
                         size="lg"
-                        className="bg-primary hover:bg-primary/90 rounded-full px-8"
+                        className="group relative overflow-hidden bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-2xl px-8 py-4 font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300"
                       >
-                        {isPlaying ? (
-                          <Pause className="w-5 h-5 mr-2" />
-                        ) : (
-                          <Play className="w-5 h-5 mr-2" />
-                        )}
-                        {isPlaying ? "Pausar" : "Tocar"}
+                        <div className="relative flex items-center gap-3">
+                          {isPlaying ? (
+                            <Pause className="w-6 h-6" />
+                          ) : (
+                            <Play className="w-6 h-6" />
+                          )}
+                          <span>{isPlaying ? "Pausar" : "Reproduzir"}</span>
+                        </div>
                       </Button>
-                    )}
+                    </motion.div>
+                  )}
 
-                    {user && (
+                  {user && (
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
                       <Button
                         onClick={handleLike}
                         disabled={isLiking}
                         variant="outline"
                         size="lg"
-                        className={`rounded-full px-6 ${liked ? "bg-red-500/10 border-red-500/20 text-red-500 hover:bg-red-500/20" : ""}`}
+                        className={`group relative overflow-hidden rounded-2xl px-8 py-4 font-semibold text-lg border-2 transition-all duration-300 ${
+                          liked 
+                            ? "bg-gradient-to-r from-red-500/20 to-pink-500/20 border-red-500/50 text-red-400" 
+                            : "bg-white/5 border-white/30 text-white hover:bg-white/10"
+                        }`}
                       >
-                        <Heart className={`w-5 h-5 mr-2 ${liked ? "fill-current" : ""}`} />
-                        {liked ? "Curtido" : "Curtir"}
+                        <div className="relative flex items-center gap-3">
+                          <Heart className={`w-5 h-5 ${liked ? "fill-current" : ""}`} />
+                          <span>{liked ? "Curtido" : "Curtir"}</span>
+                        </div>
                       </Button>
-                    )}
+                    </motion.div>
+                  )}
 
-                    {isOwner && (
-                      <>
-                        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-                          <DialogTrigger asChild>
-                            <Button variant="outline" size="lg" className="rounded-full px-6 hover:bg-accent">
-                              <Edit className="w-5 h-5 mr-2" />
-                              Editar Perfil
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-md">
-                            <DialogHeader>
-                              <DialogTitle>Editar Perfil</DialogTitle>
-                            </DialogHeader>
-                            <div className="space-y-4">
-                              <div>
-                                <Label htmlFor="edit-name">Nome</Label>
-                                <Input
-                                  id="edit-name"
-                                  value={editFormData.name}
-                                  onChange={(e) => setEditFormData(prev => ({ ...prev, name: e.target.value }))}
-                                />
-                              </div>
-                              <div>
-                                <Label htmlFor="edit-description">Descrição</Label>
-                                <Textarea
-                                  id="edit-description"
-                                  value={editFormData.description}
-                                  onChange={(e) => setEditFormData(prev => ({ ...prev, description: e.target.value }))}
-                                />
-                              </div>
-                              <div>
-                                <Label htmlFor="edit-avatar">Avatar URL</Label>
-                                <Input
-                                  id="edit-avatar"
-                                  value={editFormData.avatar}
-                                  onChange={(e) => setEditFormData(prev => ({ ...prev, avatar: e.target.value }))}
-                                />
-                              </div>
-                              <div>
-                                <Label htmlFor="edit-banner">Banner URL</Label>
-                                <Input
-                                  id="edit-banner"
-                                  value={editFormData.banner}
-                                  onChange={(e) => setEditFormData(prev => ({ ...prev, banner: e.target.value }))}
-                                />
-                              </div>
-                              <Button 
-                                className="w-full"
-                                onClick={async () => {
-                                  try {
-                                    const response = await fetch(`/api/artists/${artist.id}`, {
-                                      method: 'PUT',
-                                      headers: { 'Content-Type': 'application/json' },
-                                      credentials: 'include',
-                                      body: JSON.stringify(editFormData),
-                                    });
-                                    
-                                    if (response.ok) {
-                                      window.location.reload();
-                                    } else {
-                                      const errorData = await response.json();
-                                      console.error('Failed to update profile:', errorData.message);
-                                      alert('Erro ao atualizar perfil: ' + errorData.message);
-                                    }
-                                    setIsEditDialogOpen(false);
-                                  } catch (error) {
-                                    console.error('Error updating profile:', error);
-                                    alert('Erro de conexão ao atualizar perfil');
-                                  }
-                                }}
-                              >
-                                Salvar Alterações
-                              </Button>
+                  {isOwner && (
+                    <>
+                      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" size="lg" className="rounded-full px-6">
+                            <Edit className="w-5 h-5 mr-2" />
+                            Editar Perfil
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-md">
+                          <DialogHeader>
+                            <DialogTitle>Editar Perfil</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <div>
+                              <Label htmlFor="edit-name">Nome</Label>
+                              <Input
+                                id="edit-name"
+                                value={editFormData.name}
+                                onChange={(e) => setEditFormData(prev => ({ ...prev, name: e.target.value }))}
+                              />
                             </div>
-                          </DialogContent>
-                        </Dialog>
-
-                        <Dialog open={isTrackDialogOpen} onOpenChange={setIsTrackDialogOpen}>
-                          <DialogTrigger asChild>
-                            <Button size="lg" className="bg-secondary hover:bg-secondary/90 rounded-full px-6">
-                              <Upload className="w-5 h-5 mr-2" />
-                              Novo Track
+                            <div>
+                              <Label htmlFor="edit-description">Descrição</Label>
+                              <Textarea
+                                id="edit-description"
+                                value={editFormData.description}
+                                onChange={(e) => setEditFormData(prev => ({ ...prev, description: e.target.value }))}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="edit-avatar">Avatar URL</Label>
+                              <Input
+                                id="edit-avatar"
+                                value={editFormData.avatar}
+                                onChange={(e) => setEditFormData(prev => ({ ...prev, avatar: e.target.value }))}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="edit-banner">Banner URL</Label>
+                              <Input
+                                id="edit-banner"
+                                value={editFormData.banner}
+                                onChange={(e) => setEditFormData(prev => ({ ...prev, banner: e.target.value }))}
+                              />
+                            </div>
+                            <Button 
+                              className="w-full"
+                              onClick={async () => {
+                                try {
+                                  const response = await fetch(`/api/artists/${artist.id}`, {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    credentials: 'include',
+                                    body: JSON.stringify(editFormData),
+                                  });
+                                  
+                                  if (response.ok) {
+                                    window.location.reload();
+                                  }
+                                  setIsEditDialogOpen(false);
+                                } catch (error) {
+                                  console.error('Error updating profile:', error);
+                                }
+                              }}
+                            >
+                              Salvar Alterações
                             </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-md">
-                            <DialogHeader>
-                              <DialogTitle>Adicionar Nova Produção</DialogTitle>
-                            </DialogHeader>
-                            <div className="space-y-4">
-                              <div>
-                                <Label htmlFor="track-title">Título</Label>
-                                <Input
-                                  id="track-title"
-                                  value={trackFormData.title}
-                                  onChange={(e) => setTrackFormData(prev => ({ ...prev, title: e.target.value }))}
-                                />
-                              </div>
-                              <div>
-                                <Label htmlFor="track-audioUrl">URL do Áudio</Label>
-                                <Input
-                                  id="track-audioUrl"
-                                  value={trackFormData.audioUrl}
-                                  onChange={(e) => setTrackFormData(prev => ({ ...prev, audioUrl: e.target.value }))}
-                                />
-                              </div>
-                              <div>
-                                <Label htmlFor="track-coverUrl">URL da Capa</Label>
-                                <Input
-                                  id="track-coverUrl"
-                                  value={trackFormData.coverUrl}
-                                  onChange={(e) => setTrackFormData(prev => ({ ...prev, coverUrl: e.target.value }))}
-                                />
-                              </div>
-                              <div>
-                                <Label htmlFor="track-genre">Gênero</Label>
-                                <Input
-                                  id="track-genre"
-                                  value={trackFormData.genre}
-                                  onChange={(e) => setTrackFormData(prev => ({ ...prev, genre: e.target.value }))}
-                                />
-                              </div>
-                              <div>
-                                <Label htmlFor="track-description">Descrição</Label>
-                                <Textarea
-                                  id="track-description"
-                                  value={trackFormData.description}
-                                  onChange={(e) => setTrackFormData(prev => ({ ...prev, description: e.target.value }))}
-                                />
-                              </div>
-                              <Button 
-                                className="w-full"
-                                onClick={async () => {
-                                  try {
-                                    const trackData = {
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+
+                      <Dialog open={isTrackDialogOpen} onOpenChange={setIsTrackDialogOpen}>
+                        <DialogTrigger asChild>
+                          <Button size="lg" className="bg-secondary hover:bg-secondary/90 rounded-full px-6">
+                            <Upload className="w-5 h-5 mr-2" />
+                            Novo Track
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-md">
+                          <DialogHeader>
+                            <DialogTitle>Adicionar Nova Produção</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <div>
+                              <Label htmlFor="track-title">Título</Label>
+                              <Input
+                                id="track-title"
+                                value={trackFormData.title}
+                                onChange={(e) => setTrackFormData(prev => ({ ...prev, title: e.target.value }))}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="track-audioUrl">URL do Áudio</Label>
+                              <Input
+                                id="track-audioUrl"
+                                value={trackFormData.audioUrl}
+                                onChange={(e) => setTrackFormData(prev => ({ ...prev, audioUrl: e.target.value }))}
+                              />
+                            </div>
+                            <Button 
+                              className="w-full"
+                              onClick={async () => {
+                                try {
+                                  const response = await fetch('/api/tracks', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
                                       ...trackFormData,
                                       artistId: artistId
-                                    };
-                                    
-                                    const response = await fetch('/api/tracks', {
-                                      method: 'POST',
-                                      headers: { 'Content-Type': 'application/json' },
-                                      body: JSON.stringify(trackData),
-                                    });
-                                    
-                                    if (response.ok) {
-                                      queryClient.invalidateQueries({ queryKey: [`/api/artists/${artistId}/tracks`] });
-                                      setIsTrackDialogOpen(false);
-                                      setTrackFormData({
-                                        title: '',
-                                        audioUrl: '',
-                                        coverUrl: '',
-                                        genre: '',
-                                        description: '',
-                                        duration: 0,
-                                      });
-                                    } else {
-                                      const errorData = await response.text();
-                                      console.error('Erro ao criar track:', errorData);
-                                    }
-                                  } catch (error) {
-                                    console.error('Erro ao criar track:', error);
+                                    }),
+                                  });
+                                  
+                                  if (response.ok) {
+                                    queryClient.invalidateQueries({ queryKey: [`/api/artists/${artistId}/tracks`] });
+                                    setIsTrackDialogOpen(false);
                                   }
-                                }}
-                              >
-                                Adicionar Produção
-                              </Button>
-                            </div>
-                          </DialogContent>
-                        </Dialog>
-                      </>
-                    )}
-                  </motion.div>
+                                } catch (error) {
+                                  console.error('Error creating track:', error);
+                                }
+                              }}
+                            >
+                              Adicionar Produção
+                            </Button>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    </>
+                  )}
                 </motion.div>
-              </div>
+              </motion.div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Content Sections */}
-      <div className="container mx-auto px-4 pb-20 pt-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
+      <div className="bg-gradient-to-b from-transparent via-background/50 to-background">
+        <div className="container mx-auto px-6 lg:px-8 pb-32 pt-16">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             
-            {/* Tracks Section */}
-            {artistTracks.length > 0 && (
-              <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-              >
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Headphones className="w-5 h-5" />
-                      Produções ({artistTracks.length})
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {artistTracks.map((track) => (
-                        <div key={track.id} className="flex items-center gap-4 p-4 rounded-lg border hover:bg-accent/50 transition-colors">
-                          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                            <Music2 className="w-6 h-6 text-white" />
+            {/* Main Content */}
+            <div className="lg:col-span-3 space-y-12">
+              
+              {/* Tracks Section */}
+              {artistTracks.length > 0 && (
+                <motion.section
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                >
+                  <Card className="bg-white/5 border-white/20 backdrop-blur-xl">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-white">
+                        <Headphones className="w-6 h-6" />
+                        Produções ({artistTracks.length})
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {artistTracks.map((track) => (
+                          <div key={track.id} className="flex items-center gap-4 p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
+                            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                              <Music2 className="w-6 h-6 text-white" />
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-white">{track.title}</h4>
+                              <p className="text-sm text-white/70">{track.genre}</p>
+                            </div>
+                            <Button size="sm" variant="ghost">
+                              <Play className="w-4 h-4" />
+                            </Button>
                           </div>
-                          <div className="flex-1">
-                            <h4 className="font-semibold">{track.title}</h4>
-                            <p className="text-sm text-muted-foreground">{track.genre}</p>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.section>
+              )}
+
+              {/* Projects Section */}
+              {artistProjects.length > 0 && (
+                <motion.section
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.5 }}
+                >
+                  <Card className="bg-white/5 border-white/20 backdrop-blur-xl">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-white">
+                        <Music2 className="w-6 h-6" />
+                        Projetos ({artistProjects.length})
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {artistProjects.map((project) => (
+                          <div key={project.id} className="p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
+                            <h4 className="font-semibold mb-2 text-white">{project.name}</h4>
+                            <p className="text-sm text-white/70 mb-3">{project.description}</p>
+                            <Badge variant="secondary">{project.status}</Badge>
                           </div>
-                          <Button size="sm" variant="ghost">
-                            <Play className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.section>
-            )}
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.section>
+              )}
+            </div>
 
-            {/* Projects Section */}
-            {artistProjects.length > 0 && (
-              <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.7 }}
-              >
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Music2 className="w-5 h-5" />
-                      Projetos ({artistProjects.length})
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {artistProjects.map((project) => (
-                        <div key={project.id} className="p-4 rounded-lg border hover:bg-accent/50 transition-colors">
-                          <h4 className="font-semibold mb-2">{project.name}</h4>
-                          <p className="text-sm text-muted-foreground mb-3">{project.description}</p>
-                          <Badge variant="secondary">{project.status}</Badge>
-                        </div>
-                      ))}
+            {/* Sidebar */}
+            <div className="space-y-6">
+              <Card className="bg-white/5 border-white/20 backdrop-blur-xl">
+                <CardHeader>
+                  <CardTitle className="text-white">Informações</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <Users className="w-5 h-5 text-white/70" />
+                    <div>
+                      <p className="font-medium text-white">Funções</p>
+                      <p className="text-sm text-white/70">
+                        {artist.roles?.join(', ') || 'Não especificado'}
+                      </p>
                     </div>
-                  </CardContent>
-                </Card>
-              </motion.section>
-            )}
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Informações</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <Users className="w-5 h-5 text-muted-foreground" />
-                  <div>
-                    <p className="font-medium">Funções</p>
-                    <p className="text-sm text-muted-foreground">
-                      {artist.roles?.join(', ') || 'Não especificado'}
-                    </p>
                   </div>
-                </div>
-                
-                <div className="flex items-center gap-3">
-                  <Heart className="w-5 h-5 text-muted-foreground" />
-                  <div>
-                    <p className="font-medium">Curtidas</p>
-                    <p className="text-sm text-muted-foreground">{totalLikes}</p>
+                  
+                  <div className="flex items-center gap-3">
+                    <Heart className="w-5 h-5 text-white/70" />
+                    <div>
+                      <p className="font-medium text-white">Curtidas</p>
+                      <p className="text-sm text-white/70">{totalLikes}</p>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
@@ -601,7 +624,7 @@ export default function ArtistProfile() {
         currentTime={musicPlayer.currentTime}
         duration={musicPlayer.duration}
         volume={musicPlayer.volume}
-        onPlayPause={musicPlayer.togglePlay}
+        onPlayPause={musicPlayer.togglePlayPause}
         onNext={musicPlayer.next}
         onPrevious={musicPlayer.previous}
         onSeek={musicPlayer.seek}
@@ -609,6 +632,6 @@ export default function ArtistProfile() {
         onClose={musicPlayer.closePlayer}
         onToggleMinimize={musicPlayer.toggleMinimize}
       />
-    </>
+    </div>
   );
 }
