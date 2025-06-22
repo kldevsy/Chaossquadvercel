@@ -39,6 +39,7 @@ export const artists = pgTable("artists", {
   musicalStyles: text("musical_styles").array().notNull(),
   artistTypes: text("artist_types").array().notNull(),
   likesCount: integer("likes_count").default(0),
+  userId: text("user_id").references(() => users.id),
 });
 
 // Likes table for user likes on artists
@@ -74,12 +75,20 @@ export const notifications = pgTable("notifications", {
 });
 
 // Relations
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ many, one }) => ({
   likes: many(likes),
+  artistProfile: one(artists, {
+    fields: [users.id],
+    references: [artists.userId],
+  }),
 }));
 
-export const artistsRelations = relations(artists, ({ many }) => ({
+export const artistsRelations = relations(artists, ({ many, one }) => ({
   likes: many(likes),
+  user: one(users, {
+    fields: [artists.userId],
+    references: [users.id],
+  }),
 }));
 
 export const likesRelations = relations(likes, ({ one }) => ({

@@ -84,7 +84,8 @@ export default function Admin() {
     }),
     musicUrl: "",
     musicalStyles: "",
-    artistTypes: ""
+    artistTypes: "",
+    userId: ""
   });
 
   // Project form state
@@ -364,7 +365,8 @@ export default function Admin() {
       }),
       musicUrl: "",
       musicalStyles: "",
-      artistTypes: ""
+      artistTypes: "",
+      userId: ""
     });
   };
 
@@ -401,7 +403,8 @@ export default function Admin() {
       socialLinks: artist.socialLinks,
       musicUrl: artist.musicUrl || "",
       musicalStyles: artist.musicalStyles.join(", "),
-      artistTypes: artist.artistTypes.join(", ")
+      artistTypes: artist.artistTypes.join(", "),
+      userId: artist.userId || ""
     });
     setIsArtistDialogOpen(true);
   };
@@ -675,6 +678,38 @@ export default function Admin() {
                           required
                         />
                       </div>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="userId">Associar a Usuário (opcional)</Label>
+                      <Select
+                        value={artistForm.userId}
+                        onValueChange={(value) => setArtistForm({ ...artistForm, userId: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecionar usuário..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">Nenhum usuário</SelectItem>
+                          {(users || []).map((user) => (
+                            <SelectItem key={user.id} value={user.id}>
+                              <div className="flex items-center gap-2">
+                                <Avatar className="w-6 h-6">
+                                  <AvatarImage src={user.profileImageUrl || ""} />
+                                  <AvatarFallback className="text-xs">
+                                    {user.username.slice(0, 2).toUpperCase()}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <span>{user.username}</span>
+                                {user.isAdmin && <Crown className="w-4 h-4 text-yellow-500" />}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Associe este perfil de artista a uma conta de usuário específica
+                      </p>
                     </div>
                     <div className="flex gap-4 justify-end">
                       <Button

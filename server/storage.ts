@@ -8,6 +8,7 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   upsertUser(user: UpsertUser): Promise<User>;
+  getUserArtistProfile(userId: string): Promise<Artist | undefined>;
   
   // Artist operations
   getAllArtists(): Promise<Artist[]>;
