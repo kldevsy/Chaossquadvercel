@@ -152,13 +152,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const user = (req as any).user;
+      const userId = user?.claims?.sub || user?.id;
+      
       console.log("PUT Artist - Auth check:", {
         isAuthenticated: req.isAuthenticated(),
         user: user,
-        userId: user?.id
+        userId: userId
       });
       
-      if (!user) {
+      if (!user || !userId) {
         return res.status(401).json({ message: "Usuário não encontrado na sessão" });
       }
       
@@ -170,11 +172,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const existingArtist = await storage.getArtist(id);
       console.log("Ownership check:", { 
         existingArtist: existingArtist?.userId, 
-        user: user.id, 
-        match: existingArtist?.userId === user.id 
+        user: userId, 
+        match: existingArtist?.userId === userId 
       });
       
-      if (!existingArtist || existingArtist.userId !== user.id) {
+      if (!existingArtist || existingArtist.userId !== userId) {
         return res.status(403).json({ message: "Não autorizado para editar este perfil" });
       }
 
@@ -540,18 +542,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const user = (req as any).user;
+      const userId = user?.claims?.sub || user?.id;
+      
       console.log("POST Tracks - Auth check:", {
         isAuthenticated: req.isAuthenticated(),
         user: user,
-        userId: user?.id
+        userId: userId
       });
       
-      if (!user) {
+      if (!user || !userId) {
         return res.status(401).json({ message: "Usuário não encontrado na sessão" });
       }
 
       // Verificar se o usuário tem um perfil de artista
-      const artistProfile = await storage.getUserArtistProfile(user.id);
+      const artistProfile = await storage.getUserArtistProfile(userId);
       console.log("Artist profile found:", artistProfile);
       
       if (!artistProfile) {
