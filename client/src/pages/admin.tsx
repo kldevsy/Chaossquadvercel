@@ -1068,6 +1068,7 @@ export default function Admin() {
                           <SelectItem value="success">Sucesso</SelectItem>
                           <SelectItem value="warning">Aviso</SelectItem>
                           <SelectItem value="error">Erro</SelectItem>
+                          <SelectItem value="system">Sistema</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -1128,12 +1129,14 @@ export default function Admin() {
                                   variant={
                                     notification.type === "success" ? "default" :
                                     notification.type === "warning" ? "secondary" :
-                                    notification.type === "error" ? "destructive" : "outline"
+                                    notification.type === "error" ? "destructive" :
+                                    notification.type === "system" ? "outline" : "outline"
                                   }
                                 >
                                   {notification.type === "info" ? "Informação" :
                                    notification.type === "success" ? "Sucesso" :
-                                   notification.type === "warning" ? "Aviso" : "Erro"}
+                                   notification.type === "warning" ? "Aviso" :
+                                   notification.type === "system" ? "Sistema" : "Erro"}
                                 </Badge>
                                 <span className="text-sm text-muted-foreground">
                                   {new Date(notification.createdAt).toLocaleString('pt-BR')}
