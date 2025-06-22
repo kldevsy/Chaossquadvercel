@@ -529,9 +529,11 @@ export default function Chat() {
                     placeholder="Digite sua mensagem... (use @ para mencionar usuários)"
                     className="pr-24 pl-12 py-4 text-base bg-background/80 border-2 border-border/30 focus:border-purple-500/50 rounded-2xl shadow-lg backdrop-blur-sm transition-all duration-300 text-foreground chat-input"
                     style={{ 
-                      color: 'hsl(var(--foreground))',
-                      WebkitTextFillColor: 'hsl(var(--foreground))',
-                      caretColor: 'hsl(var(--foreground))'
+                      color: '#000000',
+                      WebkitTextFillColor: '#000000',
+                      MozTextFillColor: '#000000',
+                      caretColor: '#000000',
+                      backgroundColor: 'rgba(255, 255, 255, 0.9)'
                     }}
                     maxLength={500}
                     disabled={!isConnected || sendMessageMutation.isPending}

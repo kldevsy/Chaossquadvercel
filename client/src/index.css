@@ -10,24 +10,45 @@
   background-size: 50px 50px;
 }
 
-/* Garante visibilidade do texto em inputs */
-input[type="text"], textarea, input {
+/* Força visibilidade máxima do texto em inputs */
+input, textarea, [contenteditable] {
   color: hsl(var(--foreground)) !important;
   -webkit-text-fill-color: hsl(var(--foreground)) !important;
+  -moz-text-fill-color: hsl(var(--foreground)) !important;
   caret-color: hsl(var(--foreground)) !important;
 }
 
-input[type="text"]:focus, textarea:focus, input:focus {
+input:focus, textarea:focus, [contenteditable]:focus,
+input:active, textarea:active, [contenteditable]:active,
+input::placeholder, textarea::placeholder {
   color: hsl(var(--foreground)) !important;
   -webkit-text-fill-color: hsl(var(--foreground)) !important;
+  -moz-text-fill-color: hsl(var(--foreground)) !important;
   caret-color: hsl(var(--foreground)) !important;
 }
 
-/* Força cor do texto em todos os inputs do chat */
-.chat-input, .chat-input:focus, .chat-input:active {
-  color: hsl(var(--foreground)) !important;
-  -webkit-text-fill-color: hsl(var(--foreground)) !important;
-  caret-color: hsl(var(--foreground)) !important;
+/* Força especificamente para input do chat */
+.chat-input, 
+.chat-input:focus, 
+.chat-input:active,
+.chat-input:hover,
+.chat-input[data-state="focused"] {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  -moz-text-fill-color: #000000 !important;
+  caret-color: #000000 !important;
+}
+
+/* Para modo escuro */
+.dark .chat-input, 
+.dark .chat-input:focus, 
+.dark .chat-input:active,
+.dark .chat-input:hover,
+.dark .chat-input[data-state="focused"] {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  -moz-text-fill-color: #ffffff !important;
+  caret-color: #ffffff !important;
 }
 
 :root {
