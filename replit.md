@@ -103,6 +103,8 @@ Preferred communication style: Simple, everyday language.
 - **June 22, 2025**: Added smooth animations to notification expansion with Framer Motion
 - **June 22, 2025**: Created detailed artist profile page with stats, projects, and social links
 - **June 22, 2025**: Added profile button to artist cards for easy navigation
+- **June 22, 2025**: Enhanced artist profile with Twitter/Discord-style banner design
+- **June 22, 2025**: Redesigned statistics cards with animated icons and improved visual hierarchy
 
 ## User Preferences
 
