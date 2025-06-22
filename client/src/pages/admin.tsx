@@ -123,6 +123,7 @@ export default function Admin() {
         roles: data.roles.split(",").map((r: string) => r.trim()),
         musicalStyles: data.musicalStyles.split(",").map((s: string) => s.trim()),
         artistTypes: data.artistTypes.split(",").map((t: string) => t.trim()),
+        userId: data.userId === "none" ? null : data.userId,
         isActive: true
       };
       return await apiRequest("POST", "/api/admin/artists", formattedData);
@@ -160,6 +161,7 @@ export default function Admin() {
         roles: data.roles.split(",").map((r: string) => r.trim()),
         musicalStyles: data.musicalStyles.split(",").map((s: string) => s.trim()),
         artistTypes: data.artistTypes.split(",").map((t: string) => t.trim()),
+        userId: data.userId === "none" ? null : data.userId,
       };
       return await apiRequest("PUT", `/api/admin/artists/${id}`, formattedData);
     },
@@ -366,7 +368,7 @@ export default function Admin() {
       musicUrl: "",
       musicalStyles: "",
       artistTypes: "",
-      userId: ""
+      userId: "none"
     });
   };
 
@@ -404,7 +406,7 @@ export default function Admin() {
       musicUrl: artist.musicUrl || "",
       musicalStyles: artist.musicalStyles.join(", "),
       artistTypes: artist.artistTypes.join(", "),
-      userId: artist.userId || ""
+      userId: artist.userId || "none"
     });
     setIsArtistDialogOpen(true);
   };
@@ -690,7 +692,7 @@ export default function Admin() {
                           <SelectValue placeholder="Selecionar usuário..." />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">Nenhum usuário</SelectItem>
+                          <SelectItem value="none">Nenhum usuário</SelectItem>
                           {(users || []).map((user) => (
                             <SelectItem key={user.id} value={user.id}>
                               <div className="flex items-center gap-2">
