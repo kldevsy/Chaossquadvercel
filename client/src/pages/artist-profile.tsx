@@ -36,7 +36,7 @@ export default function ArtistProfile() {
   
   const { data: user } = useAuth();
   const musicPlayer = useMusicPlayer();
-  const { likeArtist, unlikeArtist, isLiked, likesCount } = useLikes();
+  const { isArtistLiked, toggleLike, isLiking } = useLikes();
   
   const { data: artist, isLoading } = useQuery<Artist>({
     queryKey: ["/api/artists", artistId],
@@ -56,11 +56,7 @@ export default function ArtistProfile() {
     if (!user || !artist) return;
     
     try {
-      if (isLiked(artist.id)) {
-        await unlikeArtist(artist.id);
-      } else {
-        await likeArtist(artist.id);
-      }
+      await toggleLike(artist.id);
     } catch (error) {
       console.error("Error toggling like:", error);
     }
@@ -116,8 +112,8 @@ export default function ArtistProfile() {
   }
 
   const isPlaying = musicPlayer.currentArtist?.id === artist.id && musicPlayer.isPlaying;
-  const liked = isLiked(artist.id);
-  const totalLikes = likesCount(artist.id);
+  const liked = user && isArtistLiked(artist.id);
+  const totalLikes = artist.likesCount || 0;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -220,6 +216,7 @@ export default function ArtistProfile() {
                 {user && (
                   <Button
                     onClick={handleLike}
+                    disabled={isLiking}
                     variant="outline"
                     size="lg"
                     className={liked ? "bg-red-500/10 border-red-500/20 text-red-500 hover:bg-red-500/20" : ""}

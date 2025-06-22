@@ -101,6 +101,8 @@ Preferred communication style: Simple, everyday language.
 - **June 22, 2025**: Enhanced notification system with expandable messages and "read more/less" functionality
 - **June 22, 2025**: Added "Sistema" notification type with purple icon in admin panel
 - **June 22, 2025**: Added smooth animations to notification expansion with Framer Motion
+- **June 22, 2025**: Created detailed artist profile page with stats, projects, and social links
+- **June 22, 2025**: Added profile button to artist cards for easy navigation
 
 ## User Preferences
 
