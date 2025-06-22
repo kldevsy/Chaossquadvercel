@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { useAuth } from "@/hooks/useAuth";
 import Home from "@/pages/home";
 import Projects from "@/pages/projects";
+import Chat from "@/pages/chat";
 import ArtistProfile from "@/pages/artist-profile";
 import Profile from "@/pages/profile";
 import Admin from "@/pages/admin";
@@ -24,6 +25,7 @@ function Router() {
         <>
           <Route path="/" component={Home} />
           <Route path="/projects" component={Projects} />
+          <Route path="/chat" component={Chat} />
           <Route path="/artist-profile/:id" component={ArtistProfile} />
           <Route path="/profile" component={Profile} />
           <Route path="/admin" component={Admin} />

@@ -1,11 +1,12 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Music, Mic, PenTool, Drum, Sliders, Film } from "lucide-react";
+import { Music, Mic, PenTool, Drum, Sliders, Film, MessageCircle } from "lucide-react";
 
 interface TabNavigationProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
+  onChatClick?: () => void;
 }
 
 const tabs = [
@@ -17,7 +18,7 @@ const tabs = [
   { id: "editor", label: "Editores", fullLabel: "Editores", icon: Film, color: "bg-gradient-to-r from-red-500 to-pink-600" },
 ];
 
-export default function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
+export default function TabNavigation({ activeTab, onTabChange, onChatClick }: TabNavigationProps) {
   return (
     <section className="py-12 border-b border-border/50 bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4">
@@ -32,6 +33,61 @@ export default function TabNavigation({ activeTab, onTabChange }: TabNavigationP
         </motion.div>
 
         <div className="flex flex-wrap justify-center gap-4">
+          {/* Chat Button */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: 30 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ 
+              duration: 0.5, 
+              delay: 0.1,
+              type: "spring",
+              stiffness: 100
+            }}
+            className="relative"
+          >
+            <Button
+              variant="outline"
+              onClick={onChatClick}
+              className="filter-tab px-6 py-4 text-sm font-medium rounded-2xl border-2 transition-all duration-500 group relative overflow-hidden bg-gradient-to-r from-purple-500 to-pink-500 text-white border-purple-500 shadow-2xl shadow-purple-500/25 scale-105 hover:from-purple-600 hover:to-pink-600"
+            >
+              {/* Conteúdo do botão */}
+              <div className="relative flex items-center space-x-3">
+                <div className="p-2 rounded-xl transition-all duration-300 bg-white/20">
+                  <MessageCircle className="h-5 w-5" />
+                </div>
+                <div className="text-left">
+                  <div className="font-semibold">Chat</div>
+                  <div className="text-xs opacity-80 hidden sm:block">Comunidade</div>
+                </div>
+              </div>
+
+              {/* Indicador ativo */}
+              <motion.div
+                className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-white rounded-full"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.3 }}
+              />
+
+              {/* Efeito de brilho no hover */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+              </div>
+            </Button>
+
+            {/* Badge especial para chat */}
+            <motion.div
+              className="absolute -top-2 -right-2"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Badge className="bg-green-500 text-white px-2 py-1 text-xs rounded-full shadow-lg animate-pulse">
+                💬
+              </Badge>
+            </motion.div>
+          </motion.div>
+
           {tabs.map((tab, index) => {
             const IconComponent = tab.icon;
             const isActive = activeTab === tab.id;

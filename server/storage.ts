@@ -1,4 +1,4 @@
-import { users, artists, projects, likes, notifications, tracks, type User, type UpsertUser, type InsertUser, type Artist, type InsertArtist, type Project, type InsertProject, type Like, type InsertLike, type Notification, type InsertNotification, type Track, type InsertTrack } from "@shared/schema";
+import { users, artists, projects, likes, notifications, tracks, chatMessages, type User, type UpsertUser, type InsertUser, type Artist, type InsertArtist, type Project, type InsertProject, type Like, type InsertLike, type Notification, type InsertNotification, type Track, type InsertTrack, type ChatMessage, type InsertChatMessage } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, sql, desc } from "drizzle-orm";
 
@@ -39,10 +39,6 @@ export interface IStorage {
   getActiveNotifications(): Promise<Notification[]>;
   createNotification(notification: InsertNotification): Promise<Notification>;
   deleteNotification(id: number): Promise<void>;
-  
-  // Admin user operations
-  getAllUsers(): Promise<User[]>;
-  updateUserAdminStatus(userId: string, isAdmin: boolean): Promise<User | undefined>;
   
   // Notification operations
   getAllNotifications(): Promise<Notification[]>;
@@ -360,6 +356,63 @@ export class DatabaseStorage implements IStorage {
       throw new Error("Failed to delete track");
     }
   }
+
+  // Chat operations
+  async getAllChatMessages(): Promise<any[]> {
+    const result = await db
+      .select({
+        id: chatMessages.id,
+        userId: chatMessages.userId,
+        message: chatMessages.message,
+        createdAt: chatMessages.createdAt,
+        editedAt: chatMessages.editedAt,
+        isDeleted: chatMessages.isDeleted,
+        user: {
+          id: users.id,
+          username: users.username,
+          profileImageUrl: users.profileImageUrl,
+          isAdmin: users.isAdmin,
+        },
+      })
+      .from(chatMessages)
+      .innerJoin(users, eq(chatMessages.userId, users.id))
+      .where(eq(chatMessages.isDeleted, false))
+      .orderBy(chatMessages.createdAt);
+    
+    return result;
+  }
+
+  async createChatMessage(insertMessage: InsertChatMessage): Promise<any> {
+    const [newMessage] = await db.insert(chatMessages).values(insertMessage).returning();
+    
+    // Get the message with user data
+    const result = await db
+      .select({
+        id: chatMessages.id,
+        userId: chatMessages.userId,
+        message: chatMessages.message,
+        createdAt: chatMessages.createdAt,
+        editedAt: chatMessages.editedAt,
+        isDeleted: chatMessages.isDeleted,
+        user: {
+          id: users.id,
+          username: users.username,
+          profileImageUrl: users.profileImageUrl,
+          isAdmin: users.isAdmin,
+        },
+      })
+      .from(chatMessages)
+      .innerJoin(users, eq(chatMessages.userId, users.id))
+      .where(eq(chatMessages.id, newMessage.id));
+    
+    return result[0];
+  }
+
+  async deleteChatMessage(id: number): Promise<void> {
+    await db.update(chatMessages)
+      .set({ isDeleted: true })
+      .where(eq(chatMessages.id, id));
+  }
 }
 
 // Keep MemStorage for fallback/development
@@ -369,10 +422,12 @@ export class MemStorage implements IStorage {
   private projects: Map<number, Project>;
   private likes: Map<string, Like>;
   private notifications: Map<number, Notification>;
+  private chatMessages: Map<number, any>;
   private currentArtistId: number;
   private currentProjectId: number;
   private currentLikeId: number;
   private currentNotificationId: number;
+  private currentChatMessageId: number;
 
   constructor() {
     this.users = new Map();
@@ -380,10 +435,12 @@ export class MemStorage implements IStorage {
     this.projects = new Map();
     this.likes = new Map();
     this.notifications = new Map();
+    this.chatMessages = new Map();
     this.currentArtistId = 1;
     this.currentProjectId = 1;
     this.currentLikeId = 1;
     this.currentNotificationId = 1;
+    this.currentChatMessageId = 1;
     
     // Initialize with sample data
     this.initializeArtists();
@@ -739,6 +796,58 @@ export class MemStorage implements IStorage {
     };
     this.users.set(userId, updatedUser);
     return updatedUser;
+  }
+
+  // Chat operations
+  async getAllChatMessages(): Promise<any[]> {
+    const messages = Array.from(this.chatMessages.values())
+      .filter(msg => !msg.isDeleted)
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    
+    return messages.map(msg => ({
+      ...msg,
+      user: this.users.get(msg.userId) || {
+        id: msg.userId,
+        username: "Usuário Removido",
+        profileImageUrl: null,
+        isAdmin: false
+      }
+    }));
+  }
+
+  async createChatMessage(insertMessage: InsertChatMessage): Promise<any> {
+    const user = this.users.get(insertMessage.userId);
+    if (!user) {
+      throw new Error("Usuário não encontrado");
+    }
+
+    const message = {
+      id: this.currentChatMessageId++,
+      ...insertMessage,
+      createdAt: new Date().toISOString(),
+      editedAt: null,
+      isDeleted: false,
+    };
+
+    this.chatMessages.set(message.id, message);
+
+    return {
+      ...message,
+      user: {
+        id: user.id,
+        username: user.username,
+        profileImageUrl: user.profileImageUrl,
+        isAdmin: user.isAdmin,
+      }
+    };
+  }
+
+  async deleteChatMessage(id: number): Promise<void> {
+    const message = this.chatMessages.get(id);
+    if (message) {
+      message.isDeleted = true;
+      this.chatMessages.set(id, message);
+    }
   }
 }
 

@@ -78,6 +78,7 @@ export const notifications = pgTable("notifications", {
 // Relations
 export const usersRelations = relations(users, ({ many, one }) => ({
   likes: many(likes),
+  chatMessages: many(chatMessages),
   artistProfile: one(artists, {
     fields: [users.id],
     references: [artists.userId],
@@ -146,6 +147,30 @@ export const insertTrackSchema = createInsertSchema(tracks).omit({
   updatedAt: true,
 });
 
+// Chat messages table
+export const chatMessages = pgTable("chat_messages", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  message: text("message").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  editedAt: timestamp("edited_at"),
+  isDeleted: boolean("is_deleted").default(false).notNull(),
+});
+
+export const chatMessagesRelations = relations(chatMessages, ({ one }) => ({
+  user: one(users, {
+    fields: [chatMessages.userId],
+    references: [users.id],
+  }),
+}));
+
+export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({
+  id: true,
+  createdAt: true,
+  editedAt: true,
+  isDeleted: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type UpsertUser = z.infer<typeof upsertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -159,3 +184,5 @@ export type InsertNotification = z.infer<typeof insertNotificationSchema>;
 export type Notification = typeof notifications.$inferSelect;
 export type InsertTrack = z.infer<typeof insertTrackSchema>;
 export type Track = typeof tracks.$inferSelect;
+export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
+export type ChatMessage = typeof chatMessages.$inferSelect;

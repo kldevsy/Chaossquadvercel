@@ -2,10 +2,28 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { insertArtistSchema, insertProjectSchema, insertNotificationSchema } from "@shared/schema";
+import { insertArtistSchema, insertProjectSchema, insertNotificationSchema, insertChatMessageSchema } from "@shared/schema";
 import { z } from "zod";
+import { WebSocketServer } from "ws";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  const httpServer = createServer(app);
+  
+  // Setup WebSocket server
+  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+  
+  wss.on('connection', (ws) => {
+    console.log('Nova conexão WebSocket estabelecida');
+    
+    ws.on('close', () => {
+      console.log('Conexão WebSocket fechada');
+    });
+    
+    ws.on('error', (error) => {
+      console.error('Erro WebSocket:', error);
+    });
+  });
+
   // Auth middleware
   await setupAuth(app);
 
@@ -613,6 +631,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  const httpServer = createServer(app);
+  // Chat routes
+  app.get("/api/chat/messages", isAuthenticated, async (req, res) => {
+    try {
+      const messages = await storage.getAllChatMessages();
+      res.json(messages);
+    } catch (error) {
+      console.error("Error fetching chat messages:", error);
+      res.status(500).json({ message: "Erro ao buscar mensagens" });
+    }
+  });
+
+  app.post("/api/chat/messages", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { message } = req.body;
+
+      if (!message || typeof message !== 'string' || message.trim().length === 0) {
+        return res.status(400).json({ message: "Mensagem é obrigatória" });
+      }
+
+      if (message.length > 500) {
+        return res.status(400).json({ message: "Mensagem muito longa (máximo 500 caracteres)" });
+      }
+
+      const newMessage = await storage.createChatMessage({
+        userId,
+        message: message.trim(),
+      });
+
+      // Broadcast to all WebSocket clients
+      wss.clients.forEach((client) => {
+        if (client.readyState === 1) { // WebSocket.OPEN
+          client.send(JSON.stringify({
+            type: 'new_message',
+            message: newMessage
+          }));
+        }
+      });
+
+      res.status(201).json(newMessage);
+    } catch (error) {
+      console.error("Error creating chat message:", error);
+      res.status(500).json({ message: "Erro ao enviar mensagem" });
+    }
+  });
+
   return httpServer;
 }

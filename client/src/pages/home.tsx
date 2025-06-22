@@ -9,12 +9,14 @@ import TabNavigation from "@/components/tab-navigation";
 import ExpandableArtistCard from "@/components/expandable-artist-card";
 import MusicPlayer from "@/components/music-player";
 import { useMusicPlayer } from "@/hooks/use-music-player";
+import { useLocation } from "wouter";
 import type { Artist } from "@shared/schema";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("todos");
   const [visibleCount, setVisibleCount] = useState(5);
+  const [, setLocation] = useLocation();
 
   const musicPlayer = useMusicPlayer();
 
@@ -80,7 +82,11 @@ export default function Home() {
       
       <HeroBanner />
       
-      <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+      <TabNavigation 
+        activeTab={activeTab} 
+        onTabChange={setActiveTab}
+        onChatClick={() => setLocation("/chat")}
+      />
       
       {/* Artists Grid */}
       <section className="container mx-auto px-4 pb-20">
