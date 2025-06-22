@@ -187,14 +187,18 @@ export default function ArtistProfile() {
           transition={{ duration: 0.8 }}
           className="h-48 md:h-64 relative overflow-hidden"
           style={{
-            background: `linear-gradient(135deg, 
-              hsl(var(--primary)) 0%, 
-              hsl(var(--primary)) 25%, 
-              hsl(var(--secondary)) 50%, 
-              hsl(var(--accent)) 75%, 
-              hsl(var(--primary)) 100%)`
+            background: artist.banner 
+              ? `url(${artist.banner}) center/cover` 
+              : `linear-gradient(135deg, 
+                  hsl(var(--primary)) 0%, 
+                  hsl(var(--primary)) 25%, 
+                  hsl(var(--secondary)) 50%, 
+                  hsl(var(--accent)) 75%, 
+                  hsl(var(--primary)) 100%)`
           }}
         >
+          {/* Overlay for better text readability */}
+          <div className="absolute inset-0 bg-black/30" />
           {/* Animated particles */}
           <div className="absolute inset-0">
             {Array.from({ length: 20 }).map((_, i) => (
@@ -412,9 +416,12 @@ export default function ArtistProfile() {
                                     });
                                     
                                     if (response.ok) {
+                                      // Invalidate queries to refresh data
                                       window.location.reload();
                                     } else {
-                                      console.error('Failed to update profile');
+                                      const errorData = await response.json();
+                                      console.error('Failed to update profile:', errorData.message);
+                                      alert('Erro ao atualizar perfil: ' + errorData.message);
                                     }
                                     setIsEditDialogOpen(false);
                                   } catch (error) {
