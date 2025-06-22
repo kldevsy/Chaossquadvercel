@@ -520,12 +520,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/tracks", isAuthenticated, async (req, res) => {
     try {
       const user = (req as any).user;
+      console.log("POST tracks user:", user);
+      console.log("POST tracks session:", (req as any).session);
+      
       if (!user) {
         return res.status(401).json({ message: "Usuário não autenticado" });
       }
 
       // Verificar se o usuário tem um perfil de artista
       const artistProfile = await storage.getUserArtistProfile(user.id);
+      console.log("Artist profile found:", artistProfile);
+      
       if (!artistProfile) {
         return res.status(403).json({ message: "Apenas artistas podem criar tracks" });
       }
@@ -535,6 +540,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         artistId: artistProfile.id
       };
 
+      console.log("Creating track with data:", trackData);
       const track = await storage.createTrack(trackData);
       res.status(201).json(track);
     } catch (error) {
