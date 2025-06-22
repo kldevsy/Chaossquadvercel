@@ -171,7 +171,10 @@ export default function Header({ onSearch, searchQuery, totalArtists = 0 }: Head
               
               {isAuthenticated && user ? (
                 <div className="flex items-center gap-3">
-                  <div className="hidden sm:flex items-center gap-2">
+                  <div 
+                    className="hidden sm:flex items-center gap-2 cursor-pointer hover:bg-accent rounded-lg p-2 transition-colors"
+                    onClick={() => window.location.href = "/profile"}
+                  >
                     <Avatar className="w-8 h-8">
                       <AvatarImage src={user.profileImageUrl || undefined} />
                       <AvatarFallback>

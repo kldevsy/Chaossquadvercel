@@ -31,6 +31,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch user" });
     }
   });
+
+  // User profile routes
+  app.get('/api/user/artist-profile', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const artistProfile = await storage.getUserArtistProfile(userId);
+      res.json(artistProfile);
+    } catch (error) {
+      console.error("Error fetching user artist profile:", error);
+      res.status(500).json({ message: "Failed to fetch artist profile" });
+    }
+  });
+
+  app.put('/api/user/profile', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { firstName, lastName, email } = req.body;
+      
+      const existingUser = await storage.getUser(userId);
+      if (!existingUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const updatedUser = await storage.upsertUser({
+        ...existingUser,
+        firstName: firstName || existingUser.firstName,
+        lastName: lastName || existingUser.lastName,
+        email: email || existingUser.email,
+      });
+
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
   // Get all artists
   app.get("/api/artists", async (req, res) => {
     try {
