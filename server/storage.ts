@@ -1,4 +1,4 @@
-import { users, artists, projects, likes, notifications, type User, type UpsertUser, type InsertUser, type Artist, type InsertArtist, type Project, type InsertProject, type Like, type InsertLike, type Notification, type InsertNotification } from "@shared/schema";
+import { users, artists, projects, likes, notifications, tracks, type User, type UpsertUser, type InsertUser, type Artist, type InsertArtist, type Project, type InsertProject, type Like, type InsertLike, type Notification, type InsertNotification, type Track, type InsertTrack } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, sql, desc } from "drizzle-orm";
 
@@ -288,6 +288,69 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId))
       .returning();
     return user;
+  }
+
+  // Track operations
+  async getArtistTracks(artistId: number): Promise<Track[]> {
+    try {
+      const artistTracks = await db.select().from(tracks).where(eq(tracks.artistId, artistId)).orderBy(desc(tracks.createdAt));
+      return artistTracks;
+    } catch (error) {
+      console.error("Error fetching artist tracks:", error);
+      throw new Error("Failed to fetch artist tracks");
+    }
+  }
+
+  async getAllTracks(): Promise<Track[]> {
+    try {
+      const allTracks = await db.select().from(tracks).orderBy(desc(tracks.createdAt));
+      return allTracks;
+    } catch (error) {
+      console.error("Error fetching tracks:", error);
+      throw new Error("Failed to fetch tracks");
+    }
+  }
+
+  async getTrack(id: number): Promise<Track | undefined> {
+    try {
+      const [track] = await db.select().from(tracks).where(eq(tracks.id, id));
+      return track;
+    } catch (error) {
+      console.error("Error fetching track:", error);
+      throw new Error("Failed to fetch track");
+    }
+  }
+
+  async createTrack(insertTrack: InsertTrack): Promise<Track> {
+    try {
+      const [track] = await db.insert(tracks).values(insertTrack).returning();
+      return track;
+    } catch (error) {
+      console.error("Error creating track:", error);
+      throw new Error("Failed to create track");
+    }
+  }
+
+  async updateTrack(id: number, updateData: Partial<InsertTrack>): Promise<Track | undefined> {
+    try {
+      const [track] = await db.update(tracks)
+        .set({ ...updateData, updatedAt: new Date() })
+        .where(eq(tracks.id, id))
+        .returning();
+      return track;
+    } catch (error) {
+      console.error("Error updating track:", error);
+      throw new Error("Failed to update track");
+    }
+  }
+
+  async deleteTrack(id: number): Promise<void> {
+    try {
+      await db.delete(tracks).where(eq(tracks.id, id));
+    } catch (error) {
+      console.error("Error deleting track:", error);
+      throw new Error("Failed to delete track");
+    }
   }
 }
 

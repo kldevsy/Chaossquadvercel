@@ -7,6 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { 
   ArrowLeft, 
   Play, 
@@ -22,13 +26,17 @@ import {
   Instagram,
   Twitter,
   Youtube,
-  Facebook
+  Facebook,
+  Edit,
+  Upload,
+  Volume2,
+  Download
 } from "lucide-react";
 import { useMusicPlayer } from "@/hooks/use-music-player";
 import { useLikes } from "@/hooks/useLikes";
 import { useAuth } from "@/hooks/useAuth";
 import ProjectCard from "@/components/project-card";
-import type { Artist, Project } from "@shared/schema";
+import type { Artist, Project, Track } from "@shared/schema";
 
 export default function ArtistProfile() {
   const [match, params] = useRoute("/artist-profile/:id");
@@ -45,6 +53,11 @@ export default function ArtistProfile() {
 
   const { data: projects = [] } = useQuery<Project[]>({
     queryKey: ["/api/projects"],
+  });
+
+  const { data: tracks = [] } = useQuery<Track[]>({
+    queryKey: [`/api/artists/${artistId}/tracks`],
+    enabled: !!artistId,
   });
 
   // Filter projects that include this artist
@@ -114,12 +127,42 @@ export default function ArtistProfile() {
   const isPlaying = musicPlayer.currentArtist?.id === artist.id && musicPlayer.isPlaying;
   const liked = user && isArtistLiked(artist.id);
   const totalLikes = artist.likesCount || 0;
+  const isOwner = user && artist && user.id === artist.userId;
+
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isTrackDialogOpen, setIsTrackDialogOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    name: '',
+    description: '',
+    avatar: '',
+    banner: '',
+  });
+
+  // Update form data when artist data loads
+  useEffect(() => {
+    if (artist) {
+      setEditFormData({
+        name: artist.name || '',
+        description: artist.description || '',
+        avatar: artist.avatar || '',
+        banner: artist.banner || '',
+      });
+    }
+  }, [artist]);
+  const [trackFormData, setTrackFormData] = useState({
+    title: '',
+    audioUrl: '',
+    coverUrl: '',
+    genre: '',
+    description: '',
+    duration: 0,
+  });
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header with back button */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b">
-        <div className="container mx-auto px-4 py-3">
+        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
           <Button
             variant="ghost"
             onClick={() => window.history.back()}
@@ -128,6 +171,150 @@ export default function ArtistProfile() {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Voltar
           </Button>
+          
+          {isOwner && (
+            <div className="flex gap-2">
+              <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Edit className="w-4 h-4 mr-2" />
+                    Editar Perfil
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Editar Perfil</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="name">Nome</Label>
+                      <Input
+                        id="name"
+                        value={editFormData.name}
+                        onChange={(e) => setEditFormData(prev => ({ ...prev, name: e.target.value }))}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="description">Descrição</Label>
+                      <Textarea
+                        id="description"
+                        value={editFormData.description}
+                        onChange={(e) => setEditFormData(prev => ({ ...prev, description: e.target.value }))}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="avatar">Avatar URL</Label>
+                      <Input
+                        id="avatar"
+                        value={editFormData.avatar}
+                        onChange={(e) => setEditFormData(prev => ({ ...prev, avatar: e.target.value }))}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="banner">Banner URL</Label>
+                      <Input
+                        id="banner"
+                        value={editFormData.banner}
+                        onChange={(e) => setEditFormData(prev => ({ ...prev, banner: e.target.value }))}
+                      />
+                    </div>
+                    <Button 
+                      className="w-full"
+                      onClick={async () => {
+                        try {
+                          // Implementar API call para atualizar perfil
+                          console.log('Updating profile:', editFormData);
+                          setIsEditDialogOpen(false);
+                        } catch (error) {
+                          console.error('Error updating profile:', error);
+                        }
+                      }}
+                    >
+                      Salvar Alterações
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+              
+              <Dialog open={isTrackDialogOpen} onOpenChange={setIsTrackDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button size="sm">
+                    <Upload className="w-4 h-4 mr-2" />
+                    Nova Produção
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Adicionar Nova Produção</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="title">Título</Label>
+                      <Input
+                        id="title"
+                        value={trackFormData.title}
+                        onChange={(e) => setTrackFormData(prev => ({ ...prev, title: e.target.value }))}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="audioUrl">URL do Áudio</Label>
+                      <Input
+                        id="audioUrl"
+                        value={trackFormData.audioUrl}
+                        onChange={(e) => setTrackFormData(prev => ({ ...prev, audioUrl: e.target.value }))}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="coverUrl">URL da Capa</Label>
+                      <Input
+                        id="coverUrl"
+                        value={trackFormData.coverUrl}
+                        onChange={(e) => setTrackFormData(prev => ({ ...prev, coverUrl: e.target.value }))}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="genre">Gênero</Label>
+                      <Input
+                        id="genre"
+                        value={trackFormData.genre}
+                        onChange={(e) => setTrackFormData(prev => ({ ...prev, genre: e.target.value }))}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="trackDescription">Descrição</Label>
+                      <Textarea
+                        id="trackDescription"
+                        value={trackFormData.description}
+                        onChange={(e) => setTrackFormData(prev => ({ ...prev, description: e.target.value }))}
+                      />
+                    </div>
+                    <Button 
+                      className="w-full"
+                      onClick={async () => {
+                        try {
+                          // Implementar API call para criar track
+                          console.log('Creating track:', trackFormData);
+                          setIsTrackDialogOpen(false);
+                          setTrackFormData({
+                            title: '',
+                            audioUrl: '',
+                            coverUrl: '',
+                            genre: '',
+                            description: '',
+                            duration: 0,
+                          });
+                        } catch (error) {
+                          console.error('Error creating track:', error);
+                        }
+                      }}
+                    >
+                      Adicionar Produção
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+          )}
         </div>
       </div>
 

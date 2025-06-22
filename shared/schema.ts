@@ -31,6 +31,7 @@ export const artists = pgTable("artists", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   avatar: text("avatar").notNull(),
+  banner: text("banner"),
   description: text("description").notNull(),
   roles: text("roles").array().notNull(),
   socialLinks: text("social_links").notNull(), // JSON string
@@ -122,6 +123,29 @@ export const insertNotificationSchema = createInsertSchema(notifications).omit({
   isActive: true,
 });
 
+// Tracks table for artist productions
+export const tracks = pgTable("tracks", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  audioUrl: text("audio_url").notNull(),
+  coverUrl: text("cover_url"),
+  duration: integer("duration"), // in seconds
+  genre: text("genre"),
+  description: text("description"),
+  plays: integer("plays").default(0),
+  likes: integer("likes").default(0),
+  artistId: integer("artist_id").references(() => artists.id, { onDelete: "cascade" }),
+  isPublic: boolean("is_public").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertTrackSchema = createInsertSchema(tracks).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type UpsertUser = z.infer<typeof upsertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -133,3 +157,5 @@ export type InsertLike = z.infer<typeof insertLikeSchema>;
 export type Like = typeof likes.$inferSelect;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
 export type Notification = typeof notifications.$inferSelect;
+export type InsertTrack = z.infer<typeof insertTrackSchema>;
+export type Track = typeof tracks.$inferSelect;

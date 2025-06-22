@@ -439,6 +439,128 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Track routes
+  app.get("/api/tracks", async (req, res) => {
+    try {
+      const tracks = await storage.getAllTracks();
+      res.json(tracks);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar tracks" });
+    }
+  });
+
+  app.get("/api/tracks/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "ID inválido" });
+      }
+
+      const track = await storage.getTrack(id);
+      if (!track) {
+        return res.status(404).json({ message: "Track não encontrada" });
+      }
+
+      res.json(track);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar track" });
+    }
+  });
+
+  app.get("/api/artists/:id/tracks", async (req, res) => {
+    try {
+      const artistId = parseInt(req.params.id);
+      if (isNaN(artistId)) {
+        return res.status(400).json({ message: "ID inválido" });
+      }
+
+      const tracks = await storage.getArtistTracks(artistId);
+      res.json(tracks);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar tracks do artista" });
+    }
+  });
+
+  app.post("/api/tracks", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req as any).user;
+      if (!user) {
+        return res.status(401).json({ message: "Usuário não autenticado" });
+      }
+
+      // Verificar se o usuário tem um perfil de artista
+      const artistProfile = await storage.getUserArtistProfile(user.id);
+      if (!artistProfile) {
+        return res.status(403).json({ message: "Apenas artistas podem criar tracks" });
+      }
+
+      const trackData = {
+        ...req.body,
+        artistId: artistProfile.id
+      };
+
+      const track = await storage.createTrack(trackData);
+      res.status(201).json(track);
+    } catch (error) {
+      console.error("Error creating track:", error);
+      res.status(500).json({ message: "Erro ao criar track" });
+    }
+  });
+
+  app.put("/api/tracks/:id", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req as any).user;
+      const trackId = parseInt(req.params.id);
+      
+      if (isNaN(trackId)) {
+        return res.status(400).json({ message: "ID inválido" });
+      }
+
+      const track = await storage.getTrack(trackId);
+      if (!track) {
+        return res.status(404).json({ message: "Track não encontrada" });
+      }
+
+      // Verificar se o usuário é o dono da track
+      const artistProfile = await storage.getUserArtistProfile(user.id);
+      if (!artistProfile || track.artistId !== artistProfile.id) {
+        return res.status(403).json({ message: "Não autorizado" });
+      }
+
+      const updatedTrack = await storage.updateTrack(trackId, req.body);
+      res.json(updatedTrack);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao atualizar track" });
+    }
+  });
+
+  app.delete("/api/tracks/:id", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req as any).user;
+      const trackId = parseInt(req.params.id);
+      
+      if (isNaN(trackId)) {
+        return res.status(400).json({ message: "ID inválido" });
+      }
+
+      const track = await storage.getTrack(trackId);
+      if (!track) {
+        return res.status(404).json({ message: "Track não encontrada" });
+      }
+
+      // Verificar se o usuário é o dono da track
+      const artistProfile = await storage.getUserArtistProfile(user.id);
+      if (!artistProfile || track.artistId !== artistProfile.id) {
+        return res.status(403).json({ message: "Não autorizado" });
+      }
+
+      await storage.deleteTrack(trackId);
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao deletar track" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
