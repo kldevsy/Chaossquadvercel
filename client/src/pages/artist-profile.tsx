@@ -36,6 +36,7 @@ import { useMusicPlayer } from "@/hooks/use-music-player";
 import { useLikes } from "@/hooks/useLikes";
 import { useAuth } from "@/hooks/useAuth";
 import ProjectCard from "@/components/project-card";
+import MusicPlayer from "@/components/music-player";
 import type { Artist, Project, Track } from "@shared/schema";
 
 export default function ArtistProfile() {
@@ -165,40 +166,56 @@ export default function ArtistProfile() {
 
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Header with back button - positioned above banner */}
-      <div className="absolute top-4 left-4 z-50">
-        <Button
-          variant="outline"
-          onClick={() => setLocation("/")}
-          className="bg-background/80 backdrop-blur-sm hover:bg-background/90 rounded-full shadow-lg"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Voltar
-        </Button>
-      </div>
+    <>
+      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-accent/5 text-foreground relative overflow-hidden">
+        {/* Animated background elements */}
+        <div className="fixed inset-0 pointer-events-none">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+          <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-secondary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '4s' }} />
+        </div>
 
-      {/* Banner Section - estilo Twitter/Discord */}
+        {/* Header with back button - positioned above banner */}
+        <div className="absolute top-6 left-6 z-50">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Button
+              variant="outline"
+              onClick={() => setLocation("/")}
+              className="bg-background/20 backdrop-blur-xl border-white/20 hover:bg-background/30 rounded-2xl shadow-2xl text-white hover:text-foreground transition-all duration-300"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Voltar
+            </Button>
+          </motion.div>
+        </div>
+
+      {/* Banner Section - Ultra Modern Design */}
       <div className="relative">
         {/* Banner Background */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          className="h-56 md:h-72 relative overflow-hidden"
+          initial={{ opacity: 0, scale: 1.1 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
+          className="h-80 md:h-96 relative overflow-hidden"
           style={{
             background: artist.banner 
               ? `url(${artist.banner}) center/cover no-repeat` 
               : `linear-gradient(135deg, 
                   hsl(var(--primary)) 0%, 
-                  hsl(var(--primary)) 25%, 
-                  hsl(var(--secondary)) 50%, 
-                  hsl(var(--accent)) 75%, 
-                  hsl(var(--primary)) 100%)`
+                  hsl(var(--primary)/0.8) 25%, 
+                  hsl(var(--secondary)/0.9) 50%, 
+                  hsl(var(--accent)/0.7) 75%, 
+                  hsl(var(--primary)/0.6) 100%)`
           }}
         >
-          {/* Overlay for better text readability */}
-          <div className="absolute inset-0 bg-black/30" />
+          {/* Multi-layer overlays for depth */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-transparent to-accent/20" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/40" />
           {/* Animated particles */}
           <div className="absolute inset-0">
             {Array.from({ length: 30 }).map((_, i) => (
@@ -265,30 +282,67 @@ export default function ArtistProfile() {
         </motion.div>
 
         {/* Profile Content */}
-        <div className="container mx-auto px-4">
-          <div className="relative -mt-20 md:-mt-24">
-            <div className="flex flex-col md:flex-row gap-6 items-start">
+        <div className="container mx-auto px-6">
+          <div className="relative -mt-32 md:-mt-40">
+            <div className="flex flex-col md:flex-row gap-8 items-start">
               {/* Artist Avatar */}
               <motion.div
-                initial={{ scale: 0.8, opacity: 0, y: 50 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="relative"
+                initial={{ scale: 0.5, opacity: 0, y: 100, rotateY: 180 }}
+                animate={{ scale: 1, opacity: 1, y: 0, rotateY: 0 }}
+                transition={{ 
+                  duration: 0.8, 
+                  delay: 0.3,
+                  type: "spring",
+                  stiffness: 200,
+                  damping: 20
+                }}
+                className="relative group"
               >
-                <Avatar className="w-32 h-32 md:w-40 md:h-40 border-4 border-background shadow-2xl">
-                  <AvatarImage src={artist.avatar} alt={artist.name} />
-                  <AvatarFallback className="text-3xl md:text-4xl">
-                    {artist.name?.split(' ').map(n => n[0]).join('').slice(0, 2) || 'A'}
-                  </AvatarFallback>
-                </Avatar>
+                {/* Avatar glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/40 to-accent/40 rounded-full blur-xl scale-110 group-hover:scale-125 transition-transform duration-500" />
                 
-                {/* Online indicator */}
                 <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.8 }}
-                  className="absolute bottom-2 right-2 w-6 h-6 bg-green-500 rounded-full border-4 border-background"
-                />
+                  whileHover={{ scale: 1.05, rotate: 2 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                  className="relative"
+                >
+                  <Avatar className="w-40 h-40 md:w-48 md:h-48 border-4 border-white/20 shadow-2xl ring-4 ring-primary/20 ring-offset-4 ring-offset-transparent">
+                    <AvatarImage 
+                      src={artist.avatar} 
+                      alt={artist.name}
+                      className="object-cover transition-all duration-300 group-hover:scale-110"
+                    />
+                    <AvatarFallback className="text-4xl md:text-5xl bg-gradient-to-br from-primary to-accent text-white">
+                      {artist.name?.split(' ').map(n => n[0]).join('').slice(0, 2) || 'A'}
+                    </AvatarFallback>
+                  </Avatar>
+                  
+                  {/* Animated ring */}
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    className="absolute inset-0 border-2 border-dashed border-primary/30 rounded-full scale-125"
+                  />
+                </motion.div>
+                
+                {/* Enhanced online indicator */}
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 1 }}
+                  className="absolute bottom-4 right-4 flex items-center gap-2"
+                >
+                  <motion.div
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="w-4 h-4 bg-green-500 rounded-full shadow-lg shadow-green-500/50"
+                  />
+                  <motion.div
+                    animate={{ opacity: [0.5, 1, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="w-6 h-6 bg-green-500/20 rounded-full absolute"
+                  />
+                </motion.div>
               </motion.div>
 
               {/* Artist Info */}
@@ -297,34 +351,51 @@ export default function ArtistProfile() {
                   initial={{ opacity: 0, x: -30 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: 0.4 }}
-                  className="space-y-4"
+                  className="relative p-8 rounded-3xl bg-gradient-to-br from-background/40 to-background/10 backdrop-blur-2xl border border-white/10 shadow-2xl"
                 >
-                  <div>
-                    <h1 className="text-3xl md:text-5xl font-bold gradient-text mb-2">
-                      {artist.name}
-                    </h1>
-                    <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
-                      {artist.description}
-                    </p>
-                  </div>
-
-                  {/* Roles */}
-                  {artist.roles && artist.roles.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {artist.roles.map((role, index) => (
-                        <motion.div
-                          key={index}
-                          initial={{ opacity: 0, scale: 0.8 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ delay: 0.6 + index * 0.1 }}
-                        >
-                          <Badge variant="secondary" className="px-3 py-1">
-                            {role}
-                          </Badge>
-                        </motion.div>
-                      ))}
+                  {/* Decorative elements */}
+                  <div className="absolute top-4 right-4 w-20 h-20 bg-primary/10 rounded-full blur-2xl" />
+                  <div className="absolute bottom-4 left-4 w-16 h-16 bg-accent/10 rounded-full blur-2xl" />
+                  
+                  <div className="relative z-10 space-y-6">
+                    <div>
+                      <motion.h1 
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.6, delay: 0.7 }}
+                        className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent leading-tight mb-4"
+                      >
+                        {artist.name}
+                      </motion.h1>
+                      <motion.p 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.9 }}
+                        className="text-xl text-white/80 leading-relaxed max-w-3xl"
+                      >
+                        {artist.description}
+                      </motion.p>
                     </div>
-                  )}
+
+                    {/* Roles */}
+                    {artist.roles && artist.roles.length > 0 && (
+                      <div className="flex flex-wrap gap-3">
+                        {artist.roles.map((role, index) => (
+                          <motion.div
+                            key={index}
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.6 + index * 0.1 }}
+                          >
+                            <Badge variant="secondary" className="px-4 py-2 rounded-full bg-white/20 text-white border-white/30">
+                              {role}
+                            </Badge>
+                          </motion.div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
 
                   {/* Stats inline */}
                   <motion.div
@@ -584,7 +655,7 @@ export default function ArtistProfile() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            
+              
             {/* Projects Section */}
             {artistProjects.length > 0 && (
               <motion.section
@@ -738,16 +809,14 @@ export default function ArtistProfile() {
                                   variant="outline"
                                   className="bg-primary/10 border-primary/20 hover:bg-primary hover:text-primary-foreground shadow-lg hover:shadow-primary/25 transition-all duration-300"
                                   onClick={() => {
-                                    // Create a temporary audio element to play the track
-                                    const audio = new Audio(track.audioUrl);
-                                    audio.volume = 0.7;
-                                    audio.play().then(() => {
-                                      console.log("Playing track:", track.title);
-                                    }).catch((error) => {
-                                      console.error("Audio playback failed:", error);
-                                      // Try to open in new tab as fallback
-                                      window.open(track.audioUrl, '_blank');
-                                    });
+                                    // Create a temporary artist object for the track
+                                    const trackArtist: Artist = {
+                                      ...artist,
+                                      name: track.title,
+                                      musicUrl: track.audioUrl,
+                                      avatar: track.coverUrl || artist.avatar
+                                    };
+                                    musicPlayer.playArtist(trackArtist);
                                   }}
                                 >
                                   <motion.div
@@ -980,7 +1049,7 @@ export default function ArtistProfile() {
                       return (
                         <a
                           key={platform}
-                          href={url}
+                          href={url as string}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors"
@@ -1025,6 +1094,24 @@ export default function ArtistProfile() {
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Music Player Integration */}
+      <MusicPlayer
+        isVisible={musicPlayer.isPlayerVisible}
+        isMinimized={musicPlayer.isPlayerMinimized}
+        currentArtist={musicPlayer.currentArtist}
+        isPlaying={musicPlayer.isPlaying}
+        currentTime={musicPlayer.currentTime}
+        duration={musicPlayer.duration}
+        volume={musicPlayer.volume}
+        onPlayPause={musicPlayer.togglePlayPause}
+        onNext={musicPlayer.next}
+        onPrevious={musicPlayer.previous}
+        onSeek={musicPlayer.seek}
+        onVolumeChange={musicPlayer.changeVolume}
+        onClose={musicPlayer.closePlayer}
+        onToggleMinimize={musicPlayer.toggleMinimize}
+      />
+    </>
   );
 }
