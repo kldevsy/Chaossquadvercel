@@ -96,6 +96,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get artist by ID
+  app.get("/api/artists/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "ID inválido" });
+      }
+
+      const artist = await storage.getArtist(id);
+      if (!artist) {
+        return res.status(404).json({ message: "Artista não encontrado" });
+      }
+
+      res.json(artist);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar artista" });
+    }
+  });
+
   // Get artists by role
   app.get("/api/artists/role/:role", async (req, res) => {
     try {

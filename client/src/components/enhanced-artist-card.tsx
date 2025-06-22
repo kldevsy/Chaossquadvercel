@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Play, Pause, Heart, Share2, Music, Star, Users, Calendar, MapPin, Award, Headphones } from "lucide-react";
+import { Play, Pause, Heart, Share2, Music, Star, Users, Calendar, MapPin, Award, Headphones, User } from "lucide-react";
 import type { Artist } from "@shared/schema";
 import { useLikes } from "@/hooks/useLikes";
 import { useAuth } from "@/hooks/useAuth";
@@ -266,9 +266,13 @@ export default function EnhancedArtistCard({ artist, isPlaying, onPlay, onPause 
                     variant="ghost"
                     size="icon"
                     className="rounded-full w-8 h-8 hover:bg-red-500/20 hover:text-red-500"
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleLike(artist.id);
+                    }}
+                    disabled={isLiking}
                   >
-                    <Heart className="w-4 h-4" />
+                    <Heart className={`w-4 h-4 ${liked ? 'fill-current' : ''}`} />
                   </Button>
                 </motion.div>
                 
@@ -277,9 +281,12 @@ export default function EnhancedArtistCard({ artist, isPlaying, onPlay, onPause 
                     variant="ghost"
                     size="icon"
                     className="rounded-full w-8 h-8 hover:bg-blue-500/20 hover:text-blue-500"
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.location.href = `/artist-profile/${artist.id}`;
+                    }}
                   >
-                    <Share2 className="w-4 h-4" />
+                    <User className="w-4 h-4" />
                   </Button>
                 </motion.div>
               </div>

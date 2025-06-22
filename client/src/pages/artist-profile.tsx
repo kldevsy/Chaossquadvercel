@@ -31,7 +31,7 @@ import ProjectCard from "@/components/project-card";
 import type { Artist, Project } from "@shared/schema";
 
 export default function ArtistProfile() {
-  const [match, params] = useRoute("/artist/:id");
+  const [match, params] = useRoute("/artist-profile/:id");
   const artistId = params?.id ? parseInt(params.id) : null;
   
   const { data: user } = useAuth();

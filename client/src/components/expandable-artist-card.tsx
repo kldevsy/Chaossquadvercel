@@ -184,7 +184,7 @@ export default function ExpandableArtistCard({ artist, isPlaying, onPlay, onPaus
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => window.location.href = "/profile"}
+                      onClick={() => window.location.href = `/artist-profile/${artist.id}`}
                       className="w-8 h-8 p-0 hover:bg-blue-500/10 transition-all duration-300 relative overflow-hidden group"
                     >
                         <motion.div

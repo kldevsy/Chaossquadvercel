@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Play, Pause, Music, Youtube, Instagram, Calendar, Users, Heart } from "lucide-react";
+import { Play, Pause, Music, Youtube, Instagram, Calendar, Users, Heart, User } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 import { useLikes } from "@/hooks/useLikes";
 import { useAuth } from "@/hooks/useAuth";
@@ -252,13 +252,14 @@ export default function ArtistCard({ artist, isPlaying, onPlay, onPause }: Artis
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3 justify-center">
+          <div className="flex gap-2 justify-center">
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              className="flex-1"
             >
               <Button
-                className={`flex-1 rounded-full px-6 py-2 font-medium transition-all duration-300 ${
+                className={`w-full rounded-full px-4 py-2 font-medium transition-all duration-300 ${
                   isPlaying 
                     ? "bg-primary/20 text-primary border border-primary/30 hover:bg-primary/30" 
                     : "bg-gradient-to-r from-primary to-secondary text-white hover:from-primary/90 hover:to-secondary/90 shadow-md hover:shadow-lg"
@@ -276,6 +277,20 @@ export default function ArtistCard({ artist, isPlaying, onPlay, onPause }: Artis
                     Tocar
                   </>
                 )}
+              </Button>
+            </motion.div>
+            
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Button
+                onClick={() => window.location.href = `/artist-profile/${artist.id}`}
+                variant="outline"
+                className="rounded-full px-4 py-2 border-blue-400 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950"
+              >
+                <User className="w-4 h-4 mr-1" />
+                Perfil
               </Button>
             </motion.div>
             

@@ -24,7 +24,7 @@ function Router() {
         <>
           <Route path="/" component={Home} />
           <Route path="/projects" component={Projects} />
-          <Route path="/artist/:id" component={ArtistProfile} />
+          <Route path="/artist-profile/:id" component={ArtistProfile} />
           <Route path="/profile" component={Profile} />
           <Route path="/admin" component={Admin} />
         </>
