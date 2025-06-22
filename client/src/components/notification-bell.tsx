@@ -82,7 +82,7 @@ export default function NotificationBell() {
     return `${Math.floor(diffInMinutes / 1440)}d atrás`;
   };
 
-  const truncateMessage = (message: string, maxLength: number = 100) => {
+  const truncateMessage = (message: string, maxLength: number = 80) => {
     if (message.length <= maxLength) return message;
     return message.substring(0, maxLength) + '...';
   };
@@ -173,7 +173,7 @@ export default function NotificationBell() {
               <div className="space-y-2 p-2">
                 {notifications.map((notification, index) => {
                   const isUnread = !viewedNotifications.has(notification.id);
-                  const isLongMessage = notification.message.length > 100;
+                  const isLongMessage = notification.message.length > 80;
                   const isExpanded = expandedInline.has(notification.id);
                   const displayMessage = isLongMessage && !isExpanded 
                     ? truncateMessage(notification.message) 
