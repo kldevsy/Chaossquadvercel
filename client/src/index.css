@@ -37,6 +37,8 @@ input::placeholder, textarea::placeholder {
   -webkit-text-fill-color: #000000 !important;
   -moz-text-fill-color: #000000 !important;
   caret-color: #000000 !important;
+  background-color: #ffffff !important;
+  font-weight: 500 !important;
 }
 
 /* Para modo escuro */
