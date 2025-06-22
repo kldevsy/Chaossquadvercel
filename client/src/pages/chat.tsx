@@ -394,7 +394,7 @@ export default function Chat() {
                   </motion.p>
                 </motion.div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-2">
                   <AnimatePresence>
                     {messages.map((msg, index) => {
                       const isOwnMessage = msg.userId === user?.id;
@@ -412,7 +412,7 @@ export default function Chat() {
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, y: -10, scale: 0.95 }}
                           transition={{ duration: 0.3, delay: index * 0.02 }}
-                          className={`flex gap-4 group hover:bg-muted/20 p-3 rounded-2xl transition-all duration-300 ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
+                          className={`flex gap-3 group hover:bg-muted/20 p-2 rounded-2xl transition-all duration-300 ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
                         >
                           {showAvatar && !isOwnMessage && (
                             <motion.div
@@ -429,13 +429,13 @@ export default function Chat() {
                           )}
                           
                           {!showAvatar && !isOwnMessage && (
-                            <div className="w-12 h-12 flex-shrink-0" />
+                            <div className="w-10 h-10 flex-shrink-0" />
                           )}
                           
                           <div className={`max-w-[75%] ${isOwnMessage ? 'order-first' : ''}`}>
                             {showAvatar && !isOwnMessage && (
                               <motion.div 
-                                className="flex items-center gap-2 mb-3 px-2"
+                                className="flex items-center gap-2 mb-1 px-1"
                                 initial={{ opacity: 0, x: -10 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: 0.1 }}
@@ -464,7 +464,7 @@ export default function Chat() {
                             <motion.div
                               whileHover={{ scale: 1.02 }}
                               transition={{ duration: 0.2 }}
-                              className={`px-5 py-4 rounded-3xl backdrop-blur-sm transition-all duration-300 relative shadow-lg ${
+                              className={`px-4 py-3 rounded-2xl backdrop-blur-sm transition-all duration-300 relative shadow-lg ${
                                 isOwnMessage
                                   ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white ml-auto shadow-purple-500/25'
                                   : 'bg-card/90 text-foreground border border-border/30 shadow-black/5'
@@ -497,7 +497,7 @@ export default function Chat() {
                           )}
                           
                           {!showAvatar && isOwnMessage && (
-                            <div className="w-12 h-12 flex-shrink-0" />
+                            <div className="w-10 h-10 flex-shrink-0" />
                           )}
                         </motion.div>
                       );
