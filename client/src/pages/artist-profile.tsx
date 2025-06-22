@@ -582,6 +582,103 @@ export default function ArtistProfile() {
               </motion.section>
             )}
 
+            {/* Tracks Section */}
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.7 }}
+            >
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Volume2 className="w-5 h-5" />
+                    Produções ({tracks.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {tracks.length > 0 ? (
+                    <div className="space-y-4">
+                      {tracks.map((track) => (
+                        <motion.div
+                          key={track.id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          className="flex items-center gap-4 p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                        >
+                          {/* Track Cover */}
+                          <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted flex items-center justify-center">
+                            {track.coverUrl ? (
+                              <img 
+                                src={track.coverUrl} 
+                                alt={track.title}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <Music2 className="w-8 h-8 text-muted-foreground" />
+                            )}
+                          </div>
+                          
+                          {/* Track Info */}
+                          <div className="flex-1">
+                            <h4 className="font-semibold">{track.title}</h4>
+                            <p className="text-sm text-muted-foreground">{track.genre}</p>
+                            {track.description && (
+                              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                                {track.description}
+                              </p>
+                            )}
+                          </div>
+                          
+                          {/* Track Actions */}
+                          <div className="flex items-center gap-2">
+                            {track.audioUrl && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  // Create a temporary audio element to play the track
+                                  const audio = new Audio(track.audioUrl);
+                                  audio.play().catch(() => {
+                                    console.log("Audio playback failed");
+                                  });
+                                }}
+                              >
+                                <Play className="w-4 h-4" />
+                              </Button>
+                            )}
+                            
+                            {track.audioUrl && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                asChild
+                              >
+                                <a
+                                  href={track.audioUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  <Download className="w-4 h-4" />
+                                </a>
+                              </Button>
+                            )}
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Music2 className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                      <p>Nenhuma produção disponível</p>
+                      {isOwner && (
+                        <p className="text-sm mt-2">Use o botão "Novo Track" para adicionar suas produções</p>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.section>
+
             {/* Bio Extended */}
             <motion.section
               initial={{ opacity: 0, y: 20 }}
