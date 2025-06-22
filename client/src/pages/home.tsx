@@ -85,7 +85,6 @@ export default function Home() {
       <TabNavigation 
         activeTab={activeTab} 
         onTabChange={setActiveTab}
-        onChatClick={() => setLocation("/chat")}
       />
       
       {/* Artists Grid */}

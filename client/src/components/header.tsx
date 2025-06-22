@@ -9,7 +9,8 @@ import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/hooks/useAuth";
 import AdminButton from "@/components/admin-button";
 import NotificationBell from "@/components/notification-bell";
-import { Search, Music, Menu, X, User, LogOut } from "lucide-react";
+import { Search, Music, Menu, X, User, LogOut, MessageCircle, Home, FolderOpen } from "lucide-react";
+import { Link, useLocation } from "wouter";
 
 interface HeaderProps {
   onSearch: (query: string) => void;
@@ -20,6 +21,7 @@ interface HeaderProps {
 export default function Header({ onSearch, searchQuery, totalArtists = 0 }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [location] = useLocation();
   const { theme } = useTheme();
   const { user, isAuthenticated } = useAuth();
 
@@ -94,34 +96,81 @@ export default function Header({ onSearch, searchQuery, totalArtists = 0 }: Head
           </motion.div>
 
           {/* Navigation - Hidden on mobile */}
-          <nav className="hidden md:flex items-center space-x-8">
-            {[
-              { label: "Artistas", href: "/" },
-              { label: "Projetos", href: "/projects" },
-              { label: "Gêneros", href: "#generos" },
-              { label: "Sobre", href: "#sobre" }
-            ].map((item, index) => (
-              <motion.a
-                key={item.label}
-                href={item.href}
-                className="nav-link text-foreground hover:text-primary transition-all duration-300 relative"
+          <nav className="hidden md:flex items-center space-x-4">
+            <Link href="/">
+              <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 + index * 0.1, duration: 0.5 }}
-                whileHover={{ 
-                  scale: 1.05,
-                  transition: { duration: 0.2 }
-                }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+                whileHover={{ scale: 1.05 }}
               >
-                {item.label}
-                <motion.div
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary origin-left"
-                  initial={{ scaleX: 0 }}
-                  whileHover={{ scaleX: 1 }}
-                  transition={{ duration: 0.3 }}
-                />
-              </motion.a>
-            ))}
+                <div className={`nav-link flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 relative ${
+                  location === "/" ? "bg-primary text-primary-foreground" : "text-foreground hover:text-primary hover:bg-primary/10"
+                }`}>
+                  <Home className="w-4 h-4" />
+                  Artistas
+                  {location === "/" && (
+                    <motion.div
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-foreground origin-left"
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  )}
+                </div>
+              </motion.div>
+            </Link>
+
+            <Link href="/projects">
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+                whileHover={{ scale: 1.05 }}
+              >
+                <div className={`nav-link flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 relative ${
+                  location === "/projects" ? "bg-primary text-primary-foreground" : "text-foreground hover:text-primary hover:bg-primary/10"
+                }`}>
+                  <FolderOpen className="w-4 h-4" />
+                  Projetos
+                  {location === "/projects" && (
+                    <motion.div
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-foreground origin-left"
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  )}
+                </div>
+              </motion.div>
+            </Link>
+
+            <Link href="/chat">
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6, duration: 0.5 }}
+                whileHover={{ scale: 1.05 }}
+              >
+                <div className={`nav-link flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 relative overflow-hidden ${
+                  location === "/chat" 
+                    ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white" 
+                    : "text-foreground hover:text-purple-500 hover:bg-gradient-to-r hover:from-purple-500/10 hover:to-pink-500/10 border border-purple-500/30"
+                }`}>
+                  <MessageCircle className="w-4 h-4" />
+                  Chat
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse border-2 border-background" />
+                  {location === "/chat" && (
+                    <motion.div
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-white origin-left"
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  )}
+                </div>
+              </motion.div>
+            </Link>
           </nav>
 
           {/* Search & Theme Toggle */}
@@ -260,25 +309,48 @@ export default function Header({ onSearch, searchQuery, totalArtists = 0 }: Head
               transition={{ duration: 0.3 }}
             >
               <div className="flex flex-col space-y-2">
-                {[
-                  { label: "Artistas", href: "/" },
-                  { label: "Projetos", href: "/projects" },
-                  { label: "Gêneros", href: "#generos" },
-                  { label: "Sobre", href: "#sobre" }
-                ].map((item, index) => (
-                  <motion.a
-                    key={item.label}
-                    href={item.href}
-                    className="text-foreground hover:text-primary transition-all duration-300 py-3 px-2 rounded-lg hover:bg-accent/50"
+                <Link href="/">
+                  <motion.div
+                    className="flex items-center gap-3 text-foreground hover:text-primary transition-all duration-300 py-3 px-2 rounded-lg hover:bg-accent/50"
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1, duration: 0.3 }}
+                    transition={{ delay: 0.1, duration: 0.3 }}
                     whileHover={{ x: 10, scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    {item.label}
-                  </motion.a>
-                ))}
+                    <Home className="w-4 h-4" />
+                    Artistas
+                  </motion.div>
+                </Link>
+
+                <Link href="/projects">
+                  <motion.div
+                    className="flex items-center gap-3 text-foreground hover:text-primary transition-all duration-300 py-3 px-2 rounded-lg hover:bg-accent/50"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2, duration: 0.3 }}
+                    whileHover={{ x: 10, scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <FolderOpen className="w-4 h-4" />
+                    Projetos
+                  </motion.div>
+                </Link>
+
+                <Link href="/chat">
+                  <motion.div
+                    className="flex items-center gap-3 text-foreground hover:text-purple-500 transition-all duration-300 py-3 px-2 rounded-lg hover:bg-gradient-to-r hover:from-purple-500/10 hover:to-pink-500/10 relative"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3, duration: 0.3 }}
+                    whileHover={{ x: 10, scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    Chat Comunidade
+                    <div className="absolute top-2 left-8 w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                  </motion.div>
+                </Link>
               </div>
             </motion.nav>
           )}

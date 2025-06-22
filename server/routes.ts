@@ -489,6 +489,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all users (for mentions) - limited info
+  app.get("/api/users", isAuthenticated, async (req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      // Return only essential info for mentions
+      const publicUsers = users.map(user => ({
+        id: user.id,
+        username: user.username,
+        profileImageUrl: user.profileImageUrl,
+        isAdmin: user.isAdmin
+      }));
+      res.json(publicUsers);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "Erro ao buscar usuários" });
+    }
+  });
+
   // Update user admin status (Admin only)
   app.put("/api/admin/users/:id/admin", isAuthenticated, isAdmin, async (req, res) => {
     try {

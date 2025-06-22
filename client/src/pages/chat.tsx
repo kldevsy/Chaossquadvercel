@@ -7,10 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
-import { Send, Users, MessageCircle, Music, Crown } from "lucide-react";
+import { Send, Users, MessageCircle, Music, Crown, AtSign } from "lucide-react";
 import type { ChatMessage, User } from "@shared/schema";
 
 interface ChatMessageWithUser extends ChatMessage {
@@ -20,15 +21,25 @@ interface ChatMessageWithUser extends ChatMessage {
 export default function Chat() {
   const [message, setMessage] = useState("");
   const [isConnected, setIsConnected] = useState(false);
+  const [showMentions, setShowMentions] = useState(false);
+  const [mentionSearch, setMentionSearch] = useState("");
+  const [cursorPosition, setCursorPosition] = useState(0);
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
 
   // Fetch chat messages
   const { data: messages = [], isLoading } = useQuery<ChatMessageWithUser[]>({
     queryKey: ["/api/chat/messages"],
+    enabled: isAuthenticated,
+  });
+
+  // Fetch all users for mentions - available to all authenticated users
+  const { data: allUsers = [] } = useQuery<User[]>({
+    queryKey: ["/api/users"],
     enabled: isAuthenticated,
   });
 
@@ -100,6 +111,63 @@ export default function Chat() {
     }
   }, [messages]);
 
+  // Handle message input change and mention detection
+  const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const position = e.target.selectionStart || 0;
+    
+    setMessage(value);
+    setCursorPosition(position);
+    
+    // Check for @ mentions
+    const textBeforeCursor = value.slice(0, position);
+    const lastAtIndex = textBeforeCursor.lastIndexOf('@');
+    
+    if (lastAtIndex !== -1) {
+      const textAfterAt = textBeforeCursor.slice(lastAtIndex + 1);
+      // Check if there's no space after @
+      if (!textAfterAt.includes(' ') && textAfterAt.length >= 0) {
+        setMentionSearch(textAfterAt);
+        setShowMentions(true);
+        return;
+      }
+    }
+    
+    setShowMentions(false);
+    setMentionSearch("");
+  };
+
+  // Filter users for mentions
+  const filteredUsers = allUsers.filter(u => 
+    u.username.toLowerCase().includes(mentionSearch.toLowerCase()) &&
+    u.id !== user?.id
+  ).slice(0, 5);
+
+  // Handle mention selection
+  const handleMentionSelect = (selectedUser: User) => {
+    const textBeforeCursor = message.slice(0, cursorPosition);
+    const textAfterCursor = message.slice(cursorPosition);
+    const lastAtIndex = textBeforeCursor.lastIndexOf('@');
+    
+    if (lastAtIndex !== -1) {
+      const beforeAt = textBeforeCursor.slice(0, lastAtIndex);
+      const newMessage = `${beforeAt}@${selectedUser.username} ${textAfterCursor}`;
+      setMessage(newMessage);
+      
+      // Set cursor position after the mention
+      setTimeout(() => {
+        if (inputRef.current) {
+          const newPosition = beforeAt.length + selectedUser.username.length + 2;
+          inputRef.current.setSelectionRange(newPosition, newPosition);
+          inputRef.current.focus();
+        }
+      }, 0);
+    }
+    
+    setShowMentions(false);
+    setMentionSearch("");
+  };
+
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim() || !isAuthenticated) return;
@@ -121,6 +189,34 @@ export default function Chat() {
       .join("")
       .toUpperCase()
       .slice(0, 2);
+  };
+
+  // Render message with mentions highlighted
+  const renderMessageWithMentions = (text: string) => {
+    const mentionRegex = /@(\w+)/g;
+    const parts = text.split(mentionRegex);
+    
+    return parts.map((part, index) => {
+      if (index % 2 === 1) {
+        // This is a username (odd indices after split)
+        const mentionedUser = allUsers.find(u => u.username === part);
+        const isCurrentUser = user?.username === part;
+        
+        return (
+          <span
+            key={index}
+            className={`font-semibold px-1 py-0.5 rounded text-xs ${
+              isCurrentUser 
+                ? 'bg-primary/20 text-primary' 
+                : 'bg-blue-500/20 text-blue-400'
+            }`}
+          >
+            @{part}
+          </span>
+        );
+      }
+      return part;
+    });
   };
 
   if (!isAuthenticated) {
@@ -252,7 +348,7 @@ export default function Chat() {
                               }`}
                             >
                               <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                                {msg.message}
+                                {renderMessageWithMentions(msg.message)}
                               </p>
                             </div>
                           </div>
@@ -270,14 +366,60 @@ export default function Chat() {
           <div className="border-t border-border/50 p-4">
             <form onSubmit={handleSendMessage} className="flex items-center gap-3">
               <div className="flex-1 relative">
-                <Input
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Digite sua mensagem..."
-                  className="pr-12 bg-background/50 border-border/50 focus:border-primary/50"
-                  maxLength={500}
-                  disabled={!isConnected || sendMessageMutation.isPending}
-                />
+                <Popover open={showMentions && filteredUsers.length > 0} onOpenChange={setShowMentions}>
+                  <PopoverTrigger asChild>
+                    <Input
+                      ref={inputRef}
+                      value={message}
+                      onChange={handleMessageChange}
+                      placeholder="Digite sua mensagem... (use @ para mencionar usuários)"
+                      className="pr-20 pl-10 bg-background/50 border-border/50 focus:border-primary/50"
+                      maxLength={500}
+                      disabled={!isConnected || sendMessageMutation.isPending}
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent 
+                    className="p-2 w-64" 
+                    align="start"
+                    side="top"
+                  >
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                        <AtSign className="w-3 h-3" />
+                        Mencionar usuário
+                      </div>
+                      {filteredUsers.map((filteredUser) => (
+                        <div
+                          key={filteredUser.id}
+                          className="flex items-center gap-2 p-2 rounded-lg hover:bg-muted cursor-pointer transition-colors"
+                          onClick={() => handleMentionSelect(filteredUser)}
+                        >
+                          <Avatar className="w-6 h-6">
+                            <AvatarImage src={filteredUser.profileImageUrl || undefined} />
+                            <AvatarFallback className="text-xs">
+                              {getInitials(filteredUser.username)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-1">
+                              <span className="text-sm font-medium">{filteredUser.username}</span>
+                              {filteredUser.isAdmin && (
+                                <Crown className="w-3 h-3 text-yellow-500" />
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      {filteredUsers.length === 0 && mentionSearch && (
+                        <div className="p-2 text-xs text-muted-foreground text-center">
+                          Nenhum usuário encontrado
+                        </div>
+                      )}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+                
+                <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
                   {message.length}/500
                 </div>
