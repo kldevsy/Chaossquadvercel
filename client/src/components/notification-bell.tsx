@@ -90,6 +90,7 @@ export default function NotificationBell() {
   const handleNotificationClick = (notification: Notification) => {
     if (notification.message.length > 100) {
       setExpandedNotification(notification);
+      setIsOpen(false); // Close the popover when opening the dialog
     }
   };
 
@@ -185,7 +186,10 @@ export default function NotificationBell() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.05 }}
                     >
-                      <Card className={`cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] ${getNotificationColor(notification.type)} ${isUnread ? 'ring-2 ring-primary/20' : ''}`}>
+                      <Card 
+                        className={`cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] ${getNotificationColor(notification.type)} ${isUnread ? 'ring-2 ring-primary/20' : ''}`}
+                        onClick={() => handleNotificationClick(notification)}
+                      >
                         <CardContent className="p-3 relative">
                           {isUnread && (
                             <div className="absolute top-2 right-2">
