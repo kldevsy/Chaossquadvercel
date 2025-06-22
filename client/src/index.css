@@ -11,12 +11,23 @@
 }
 
 /* Garante visibilidade do texto em inputs */
-input[type="text"], textarea {
+input[type="text"], textarea, input {
   color: hsl(var(--foreground)) !important;
+  -webkit-text-fill-color: hsl(var(--foreground)) !important;
+  caret-color: hsl(var(--foreground)) !important;
 }
 
-input[type="text"]:focus, textarea:focus {
+input[type="text"]:focus, textarea:focus, input:focus {
   color: hsl(var(--foreground)) !important;
+  -webkit-text-fill-color: hsl(var(--foreground)) !important;
+  caret-color: hsl(var(--foreground)) !important;
+}
+
+/* Força cor do texto em todos os inputs do chat */
+.chat-input, .chat-input:focus, .chat-input:active {
+  color: hsl(var(--foreground)) !important;
+  -webkit-text-fill-color: hsl(var(--foreground)) !important;
+  caret-color: hsl(var(--foreground)) !important;
 }
 
 :root {
