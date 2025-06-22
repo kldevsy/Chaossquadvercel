@@ -44,8 +44,28 @@ input::placeholder, textarea::placeholder {
   text-shadow: none !important;
 }
 
-/* Força ainda mais especificamente */
-input.chat-input[type="text"] {
+/* Força ainda mais especificamente para o texto digitado */
+input.chat-input[type="text"],
+input.chat-input[type="text"]:focus,
+input.chat-input[type="text"]:active {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  -webkit-appearance: none !important;
+}
+
+/* Força cor do texto em tempo real */
+.chat-input::-webkit-input-placeholder { color: #666666 !important; }
+.chat-input::-moz-placeholder { color: #666666 !important; }
+.chat-input:-ms-input-placeholder { color: #666666 !important; }
+.chat-input::placeholder { color: #666666 !important; }
+
+/* Última tentativa - força máxima para texto digitado */
+input[class*="chat-input"] {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+
+input[class*="chat-input"]:not(:placeholder-shown) {
   color: #000000 !important;
   -webkit-text-fill-color: #000000 !important;
 }
