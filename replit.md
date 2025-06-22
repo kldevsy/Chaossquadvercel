@@ -115,6 +115,10 @@ Preferred communication style: Simple, everyday language.
 - **June 22, 2025**: Enhanced chat to show artist names and avatars when users have artist profiles
 - **June 22, 2025**: Added artist badges in chat for users with linked artist accounts
 - **June 22, 2025**: Fixed console unhandled rejection warnings
+- **June 22, 2025**: Completely redesigned chat interface with modern gradient design
+- **June 22, 2025**: Added smooth animations, hover effects, and improved visual hierarchy
+- **June 22, 2025**: Enhanced message bubbles with gradient backgrounds and better spacing
+- **June 22, 2025**: Improved mentions dropdown with better styling and animations
 
 ## User Preferences
 
