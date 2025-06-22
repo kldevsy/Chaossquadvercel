@@ -150,7 +150,7 @@ export default function ArtistProfile() {
               <Avatar className="w-48 h-48 border-4 border-primary/20">
                 <AvatarImage src={artist.avatar} alt={artist.name} />
                 <AvatarFallback className="text-4xl">
-                  {artist.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                  {artist.name?.split(' ').map(n => n[0]).join('').slice(0, 2) || 'A'}
                 </AvatarFallback>
               </Avatar>
             </motion.div>
@@ -178,18 +178,20 @@ export default function ArtistProfile() {
               </div>
 
               {/* Roles */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-                className="flex flex-wrap gap-2"
-              >
-                {artist.roles.map((role, index) => (
-                  <Badge key={index} variant="secondary" className="text-sm">
-                    {role}
-                  </Badge>
-                ))}
-              </motion.div>
+              {artist.roles && artist.roles.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.5 }}
+                  className="flex flex-wrap gap-2"
+                >
+                  {artist.roles.map((role, index) => (
+                    <Badge key={index} variant="secondary" className="text-sm">
+                      {role}
+                    </Badge>
+                  ))}
+                </motion.div>
+              )}
 
               {/* Action Buttons */}
               <motion.div
@@ -326,14 +328,14 @@ export default function ArtistProfile() {
                       <Users className="w-4 h-4" />
                       Funções
                     </span>
-                    <span className="font-semibold">{artist.roles.length}</span>
+                    <span className="font-semibold">{artist.roles?.length || 0}</span>
                   </div>
                 </CardContent>
               </Card>
             </motion.div>
 
             {/* Social Links */}
-            {artist.socialLinks && Object.keys(artist.socialLinks).length > 0 && (
+            {artist.socialLinks && typeof artist.socialLinks === 'object' && Object.keys(artist.socialLinks).length > 0 && (
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
