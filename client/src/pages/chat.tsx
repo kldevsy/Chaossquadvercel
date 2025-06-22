@@ -117,10 +117,25 @@ export default function Chat() {
     }
   }, [messages]);
 
+  // Force black text color on input
+  useEffect(() => {
+    if (inputRef.current) {
+      const input = inputRef.current;
+      input.style.setProperty('color', '#000000', 'important');
+      input.style.setProperty('-webkit-text-fill-color', '#000000', 'important');
+      input.style.setProperty('background-color', '#ffffff', 'important');
+    }
+  }, []);
+
   // Handle message input change and mention detection
   const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     const position = e.target.selectionStart || 0;
+    
+    // Force color again on every change
+    const input = e.target;
+    input.style.setProperty('color', '#000000', 'important');
+    input.style.setProperty('-webkit-text-fill-color', '#000000', 'important');
     
     setMessage(value);
     setCursorPosition(position);
@@ -529,15 +544,22 @@ export default function Chat() {
                     placeholder="Digite sua mensagem... (use @ para mencionar usuários)"
                     className="pr-24 pl-12 py-4 text-base border-2 border-border/30 focus:border-purple-500/50 rounded-2xl shadow-lg transition-all duration-300 chat-input"
                     style={{ 
-                      color: '#000000 !important',
-                      WebkitTextFillColor: '#000000 !important',
-                      MozTextFillColor: '#000000 !important',
-                      textFillColor: '#000000 !important',
-                      caretColor: '#000000 !important',
-                      backgroundColor: '#ffffff !important',
-                      fontWeight: '700 !important',
-                      textShadow: 'none !important'
-                    } as any}
+                      color: '#000000',
+                      WebkitTextFillColor: '#000000',
+                      MozTextFillColor: '#000000',
+                      caretColor: '#000000',
+                      backgroundColor: '#ffffff',
+                      fontWeight: 'bold'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.setProperty('color', '#000000', 'important');
+                      e.target.style.setProperty('-webkit-text-fill-color', '#000000', 'important');
+                    }}
+                    onInput={(e) => {
+                      const target = e.target as HTMLInputElement;
+                      target.style.setProperty('color', '#000000', 'important');
+                      target.style.setProperty('-webkit-text-fill-color', '#000000', 'important');
+                    }}
                     maxLength={500}
                     disabled={!isConnected || sendMessageMutation.isPending}
                   />
