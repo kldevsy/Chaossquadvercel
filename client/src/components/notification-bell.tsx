@@ -5,13 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+
 import { Bell, Info, CheckCircle, AlertTriangle, AlertCircle, Sparkles, Settings, ChevronDown, ChevronUp } from "lucide-react";
 import type { Notification } from "@shared/schema";
 
 export default function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
-  const [expandedNotification, setExpandedNotification] = useState<Notification | null>(null);
+
   const [expandedInline, setExpandedInline] = useState<Set<number>>(new Set());
   const [viewedNotifications, setViewedNotifications] = useState<Set<number>>(() => {
     // Load viewed notifications from localStorage
@@ -88,9 +88,9 @@ export default function NotificationBell() {
   };
 
   const handleNotificationClick = (notification: Notification) => {
+    // Expandir inline ao invés de abrir dialog
     if (notification.message.length > 50) {
-      setExpandedNotification(notification);
-      setIsOpen(false);
+      toggleInlineExpansion(notification.id);
     }
   };
 
@@ -273,50 +273,6 @@ export default function NotificationBell() {
           )}
         </PopoverContent>
       </Popover>
-
-      {/* Dialog for expanded notification */}
-      <Dialog open={!!expandedNotification} onOpenChange={() => setExpandedNotification(null)}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              {expandedNotification && getNotificationIcon(expandedNotification.type)}
-              {expandedNotification?.title}
-            </DialogTitle>
-          </DialogHeader>
-          {expandedNotification && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Badge 
-                  variant={
-                    expandedNotification.type === "success" ? "default" :
-                    expandedNotification.type === "warning" ? "secondary" :
-                    expandedNotification.type === "error" ? "destructive" :
-                    expandedNotification.type === "system" ? "outline" : "outline"
-                  }
-                >
-                  {expandedNotification.type === "info" ? "Informação" :
-                   expandedNotification.type === "success" ? "Sucesso" :
-                   expandedNotification.type === "warning" ? "Aviso" :
-                   expandedNotification.type === "system" ? "Sistema" : "Erro"}
-                </Badge>
-                <span className="text-sm text-muted-foreground">
-                  {formatDate(expandedNotification.createdAt)}
-                </span>
-              </div>
-              <div className="bg-muted/30 p-4 rounded-lg">
-                <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                  {expandedNotification.message}
-                </p>
-              </div>
-              <div className="flex justify-end">
-                <Button onClick={() => setExpandedNotification(null)}>
-                  Fechar
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </>
   );
 }
