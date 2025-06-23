@@ -133,10 +133,11 @@ export default function Chat() {
   // Send typing indicator
   const sendTypingIndicator = () => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN && user) {
+      const userDisplayInfo = getUserDisplayInfo(user.id, user.username);
       wsRef.current.send(JSON.stringify({
         type: 'typing',
         userId: user.id,
-        username: user.username
+        username: userDisplayInfo.displayName
       }));
     }
   };
@@ -660,7 +661,7 @@ export default function Chat() {
                             whileTap={{ scale: 0.98 }}
                             className="flex items-center gap-3 p-3 rounded-xl hover:bg-purple-500/10 cursor-pointer transition-all duration-200 border border-transparent hover:border-purple-500/20"
                             onClick={() => handleMentionSelect(filteredUser)}
-                            onTouchStart={() => handleMentionSelect(filteredUser)}
+                            onTouchEnd={() => handleMentionSelect(filteredUser)}
                           >
                             <Avatar className="w-8 h-8 ring-1 ring-border">
                               <AvatarImage src={userDisplayInfo.avatar || filteredUser.profileImageUrl || undefined} />
