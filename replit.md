@@ -139,6 +139,7 @@ Preferred communication style: Simple, everyday language.
 - **June 23, 2025**: Fixed menu button visibility - now always visible on all screen sizes for better navigation access
 - **June 23, 2025**: Fixed menu button position - moved before user section to ensure visibility for admin users
 - **June 23, 2025**: Fixed header layout overflow - reduced button sizes and spacing to prevent elements from going off-screen
+- **June 23, 2025**: Added "Meu Perfil" option to mobile navigation menu for easy access to user profile page
 
 ## User Preferences
 

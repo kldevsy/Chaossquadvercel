@@ -337,12 +337,26 @@ export default function Header({ onSearch, searchQuery, totalArtists = 0 }: Head
                   </motion.div>
                 </Link>
 
+                <Link href="/profile">
+                  <motion.div
+                    className="flex items-center gap-3 text-foreground hover:text-primary transition-all duration-300 py-3 px-2 rounded-lg hover:bg-accent/50"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3, duration: 0.3 }}
+                    whileHover={{ x: 10, scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <User className="w-4 h-4" />
+                    Meu Perfil
+                  </motion.div>
+                </Link>
+
                 <Link href="/chat">
                   <motion.div
                     className="flex items-center gap-3 text-foreground hover:text-purple-500 transition-all duration-300 py-3 px-2 rounded-lg hover:bg-gradient-to-r hover:from-purple-500/10 hover:to-pink-500/10 relative"
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3, duration: 0.3 }}
+                    transition={{ delay: 0.4, duration: 0.3 }}
                     whileHover={{ x: 10, scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
