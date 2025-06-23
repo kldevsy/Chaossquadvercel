@@ -135,6 +135,7 @@ Preferred communication style: Simple, everyday language.
 - **June 23, 2025**: Added notification targeting options: all users, artists only, or specific user
 - **June 23, 2025**: Updated database schema to support notification targeting with targetType field
 - **June 23, 2025**: Corrected getUserNotifications to properly filter notifications by target type
+- **June 23, 2025**: Fixed mention notifications to only target specific mentioned users instead of all users
 
 ## User Preferences
 

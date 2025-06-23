@@ -755,6 +755,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               message: `${senderUser?.username || 'Alguém'} mencionou você: "${message.length > 50 ? message.substring(0, 50) + '...' : message}"`,
               type: "mention",
               userId: targetUserId,
+              targetType: "specific_user",
               relatedMessageId: newMessage.id,
             });
           }
