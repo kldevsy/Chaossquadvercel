@@ -24,6 +24,9 @@ export default function Chat() {
   const [showMentions, setShowMentions] = useState(false);
   const [mentionSearch, setMentionSearch] = useState("");
   const [cursorPosition, setCursorPosition] = useState(0);
+  const [typingUsers, setTypingUsers] = useState<string[]>([]);
+  const [isTyping, setIsTyping] = useState(false);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -127,6 +130,17 @@ export default function Chat() {
     }
   }, []);
 
+  // Send typing indicator
+  const sendTypingIndicator = () => {
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN && user) {
+      wsRef.current.send(JSON.stringify({
+        type: 'typing',
+        userId: user.id,
+        username: user.username
+      }));
+    }
+  };
+
   // Handle message input change and mention detection
   const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -139,6 +153,22 @@ export default function Chat() {
     
     setMessage(value);
     setCursorPosition(position);
+    
+    // Handle typing indicator
+    if (!isTyping && value.length > 0) {
+      setIsTyping(true);
+      sendTypingIndicator();
+    }
+    
+    // Clear previous timeout
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    
+    // Set new timeout to stop typing indicator
+    typingTimeoutRef.current = setTimeout(() => {
+      setIsTyping(false);
+    }, 1000);
     
     // Check for @ mentions
     const textBeforeCursor = value.slice(0, position);
@@ -192,6 +222,12 @@ export default function Chat() {
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim() || !isAuthenticated) return;
+    
+    // Clear typing indicator
+    setIsTyping(false);
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
     
     sendMessageMutation.mutate(message.trim());
   };
@@ -518,6 +554,43 @@ export default function Chat() {
                       );
                     })}
                   </AnimatePresence>
+                  
+                  {/* Typing Indicator */}
+                  {typingUsers.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground"
+                    >
+                      <div className="flex gap-1">
+                        <motion.div
+                          className="w-2 h-2 bg-purple-500 rounded-full"
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ duration: 1, repeat: Infinity, delay: 0 }}
+                        />
+                        <motion.div
+                          className="w-2 h-2 bg-purple-500 rounded-full"
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ duration: 1, repeat: Infinity, delay: 0.2 }}
+                        />
+                        <motion.div
+                          className="w-2 h-2 bg-purple-500 rounded-full"
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ duration: 1, repeat: Infinity, delay: 0.4 }}
+                        />
+                      </div>
+                      <span className="font-medium">
+                        {typingUsers.length === 1 
+                          ? `${typingUsers[0]} está digitando...`
+                          : typingUsers.length === 2
+                          ? `${typingUsers[0]} e ${typingUsers[1]} estão digitando...`
+                          : `${typingUsers[0]} e +${typingUsers.length - 1} pessoas estão digitando...`
+                        }
+                      </span>
+                    </motion.div>
+                  )}
+                  
                   <div ref={messagesEndRef} />
                 </div>
               )}
@@ -587,6 +660,7 @@ export default function Chat() {
                             whileTap={{ scale: 0.98 }}
                             className="flex items-center gap-3 p-3 rounded-xl hover:bg-purple-500/10 cursor-pointer transition-all duration-200 border border-transparent hover:border-purple-500/20"
                             onClick={() => handleMentionSelect(filteredUser)}
+                            onTouchStart={() => handleMentionSelect(filteredUser)}
                           >
                             <Avatar className="w-8 h-8 ring-1 ring-border">
                               <AvatarImage src={userDisplayInfo.avatar || filteredUser.profileImageUrl || undefined} />

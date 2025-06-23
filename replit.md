@@ -121,6 +121,9 @@ Preferred communication style: Simple, everyday language.
 - **June 22, 2025**: Improved mentions dropdown with better styling and animations
 - **June 22, 2025**: Reduced message spacing for more fluid conversation flow
 - **June 22, 2025**: Fixed chat input text visibility issue - text now always visible
+- **June 22, 2025**: Added touch support for mention autocomplete on mobile devices
+- **June 22, 2025**: Implemented real-time typing indicators with WebSocket
+- **June 22, 2025**: Added animated "user is typing" with multiple users support
 
 ## User Preferences
 
