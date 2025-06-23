@@ -214,12 +214,27 @@ export default function Header({ onSearch, searchQuery, totalArtists = 0 }: Head
             </motion.div>
 
             {/* User Section & Actions */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               <ThemeSelector />
               <NotificationBell />
               
+              {/* Menu Button - Always visible */}
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full hover:scale-110 transition-all duration-300"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                <motion.div
+                  animate={{ rotate: isMenuOpen ? 180 : 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+                </motion.div>
+              </Button>
+              
               {isAuthenticated && user ? (
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
                   <div 
                     className="hidden sm:flex items-center gap-2 cursor-pointer hover:bg-accent rounded-lg p-2 transition-colors"
                     onClick={() => window.location.href = "/profile"}
@@ -257,21 +272,6 @@ export default function Header({ onSearch, searchQuery, totalArtists = 0 }: Head
                   <span className="hidden sm:inline">Entrar</span>
                 </Button>
               )}
-              
-              {/* Menu Button - Always visible */}
-              <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full hover:scale-110 transition-all duration-300"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-              >
-                <motion.div
-                  animate={{ rotate: isMenuOpen ? 180 : 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-                </motion.div>
-              </Button>
             </div>
           </div>
         </div>
