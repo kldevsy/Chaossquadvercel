@@ -214,7 +214,7 @@ export default function Header({ onSearch, searchQuery, totalArtists = 0 }: Head
             </motion.div>
 
             {/* User Section & Actions */}
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2">
               <ThemeSelector />
               <NotificationBell />
               
@@ -234,18 +234,18 @@ export default function Header({ onSearch, searchQuery, totalArtists = 0 }: Head
               </Button>
               
               {isAuthenticated && user ? (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
                   <div 
-                    className="hidden sm:flex items-center gap-2 cursor-pointer hover:bg-accent rounded-lg p-2 transition-colors"
+                    className="hidden lg:flex items-center gap-2 cursor-pointer hover:bg-accent rounded-lg p-1 transition-colors"
                     onClick={() => window.location.href = "/profile"}
                   >
-                    <Avatar className="w-8 h-8">
+                    <Avatar className="w-7 h-7">
                       <AvatarImage src={user.profileImageUrl || undefined} />
                       <AvatarFallback>
-                        <User className="w-4 h-4" />
+                        <User className="w-3 h-3" />
                       </AvatarFallback>
                     </Avatar>
-                    <span className="text-sm font-medium">
+                    <span className="text-xs font-medium max-w-20 truncate">
                       {user.firstName || user.username}
                     </span>
                   </div>
@@ -256,10 +256,10 @@ export default function Header({ onSearch, searchQuery, totalArtists = 0 }: Head
                     variant="outline" 
                     size="sm" 
                     onClick={() => window.location.href = "/api/logout"}
-                    className="gap-2"
+                    className="gap-1 px-2"
                   >
-                    <LogOut className="w-4 h-4" />
-                    <span className="hidden sm:inline">Sair</span>
+                    <LogOut className="w-3 h-3" />
+                    <span className="hidden lg:inline text-xs">Sair</span>
                   </Button>
                 </div>
               ) : (

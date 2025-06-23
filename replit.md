@@ -138,6 +138,7 @@ Preferred communication style: Simple, everyday language.
 - **June 23, 2025**: Fixed mention notifications to only target specific mentioned users instead of all users
 - **June 23, 2025**: Fixed menu button visibility - now always visible on all screen sizes for better navigation access
 - **June 23, 2025**: Fixed menu button position - moved before user section to ensure visibility for admin users
+- **June 23, 2025**: Fixed header layout overflow - reduced button sizes and spacing to prevent elements from going off-screen
 
 ## User Preferences
 

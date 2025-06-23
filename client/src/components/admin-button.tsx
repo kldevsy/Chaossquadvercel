@@ -13,10 +13,10 @@ export default function AdminButton() {
     <Button 
       size="sm" 
       onClick={() => window.location.href = "/admin"}
-      className="gap-2 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600"
+      className="gap-1 px-2 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600"
     >
-      <Settings className="w-4 h-4" />
-      <span className="hidden sm:inline">Admin</span>
+      <Settings className="w-3 h-3" />
+      <span className="hidden lg:inline text-xs">Admin</span>
     </Button>
   );
 }
