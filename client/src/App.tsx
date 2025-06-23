@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { useAuth } from "@/hooks/useAuth";
+import FloatingNotification from "@/components/floating-notification";
+import { useFloatingNotifications } from "@/hooks/useFloatingNotifications";
 import Home from "@/pages/home";
 import Projects from "@/pages/projects";
 import Chat from "@/pages/chat";
@@ -36,13 +38,31 @@ function Router() {
   );
 }
 
+function AppWithNotifications() {
+  const { isAuthenticated } = useAuth();
+  const { currentNotification, closeNotification, handleNavigate } = useFloatingNotifications();
+
+  return (
+    <>
+      <Router />
+      {isAuthenticated && (
+        <FloatingNotification
+          notification={currentNotification}
+          onClose={closeNotification}
+          onNavigate={handleNavigate}
+        />
+      )}
+    </>
+  );
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <TooltipProvider>
           <Toaster />
-          <Router />
+          <AppWithNotifications />
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>

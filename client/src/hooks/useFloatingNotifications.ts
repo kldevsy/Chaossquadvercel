@@ -4,44 +4,39 @@ import type { Notification } from "@shared/schema";
 
 export function useFloatingNotifications() {
   const [currentNotification, setCurrentNotification] = useState<Notification | null>(null);
-  const [processedIds, setProcessedIds] = useState<Set<number>>(new Set());
-  const lastNotificationCount = useRef<number>(0);
+  const [lastProcessedId, setLastProcessedId] = useState<number>(0);
 
   const { data: notifications = [] } = useQuery<Notification[]>({
     queryKey: ["/api/notifications"],
-    refetchInterval: 5000, // Check every 5 seconds for new notifications
+    refetchInterval: 2000, // Check every 2 seconds for faster detection
   });
 
   useEffect(() => {
-    // Check for new notifications
-    if (notifications.length > lastNotificationCount.current) {
-      // Find the newest notification that hasn't been processed
-      const newNotifications = notifications.filter(
-        notification => !processedIds.has(notification.id)
-      );
+    if (notifications.length > 0) {
+      // Sort notifications by ID to get the newest
+      const sortedNotifications = [...notifications].sort((a, b) => b.id - a.id);
+      const newestNotification = sortedNotifications[0];
 
-      if (newNotifications.length > 0) {
-        // Sort by creation date and get the newest
-        const newestNotification = newNotifications.sort((a, b) => 
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        )[0];
+      // Initialize lastProcessedId if it's the first time
+      if (lastProcessedId === 0) {
+        setLastProcessedId(newestNotification.id);
+        return;
+      }
 
+      // Check if this is a new notification we haven't seen
+      if (newestNotification.id > lastProcessedId) {
+        console.log('Nova notificação detectada:', newestNotification);
+        
         // Only show floating notification if there's no current one
         if (!currentNotification) {
           setCurrentNotification(newestNotification);
         }
 
-        // Mark all new notifications as processed
-        setProcessedIds(prev => {
-          const newSet = new Set(prev);
-          newNotifications.forEach(n => newSet.add(n.id));
-          return newSet;
-        });
+        // Update the last processed ID
+        setLastProcessedId(newestNotification.id);
       }
     }
-
-    lastNotificationCount.current = notifications.length;
-  }, [notifications, currentNotification, processedIds]);
+  }, [notifications, currentNotification, lastProcessedId]);
 
   const closeNotification = () => {
     setCurrentNotification(null);
@@ -51,6 +46,7 @@ export function useFloatingNotifications() {
     if (currentNotification?.type === 'mention') {
       window.location.href = '/chat';
     }
+    closeNotification();
   };
 
   return {

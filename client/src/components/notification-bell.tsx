@@ -21,7 +21,7 @@ export default function NotificationBell() {
 
   const { data: notifications = [] } = useQuery<Notification[]>({
     queryKey: ["/api/notifications"],
-    refetchInterval: 30000, // Refetch every 30 seconds
+    refetchInterval: 5000, // Refetch every 5 seconds for faster updates
   });
 
   const unreadCount = notifications.filter(n => !viewedNotifications.has(n.id)).length;
