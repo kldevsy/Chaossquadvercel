@@ -128,6 +128,9 @@ Preferred communication style: Simple, everyday language.
 - **June 23, 2025**: Resolved @ mention dropdown z-index conflicts - now displays above all chat elements
 - **June 23, 2025**: Implemented mention notification system - users receive notifications when mentioned in chat
 - **June 23, 2025**: Added click-to-navigate functionality - clicking mention notifications leads to chat page
+- **June 23, 2025**: Created floating notification system - real-time toast notifications appear when users receive new notifications
+- **June 23, 2025**: Added auto-hide timer and smooth animations for floating notifications with progress bar
+- **June 23, 2025**: Integrated floating notifications across all pages with click-to-navigate functionality
 
 ## User Preferences
 
