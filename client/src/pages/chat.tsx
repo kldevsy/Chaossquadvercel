@@ -69,9 +69,18 @@ export default function Chat() {
     wsRef.current.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
+        console.log('WebSocket data received:', data);
+        
         if (data.type === "new_message") {
           // Invalidate queries to refresh messages
           queryClient.invalidateQueries({ queryKey: ["/api/chat/messages"] });
+        } else if (data.type === 'typing') {
+          // Filter out current user from typing list
+          const filteredUsers = (data.users || []).filter((username: string) => {
+            const userDisplayInfo = getUserDisplayInfo(user?.id || '', user?.username || '');
+            return username !== userDisplayInfo.displayName;
+          });
+          setTypingUsers(filteredUsers);
         }
       } catch (error) {
         console.error("Erro ao processar mensagem WebSocket:", error);
@@ -102,6 +111,8 @@ export default function Chat() {
     },
     onSuccess: () => {
       setMessage("");
+      setShowMentions(false);
+      setMentionSearch("");
       queryClient.invalidateQueries({ queryKey: ["/api/chat/messages"] });
     },
     onError: () => {
@@ -156,20 +167,30 @@ export default function Chat() {
     setCursorPosition(position);
     
     // Handle typing indicator
-    if (!isTyping && value.length > 0) {
-      setIsTyping(true);
+    if (value.length > 0) {
+      if (!isTyping) {
+        setIsTyping(true);
+        sendTypingIndicator();
+      }
+      
+      // Clear previous timeout
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+      
+      // Set new timeout to stop typing indicator
+      typingTimeoutRef.current = setTimeout(() => {
+        setIsTyping(false);
+      }, 1000);
+      
+      // Send typing indicator periodically while typing
       sendTypingIndicator();
-    }
-    
-    // Clear previous timeout
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-    }
-    
-    // Set new timeout to stop typing indicator
-    typingTimeoutRef.current = setTimeout(() => {
+    } else {
       setIsTyping(false);
-    }, 1000);
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    }
     
     // Check for @ mentions
     const textBeforeCursor = value.slice(0, position);
@@ -197,19 +218,21 @@ export default function Chat() {
 
   // Handle mention selection
   const handleMentionSelect = (selectedUser: User) => {
+    console.log('Mention selected:', selectedUser);
     const textBeforeCursor = message.slice(0, cursorPosition);
     const textAfterCursor = message.slice(cursorPosition);
     const lastAtIndex = textBeforeCursor.lastIndexOf('@');
     
     if (lastAtIndex !== -1) {
       const beforeAt = textBeforeCursor.slice(0, lastAtIndex);
-      const newMessage = `${beforeAt}@${selectedUser.username} ${textAfterCursor}`;
+      const userDisplayInfo = getUserDisplayInfo(selectedUser.id, selectedUser.username);
+      const newMessage = `${beforeAt}@${userDisplayInfo.displayName} ${textAfterCursor}`;
       setMessage(newMessage);
       
       // Set cursor position after the mention
       setTimeout(() => {
         if (inputRef.current) {
-          const newPosition = beforeAt.length + selectedUser.username.length + 2;
+          const newPosition = beforeAt.length + userDisplayInfo.displayName.length + 2;
           inputRef.current.setSelectionRange(newPosition, newPosition);
           inputRef.current.focus();
         }
@@ -660,8 +683,15 @@ export default function Chat() {
                             whileHover={{ scale: 1.02, x: 5 }}
                             whileTap={{ scale: 0.98 }}
                             className="flex items-center gap-3 p-3 rounded-xl hover:bg-purple-500/10 cursor-pointer transition-all duration-200 border border-transparent hover:border-purple-500/20"
-                            onClick={() => handleMentionSelect(filteredUser)}
-                            onTouchEnd={() => handleMentionSelect(filteredUser)}
+                            onClick={() => {
+                              console.log('Click on mention:', filteredUser);
+                              handleMentionSelect(filteredUser);
+                            }}
+                            onTouchEnd={(e) => {
+                              e.preventDefault();
+                              console.log('Touch on mention:', filteredUser);
+                              handleMentionSelect(filteredUser);
+                            }}
                           >
                             <Avatar className="w-8 h-8 ring-1 ring-border">
                               <AvatarImage src={userDisplayInfo.avatar || filteredUser.profileImageUrl || undefined} />

@@ -11,9 +11,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Setup WebSocket server
   const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+  const typingUsers = new Map<string, { username: string, timeout: NodeJS.Timeout }>();
+  
+  const broadcastTypingUsers = () => {
+    const users = Array.from(typingUsers.values()).map(u => u.username);
+    wss.clients.forEach(client => {
+      if (client.readyState === 1) { // WebSocket.OPEN
+        client.send(JSON.stringify({
+          type: 'typing',
+          users
+        }));
+      }
+    });
+  };
   
   wss.on('connection', (ws) => {
     console.log('Nova conexão WebSocket estabelecida');
+    
+    ws.on('message', (data) => {
+      try {
+        const message = JSON.parse(data.toString());
+        console.log('WebSocket message received:', message);
+        
+        if (message.type === 'typing') {
+          const { userId, username } = message;
+          
+          // Clear existing timeout for this user
+          if (typingUsers.has(userId)) {
+            clearTimeout(typingUsers.get(userId)!.timeout);
+          }
+          
+          // Set new timeout to remove user from typing list
+          const timeout = setTimeout(() => {
+            typingUsers.delete(userId);
+            broadcastTypingUsers();
+          }, 2000);
+          
+          typingUsers.set(userId, { username, timeout });
+          broadcastTypingUsers();
+        }
+      } catch (error) {
+        console.error('Erro ao processar mensagem WebSocket:', error);
+      }
+    });
     
     ws.on('close', () => {
       console.log('Conexão WebSocket fechada');
