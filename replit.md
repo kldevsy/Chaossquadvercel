@@ -136,6 +136,7 @@ Preferred communication style: Simple, everyday language.
 - **June 23, 2025**: Updated database schema to support notification targeting with targetType field
 - **June 23, 2025**: Corrected getUserNotifications to properly filter notifications by target type
 - **June 23, 2025**: Fixed mention notifications to only target specific mentioned users instead of all users
+- **June 23, 2025**: Fixed menu button visibility - now always visible on all screen sizes for better navigation access
 
 ## User Preferences
 

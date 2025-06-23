@@ -258,11 +258,11 @@ export default function Header({ onSearch, searchQuery, totalArtists = 0 }: Head
                 </Button>
               )}
               
-              {/* Mobile Menu Button */}
+              {/* Menu Button - Always visible */}
               <Button
                 variant="outline"
                 size="icon"
-                className="md:hidden rounded-full hover:scale-110 transition-all duration-300"
+                className="rounded-full hover:scale-110 transition-all duration-300"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
                 <motion.div
