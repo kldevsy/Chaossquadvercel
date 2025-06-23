@@ -579,42 +579,6 @@ export default function Chat() {
                     })}
                   </AnimatePresence>
                   
-                  {/* Typing Indicator */}
-                  {typingUsers.length > 0 && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground"
-                    >
-                      <div className="flex gap-1">
-                        <motion.div
-                          className="w-2 h-2 bg-purple-500 rounded-full"
-                          animate={{ scale: [1, 1.2, 1] }}
-                          transition={{ duration: 1, repeat: Infinity, delay: 0 }}
-                        />
-                        <motion.div
-                          className="w-2 h-2 bg-purple-500 rounded-full"
-                          animate={{ scale: [1, 1.2, 1] }}
-                          transition={{ duration: 1, repeat: Infinity, delay: 0.2 }}
-                        />
-                        <motion.div
-                          className="w-2 h-2 bg-purple-500 rounded-full"
-                          animate={{ scale: [1, 1.2, 1] }}
-                          transition={{ duration: 1, repeat: Infinity, delay: 0.4 }}
-                        />
-                      </div>
-                      <span className="font-medium">
-                        {typingUsers.length === 1 
-                          ? `${typingUsers[0]} está digitando...`
-                          : typingUsers.length === 2
-                          ? `${typingUsers[0]} e ${typingUsers[1]} estão digitando...`
-                          : `${typingUsers[0]} e +${typingUsers.length - 1} pessoas estão digitando...`
-                        }
-                      </span>
-                    </motion.div>
-                  )}
-                  
                   <div ref={messagesEndRef} />
                 </div>
               )}
@@ -628,6 +592,42 @@ export default function Chat() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
+            {/* Typing Indicator - moved here to be closer to input */}
+            {typingUsers.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="flex items-center gap-2 px-4 py-2 mb-3 text-sm text-muted-foreground bg-muted/20 rounded-xl"
+              >
+                <div className="flex gap-1">
+                  <motion.div
+                    className="w-2 h-2 bg-purple-500 rounded-full"
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 1, repeat: Infinity, delay: 0 }}
+                  />
+                  <motion.div
+                    className="w-2 h-2 bg-purple-500 rounded-full"
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 1, repeat: Infinity, delay: 0.2 }}
+                  />
+                  <motion.div
+                    className="w-2 h-2 bg-purple-500 rounded-full"
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 1, repeat: Infinity, delay: 0.4 }}
+                  />
+                </div>
+                <span className="font-medium">
+                  {typingUsers.length === 1 
+                    ? `${typingUsers[0]} está digitando...`
+                    : typingUsers.length === 2
+                    ? `${typingUsers[0]} e ${typingUsers[1]} estão digitando...`
+                    : `${typingUsers[0]} e +${typingUsers.length - 1} pessoas estão digitando...`
+                  }
+                </span>
+              </motion.div>
+            )}
+            
             <form onSubmit={handleSendMessage} className="flex items-center gap-4">
               <div className="flex-1 relative">
                 <motion.div
@@ -662,68 +662,84 @@ export default function Chat() {
                   />
                 </motion.div>
                 
-                {/* Mentions Dropdown */}
-                {showMentions && filteredUsers.length > 0 && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute bottom-full left-0 mb-3 w-72 bg-card/95 backdrop-blur-xl border border-border/30 rounded-2xl shadow-2xl z-50 p-3"
-                  >
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3 px-2">
-                        <AtSign className="w-4 h-4 text-purple-500" />
-                        <span className="font-medium">Mencionar usuário</span>
-                      </div>
-                      {filteredUsers.map((filteredUser) => {
-                        const userDisplayInfo = getUserDisplayInfo(filteredUser.id, filteredUser.username);
-                        return (
-                          <motion.div
-                            key={filteredUser.id}
-                            whileHover={{ scale: 1.02, x: 5 }}
-                            whileTap={{ scale: 0.98 }}
-                            className="flex items-center gap-3 p-3 rounded-xl hover:bg-purple-500/10 cursor-pointer transition-all duration-200 border border-transparent hover:border-purple-500/20"
-                            onClick={() => {
-                              console.log('Click on mention:', filteredUser);
-                              handleMentionSelect(filteredUser);
-                            }}
-                            onTouchEnd={(e) => {
-                              e.preventDefault();
-                              console.log('Touch on mention:', filteredUser);
-                              handleMentionSelect(filteredUser);
-                            }}
-                          >
-                            <Avatar className="w-8 h-8 ring-1 ring-border">
-                              <AvatarImage src={userDisplayInfo.avatar || filteredUser.profileImageUrl || undefined} />
-                              <AvatarFallback className="text-xs bg-gradient-to-br from-purple-500/20 to-pink-500/20">
-                                {getInitials(userDisplayInfo.displayName)}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm font-semibold text-foreground">{userDisplayInfo.displayName}</span>
-                                {userDisplayInfo.isArtist && (
-                                  <Music className="w-3 h-3 text-purple-500" />
-                                )}
-                                {filteredUser.isAdmin && (
-                                  <Crown className="w-3 h-3 text-yellow-500" />
-                                )}
-                              </div>
-                              {userDisplayInfo.displayName !== filteredUser.username && (
-                                <div className="text-xs text-muted-foreground">@{filteredUser.username}</div>
-                              )}
-                            </div>
-                          </motion.div>
-                        );
-                      })}
-                      {filteredUsers.length === 0 && mentionSearch && (
-                        <div className="p-3 text-xs text-muted-foreground text-center rounded-xl bg-muted/20">
-                          Nenhum usuário encontrado
+                {/* Mentions Dropdown - Fixed positioning and click handling */}
+                <AnimatePresence>
+                  {showMentions && filteredUsers.length > 0 && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      className="absolute bottom-full left-0 mb-2 w-80 bg-popover backdrop-blur-xl border border-border rounded-2xl shadow-2xl z-[100] overflow-hidden"
+                    >
+                      <div className="p-2">
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2 px-3 py-2">
+                          <AtSign className="w-4 h-4 text-purple-500" />
+                          <span className="font-medium">Mencionar usuário</span>
                         </div>
-                      )}
-                    </div>
-                  </motion.div>
-                )}
+                        <div className="space-y-1">
+                          {filteredUsers.map((filteredUser) => {
+                            const userDisplayInfo = getUserDisplayInfo(filteredUser.id, filteredUser.username);
+                            return (
+                              <motion.button
+                                key={filteredUser.id}
+                                type="button"
+                                whileHover={{ scale: 1.01 }}
+                                whileTap={{ scale: 0.99 }}
+                                className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-accent cursor-pointer transition-all duration-200 text-left"
+                                onMouseDown={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  console.log('Click on mention:', filteredUser);
+                                  handleMentionSelect(filteredUser);
+                                }}
+                                onTouchStart={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                }}
+                                onTouchEnd={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  console.log('Touch on mention:', filteredUser);
+                                  handleMentionSelect(filteredUser);
+                                }}
+                              >
+                                <Avatar className="w-10 h-10 ring-2 ring-border">
+                                  <AvatarImage src={userDisplayInfo.avatar || filteredUser.profileImageUrl || undefined} />
+                                  <AvatarFallback className="text-sm bg-gradient-to-br from-purple-500/20 to-pink-500/20 font-semibold">
+                                    {getInitials(userDisplayInfo.displayName)}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-sm font-semibold text-foreground truncate">{userDisplayInfo.displayName}</span>
+                                    {userDisplayInfo.isArtist && (
+                                      <Music className="w-4 h-4 text-purple-500 flex-shrink-0" />
+                                    )}
+                                    {filteredUser.isAdmin && (
+                                      <Crown className="w-4 h-4 text-yellow-500 flex-shrink-0" />
+                                    )}
+                                  </div>
+                                  {userDisplayInfo.displayName !== filteredUser.username && (
+                                    <div className="text-xs text-muted-foreground truncate">@{filteredUser.username}</div>
+                                  )}
+                                </div>
+                              </motion.button>
+                            );
+                          })}
+                        </div>
+                        {filteredUsers.length === 0 && mentionSearch && (
+                          <div className="p-4 text-sm text-muted-foreground text-center">
+                            Nenhum usuário encontrado para "{mentionSearch}"
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
                 
                 <AtSign className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-500" />
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
