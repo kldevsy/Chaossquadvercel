@@ -37,12 +37,7 @@ export interface IStorage {
   // Notification operations
   getAllNotifications(): Promise<Notification[]>;
   getActiveNotifications(): Promise<Notification[]>;
-  createNotification(notification: InsertNotification): Promise<Notification>;
-  deleteNotification(id: number): Promise<void>;
-  
-  // Notification operations
-  getAllNotifications(): Promise<Notification[]>;
-  getActiveNotifications(): Promise<Notification[]>;
+  getUserNotifications(userId: string): Promise<Notification[]>;
   createNotification(notification: InsertNotification): Promise<Notification>;
   deleteNotification(id: number): Promise<void>;
   
@@ -262,6 +257,14 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(notifications.createdAt));
   }
 
+  async getUserNotifications(userId: string): Promise<Notification[]> {
+    return await db
+      .select()
+      .from(notifications)
+      .where(and(eq(notifications.isActive, true), eq(notifications.userId, userId)))
+      .orderBy(desc(notifications.createdAt));
+  }
+
   async createNotification(insertNotification: InsertNotification): Promise<Notification> {
     const [notification] = await db
       .insert(notifications)
@@ -269,6 +272,8 @@ export class DatabaseStorage implements IStorage {
         title: insertNotification.title,
         message: insertNotification.message,
         type: insertNotification.type || "info",
+        userId: insertNotification.userId,
+        relatedMessageId: insertNotification.relatedMessageId,
         isActive: true,
         createdAt: new Date().toISOString(),
       })

@@ -68,9 +68,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   await setupAuth(app);
 
   // Notifications routes
-  app.get("/api/notifications", async (req, res) => {
+  app.get("/api/notifications", isAuthenticated, async (req: any, res) => {
     try {
-      const notifications = await storage.getActiveNotifications();
+      const userId = req.user.claims.sub;
+      const notifications = await storage.getUserNotifications(userId);
       res.json(notifications);
     } catch (error) {
       console.error("Error fetching notifications:", error);
@@ -717,6 +718,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId,
         message: message.trim(),
       });
+
+      // Detect mentions in the message and create notifications
+      const mentionRegex = /@(\w+)/g;
+      const mentions = [];
+      let match;
+      
+      while ((match = mentionRegex.exec(message)) !== null) {
+        const mentionedUsername = match[1];
+        mentions.push(mentionedUsername);
+      }
+
+      // Process mentions and create notifications
+      if (mentions.length > 0) {
+        const allUsers = await storage.getAllUsers();
+        const senderUser = await storage.getUser(userId);
+        
+        for (const mentionedUsername of mentions) {
+          // Find user by username or by artist name
+          const mentionedUser = allUsers.find(u => u.username === mentionedUsername);
+          const mentionedArtist = await storage.getAllArtists().then(artists => 
+            artists.find(a => a.name === mentionedUsername && a.userId)
+          );
+          
+          let targetUserId = null;
+          if (mentionedUser) {
+            targetUserId = mentionedUser.id;
+          } else if (mentionedArtist) {
+            targetUserId = mentionedArtist.userId;
+          }
+
+          // Only create notification if user exists and it's not self-mention
+          if (targetUserId && targetUserId !== userId) {
+            await storage.createNotification({
+              title: "Você foi mencionado no chat",
+              message: `${senderUser?.username || 'Alguém'} mencionou você: "${message.length > 50 ? message.substring(0, 50) + '...' : message}"`,
+              type: "mention",
+              userId: targetUserId,
+              relatedMessageId: newMessage.id,
+            });
+          }
+        }
+      }
 
       // Broadcast to all WebSocket clients
       wss.clients.forEach((client) => {

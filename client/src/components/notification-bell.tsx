@@ -51,6 +51,8 @@ export default function NotificationBell() {
         return <AlertCircle className="w-4 h-4 text-red-500" />;
       case 'system':
         return <Settings className="w-4 h-4 text-purple-500" />;
+      case 'mention':
+        return <Bell className="w-4 h-4 text-orange-500" />;
       default:
         return <Info className="w-4 h-4 text-blue-500" />;
     }
@@ -66,6 +68,8 @@ export default function NotificationBell() {
         return 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950';
       case 'system':
         return 'border-purple-200 bg-purple-50 dark:border-purple-800 dark:bg-purple-950';
+      case 'mention':
+        return 'border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950';
       default:
         return 'border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950';
     }
@@ -88,6 +92,14 @@ export default function NotificationBell() {
   };
 
   const handleNotificationClick = (notification: Notification) => {
+    // Handle mention notifications - navigate to chat
+    if (notification.type === 'mention' && notification.relatedMessageId) {
+      // Navigate to chat page
+      window.location.href = '/chat';
+      setIsOpen(false);
+      return;
+    }
+    
     // Expandir inline ao invés de abrir dialog
     if (notification.message.length > 50) {
       toggleInlineExpansion(notification.id);
