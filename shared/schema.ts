@@ -70,8 +70,9 @@ export const notifications = pgTable("notifications", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
   message: text("message").notNull(),
-  type: text("type").notNull().default("info"), // info, success, warning, error, mention
-  userId: text("user_id").references(() => users.id), // User who should receive the notification
+  type: text("type").notNull().default("info"), // info, success, warning, error, mention, system
+  userId: text("user_id").references(() => users.id), // User who should receive the notification (null = all users)
+  targetType: text("target_type").notNull().default("all"), // "all", "specific_user", "artists_only"
   relatedMessageId: integer("related_message_id"), // ID of the chat message that triggered this notification
   isActive: boolean("is_active").default(true).notNull(),
   createdAt: text("created_at").notNull(),

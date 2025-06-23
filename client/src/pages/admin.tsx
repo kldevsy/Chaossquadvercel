@@ -109,7 +109,9 @@ export default function Admin() {
   const [notificationForm, setNotificationForm] = useState({
     title: "",
     message: "",
-    type: "info"
+    type: "info",
+    targetType: "all",
+    userId: null as string | null
   });
 
   // User management state
@@ -284,7 +286,12 @@ export default function Admin() {
   // Notification mutations
   const createNotificationMutation = useMutation({
     mutationFn: async (data: any) => {
-      return await apiRequest("POST", "/api/admin/notifications", data);
+      const notificationData = {
+        ...data,
+        userId: data.targetType === "specific_user" ? data.userId : null,
+        createdAt: new Date().toISOString()
+      };
+      return await apiRequest("POST", "/api/admin/notifications", notificationData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/notifications"] });
@@ -391,7 +398,9 @@ export default function Admin() {
     setNotificationForm({
       title: "",
       message: "",
-      type: "info"
+      type: "info",
+      targetType: "all",
+      userId: null
     });
   };
 
@@ -448,6 +457,17 @@ export default function Admin() {
 
   const handleSubmitNotification = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate specific user selection
+    if (notificationForm.targetType === "specific_user" && !notificationForm.userId) {
+      toast({
+        title: "Erro de validação",
+        description: "Selecione um usuário específico",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     createNotificationMutation.mutate(notificationForm);
   };
 
@@ -1109,6 +1129,43 @@ export default function Admin() {
                         </SelectContent>
                       </Select>
                     </div>
+                    <div>
+                      <Label htmlFor="targetType">Destinatário</Label>
+                      <Select
+                        value={notificationForm.targetType}
+                        onValueChange={(value) => setNotificationForm({ ...notificationForm, targetType: value, userId: null })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Todos os usuários</SelectItem>
+                          <SelectItem value="artists_only">Apenas artistas</SelectItem>
+                          <SelectItem value="specific_user">Usuário específico</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {notificationForm.targetType === "specific_user" && (
+                      <div>
+                        <Label htmlFor="specificUser">Usuário</Label>
+                        <Select
+                          value={notificationForm.userId || ""}
+                          onValueChange={(value) => setNotificationForm({ ...notificationForm, userId: value })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione um usuário" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {users.map((user) => (
+                              <SelectItem key={user.id} value={user.id}>
+                                {user.firstName ? `${user.firstName} ${user.lastName || ''}` : user.username} 
+                                {user.email && ` (${user.email})`}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
                     <div className="flex gap-4 justify-end">
                       <Button
                         type="button"

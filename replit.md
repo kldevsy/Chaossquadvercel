@@ -131,6 +131,10 @@ Preferred communication style: Simple, everyday language.
 - **June 23, 2025**: Created floating notification system - real-time toast notifications appear when users receive new notifications
 - **June 23, 2025**: Added auto-hide timer and smooth animations for floating notifications with progress bar
 - **June 23, 2025**: Integrated floating notifications across all pages with click-to-navigate functionality
+- **June 23, 2025**: Fixed notification system creation and enhanced admin panel with target selection
+- **June 23, 2025**: Added notification targeting options: all users, artists only, or specific user
+- **June 23, 2025**: Updated database schema to support notification targeting with targetType field
+- **June 23, 2025**: Corrected getUserNotifications to properly filter notifications by target type
 
 ## User Preferences
 

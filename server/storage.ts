@@ -1,6 +1,6 @@
 import { users, artists, projects, likes, notifications, tracks, chatMessages, type User, type UpsertUser, type InsertUser, type Artist, type InsertArtist, type Project, type InsertProject, type Like, type InsertLike, type Notification, type InsertNotification, type Track, type InsertTrack, type ChatMessage, type InsertChatMessage } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, sql, desc } from "drizzle-orm";
+import { eq, and, sql, desc, or, exists } from "drizzle-orm";
 
 export interface IStorage {
   // User operations
@@ -261,7 +261,20 @@ export class DatabaseStorage implements IStorage {
     return await db
       .select()
       .from(notifications)
-      .where(and(eq(notifications.isActive, true), eq(notifications.userId, userId)))
+      .where(and(
+        eq(notifications.isActive, true),
+        or(
+          eq(notifications.userId, userId), // Specific user notification
+          eq(notifications.targetType, "all"), // All users notification
+          and(
+            eq(notifications.targetType, "artists_only"),
+            // Check if user is an artist
+            exists(
+              db.select().from(artists).where(eq(artists.userId, userId))
+            )
+          )
+        )
+      ))
       .orderBy(desc(notifications.createdAt));
   }
 
@@ -273,6 +286,7 @@ export class DatabaseStorage implements IStorage {
         message: insertNotification.message,
         type: insertNotification.type || "info",
         userId: insertNotification.userId,
+        targetType: insertNotification.targetType || "all",
         relatedMessageId: insertNotification.relatedMessageId,
         isActive: true,
         createdAt: new Date().toISOString(),
