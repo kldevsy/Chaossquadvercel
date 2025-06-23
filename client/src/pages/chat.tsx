@@ -192,20 +192,25 @@ export default function Chat() {
       }
     }
     
-    // Check for @ mentions
+    // Check for @ mentions with improved logic
     const textBeforeCursor = value.slice(0, position);
     const lastAtIndex = textBeforeCursor.lastIndexOf('@');
     
     if (lastAtIndex !== -1) {
-      const textAfterAt = textBeforeCursor.slice(lastAtIndex + 1);
-      // Check if there's no space after @
-      if (!textAfterAt.includes(' ') && textAfterAt.length >= 0) {
-        setMentionSearch(textAfterAt);
+      // Get text after the last @
+      const searchText = textBeforeCursor.slice(lastAtIndex + 1);
+      
+      // Only show mentions if:
+      // 1. There's no space in the search text (still typing the username)
+      // 2. We're right after @ or typing a username
+      if (!searchText.includes(' ')) {
+        setMentionSearch(searchText);
         setShowMentions(true);
         return;
       }
     }
     
+    // Hide mentions if no valid @ context
     setShowMentions(false);
     setMentionSearch("");
   };
@@ -216,31 +221,48 @@ export default function Chat() {
     u.id !== user?.id
   ).slice(0, 5);
 
-  // Handle mention selection
+  // Handle mention selection - robust implementation
   const handleMentionSelect = (selectedUser: User) => {
     console.log('Mention selected:', selectedUser);
-    const textBeforeCursor = message.slice(0, cursorPosition);
-    const textAfterCursor = message.slice(cursorPosition);
+    
+    if (!inputRef.current) return;
+    
+    // Get current cursor position and message content
+    const currentPosition = inputRef.current.selectionStart || cursorPosition;
+    const currentMessage = inputRef.current.value;
+    const textBeforeCursor = currentMessage.slice(0, currentPosition);
+    const textAfterCursor = currentMessage.slice(currentPosition);
+    
+    // Find the last @ symbol before cursor
     const lastAtIndex = textBeforeCursor.lastIndexOf('@');
     
     if (lastAtIndex !== -1) {
-      const beforeAt = textBeforeCursor.slice(0, lastAtIndex);
+      // Get user info and construct mention
       const userDisplayInfo = getUserDisplayInfo(selectedUser.id, selectedUser.username);
-      const newMessage = `${beforeAt}@${userDisplayInfo.displayName} ${textAfterCursor}`;
+      const beforeAt = textBeforeCursor.slice(0, lastAtIndex);
+      const mentionText = `@${userDisplayInfo.displayName}`;
+      
+      // Build complete new message
+      const newMessage = `${beforeAt}${mentionText} ${textAfterCursor}`;
+      const newCursorPosition = beforeAt.length + mentionText.length + 1; // +1 for space
+      
+      // Clear mentions first
+      setShowMentions(false);
+      setMentionSearch("");
+      
+      // Update the input directly and state
+      inputRef.current.value = newMessage;
       setMessage(newMessage);
       
-      // Set cursor position after the mention
-      setTimeout(() => {
-        if (inputRef.current) {
-          const newPosition = beforeAt.length + userDisplayInfo.displayName.length + 2;
-          inputRef.current.setSelectionRange(newPosition, newPosition);
-          inputRef.current.focus();
-        }
-      }, 0);
+      // Position cursor after mention
+      inputRef.current.focus();
+      inputRef.current.setSelectionRange(newCursorPosition, newCursorPosition);
+      setCursorPosition(newCursorPosition);
+      
+      // Force color styling
+      inputRef.current.style.setProperty('color', '#000000', 'important');
+      inputRef.current.style.setProperty('-webkit-text-fill-color', '#000000', 'important');
     }
-    
-    setShowMentions(false);
-    setMentionSearch("");
   };
 
   const handleSendMessage = (e: React.FormEvent) => {
@@ -673,6 +695,19 @@ export default function Chat() {
                     ref={inputRef}
                     value={message}
                     onChange={handleMessageChange}
+                    onKeyDown={(e) => {
+                      // Handle cursor position updates for mentions
+                      setTimeout(() => {
+                        if (inputRef.current) {
+                          setCursorPosition(inputRef.current.selectionStart || 0);
+                        }
+                      }, 0);
+                    }}
+                    onClick={(e) => {
+                      // Update cursor position on click
+                      const target = e.target as HTMLInputElement;
+                      setCursorPosition(target.selectionStart || 0);
+                    }}
                     placeholder="Digite sua mensagem... (use @ para mencionar usuários)"
                     className="pr-24 pl-12 py-4 text-base border-2 border-border/30 focus:border-purple-500/50 rounded-2xl shadow-lg transition-all duration-300 chat-input"
                     style={{ 
@@ -697,76 +732,75 @@ export default function Chat() {
                   />
                 </motion.div>
                 
-                {/* Mentions Dropdown - Fixed positioning and click handling */}
+                {/* Mentions Dropdown - Simplified and robust */}
                 <AnimatePresence>
                   {showMentions && filteredUsers.length > 0 && (
                     <>
-                      {/* Backdrop to prevent clicks behind */}
-                      <div className="fixed inset-0 z-[999]" onClick={() => setShowMentions(false)} />
+                      {/* Transparent backdrop */}
+                      <div 
+                        className="fixed inset-0 z-[999]" 
+                        onClick={() => {
+                          setShowMentions(false);
+                          setMentionSearch("");
+                          if (inputRef.current) {
+                            inputRef.current.focus();
+                          }
+                        }} 
+                      />
                       
                       <motion.div 
-                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        initial={{ opacity: 0, y: 8, scale: 0.96 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        className="absolute bottom-full left-0 mb-2 w-80 bg-popover/95 backdrop-blur-xl border border-border rounded-2xl shadow-2xl z-[1000] overflow-hidden"
+                        exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                        transition={{ duration: 0.15, ease: "easeOut" }}
+                        className="absolute bottom-full left-0 mb-2 w-80 bg-popover backdrop-blur-xl border border-border/50 rounded-xl shadow-2xl z-[1000] max-h-60 overflow-hidden"
                       >
-                      <div className="p-2">
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2 px-3 py-2">
+                      <div className="py-2">
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2 px-3 py-1">
                           <AtSign className="w-4 h-4 text-purple-500" />
                           <span className="font-medium">Mencionar usuário</span>
                         </div>
-                        <div className="space-y-1">
+                        <div className="max-h-48 overflow-y-auto">
                           {filteredUsers.map((filteredUser) => {
                             const userDisplayInfo = getUserDisplayInfo(filteredUser.id, filteredUser.username);
                             return (
-                              <motion.button
+                              <div
                                 key={filteredUser.id}
-                                type="button"
-                                whileHover={{ scale: 1.01 }}
-                                whileTap={{ scale: 0.99 }}
-                                className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-accent cursor-pointer transition-all duration-200 text-left"
+                                className="flex items-center gap-3 px-3 py-2 hover:bg-accent/70 cursor-pointer transition-colors duration-150"
                                 onMouseDown={(e) => {
                                   e.preventDefault();
-                                  e.stopPropagation();
+                                  handleMentionSelect(filteredUser);
                                 }}
                                 onClick={(e) => {
                                   e.preventDefault();
-                                  e.stopPropagation();
-                                  console.log('Click on mention:', filteredUser);
                                   handleMentionSelect(filteredUser);
-                                }}
-                                onTouchStart={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
                                 }}
                                 onTouchEnd={(e) => {
                                   e.preventDefault();
-                                  e.stopPropagation();
-                                  console.log('Touch on mention:', filteredUser);
                                   handleMentionSelect(filteredUser);
                                 }}
                               >
-                                <Avatar className="w-10 h-10 ring-2 ring-border">
+                                <Avatar className="w-9 h-9 ring-1 ring-border/30">
                                   <AvatarImage src={userDisplayInfo.avatar || filteredUser.profileImageUrl || undefined} />
-                                  <AvatarFallback className="text-sm bg-gradient-to-br from-purple-500/20 to-pink-500/20 font-semibold">
+                                  <AvatarFallback className="text-xs bg-muted font-medium">
                                     {getInitials(userDisplayInfo.displayName)}
                                   </AvatarFallback>
                                 </Avatar>
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center gap-2">
-                                    <span className="text-sm font-semibold text-foreground truncate">{userDisplayInfo.displayName}</span>
+                                    <span className="text-sm font-medium text-foreground truncate">{userDisplayInfo.displayName}</span>
                                     {userDisplayInfo.isArtist && (
-                                      <Music className="w-4 h-4 text-purple-500 flex-shrink-0" />
+                                      <Music className="w-3 h-3 text-purple-500 flex-shrink-0" />
                                     )}
                                     {filteredUser.isAdmin && (
-                                      <Crown className="w-4 h-4 text-yellow-500 flex-shrink-0" />
+                                      <Crown className="w-3 h-3 text-yellow-500 flex-shrink-0" />
                                     )}
                                   </div>
                                   {userDisplayInfo.displayName !== filteredUser.username && (
-                                    <div className="text-xs text-muted-foreground truncate">@{filteredUser.username}</div>
+                                    <div className="text-xs text-muted-foreground/70 truncate">@{filteredUser.username}</div>
                                   )}
                                 </div>
-                              </motion.button>
+                              </div>
                             );
                           })}
                         </div>
