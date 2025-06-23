@@ -421,7 +421,7 @@ export default function Chat() {
               {/* Gradient overlay for better readability */}
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/5 pointer-events-none z-10" />
               
-              <ScrollArea className="h-full p-8 relative z-20">
+              <ScrollArea className="h-full p-8 relative z-0">
               {isLoading ? (
                 <div className="space-y-4">
                   {Array.from({ length: 5 }).map((_, i) => (
@@ -592,41 +592,76 @@ export default function Chat() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            {/* Typing Indicator - moved here to be closer to input */}
-            {typingUsers.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="flex items-center gap-2 px-4 py-2 mb-3 text-sm text-muted-foreground bg-muted/20 rounded-xl"
-              >
-                <div className="flex gap-1">
-                  <motion.div
-                    className="w-2 h-2 bg-purple-500 rounded-full"
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 1, repeat: Infinity, delay: 0 }}
-                  />
-                  <motion.div
-                    className="w-2 h-2 bg-purple-500 rounded-full"
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 1, repeat: Infinity, delay: 0.2 }}
-                  />
-                  <motion.div
-                    className="w-2 h-2 bg-purple-500 rounded-full"
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 1, repeat: Infinity, delay: 0.4 }}
-                  />
-                </div>
-                <span className="font-medium">
-                  {typingUsers.length === 1 
-                    ? `${typingUsers[0]} está digitando...`
-                    : typingUsers.length === 2
-                    ? `${typingUsers[0]} e ${typingUsers[1]} estão digitando...`
-                    : `${typingUsers[0]} e +${typingUsers.length - 1} pessoas estão digitando...`
-                  }
-                </span>
-              </motion.div>
-            )}
+            {/* Typing Indicator - improved animation */}
+            <AnimatePresence>
+              {typingUsers.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  className="flex items-center gap-3 px-4 py-3 mb-3 text-sm bg-gradient-to-r from-purple-500/10 to-pink-500/10 backdrop-blur-sm border border-purple-500/20 rounded-2xl shadow-lg"
+                >
+                  <motion.div 
+                    className="flex gap-1"
+                    animate={{ scale: [1, 1.05, 1] }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <motion.div
+                      className="w-2.5 h-2.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-sm"
+                      animate={{ 
+                        scale: [1, 1.4, 1],
+                        opacity: [0.7, 1, 0.7]
+                      }}
+                      transition={{ 
+                        duration: 1.2, 
+                        repeat: Infinity, 
+                        delay: 0,
+                        ease: "easeInOut"
+                      }}
+                    />
+                    <motion.div
+                      className="w-2.5 h-2.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-sm"
+                      animate={{ 
+                        scale: [1, 1.4, 1],
+                        opacity: [0.7, 1, 0.7]
+                      }}
+                      transition={{ 
+                        duration: 1.2, 
+                        repeat: Infinity, 
+                        delay: 0.3,
+                        ease: "easeInOut"
+                      }}
+                    />
+                    <motion.div
+                      className="w-2.5 h-2.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-sm"
+                      animate={{ 
+                        scale: [1, 1.4, 1],
+                        opacity: [0.7, 1, 0.7]
+                      }}
+                      transition={{ 
+                        duration: 1.2, 
+                        repeat: Infinity, 
+                        delay: 0.6,
+                        ease: "easeInOut"
+                      }}
+                    />
+                  </motion.div>
+                  <motion.span 
+                    className="font-medium text-foreground/90"
+                    animate={{ opacity: [0.8, 1, 0.8] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    {typingUsers.length === 1 
+                      ? `${typingUsers[0]} está digitando...`
+                      : typingUsers.length === 2
+                      ? `${typingUsers[0]} e ${typingUsers[1]} estão digitando...`
+                      : `${typingUsers[0]} e +${typingUsers.length - 1} pessoas estão digitando...`
+                    }
+                  </motion.span>
+                </motion.div>
+              )}
+            </AnimatePresence>
             
             <form onSubmit={handleSendMessage} className="flex items-center gap-4">
               <div className="flex-1 relative">
@@ -665,12 +700,16 @@ export default function Chat() {
                 {/* Mentions Dropdown - Fixed positioning and click handling */}
                 <AnimatePresence>
                   {showMentions && filteredUsers.length > 0 && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      className="absolute bottom-full left-0 mb-2 w-80 bg-popover backdrop-blur-xl border border-border rounded-2xl shadow-2xl z-[100] overflow-hidden"
-                    >
+                    <>
+                      {/* Backdrop to prevent clicks behind */}
+                      <div className="fixed inset-0 z-[999]" onClick={() => setShowMentions(false)} />
+                      
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        className="absolute bottom-full left-0 mb-2 w-80 bg-popover/95 backdrop-blur-xl border border-border rounded-2xl shadow-2xl z-[1000] overflow-hidden"
+                      >
                       <div className="p-2">
                         <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2 px-3 py-2">
                           <AtSign className="w-4 h-4 text-purple-500" />
@@ -738,6 +777,7 @@ export default function Chat() {
                         )}
                       </div>
                     </motion.div>
+                    </>
                   )}
                 </AnimatePresence>
                 
