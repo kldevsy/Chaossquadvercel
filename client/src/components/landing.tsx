@@ -252,33 +252,35 @@ export default function Landing() {
           </motion.div>
         </div>
 
-        {/* Simplified Floating Elements */}
+        {/* Enhanced Floating Elements */}
         <div className="absolute inset-0 pointer-events-none">
-          {[...Array(6)].map((_, i) => {
-            const icons = [Gamepad2, Music, Star, Heart, Mic, Radio];
-            const IconComponent = icons[i];
-            const colors = ['text-primary/30', 'text-secondary/30', 'text-orange-400/30'];
+          {[...Array(15)].map((_, i) => {
+            const icons = [Gamepad2, Music, Star, Heart, Mic, Radio, Sparkles, Users, Play, Volume2, Headphones, Crown, Palette, Zap, MessageCircle];
+            const IconComponent = icons[i % icons.length];
+            const colors = ['text-primary/30', 'text-secondary/30', 'text-orange-400/30', 'text-pink-400/30', 'text-green-400/30', 'text-purple-400/30'];
             
             return (
               <motion.div
                 key={i}
                 className="absolute"
                 animate={{
-                  y: [0, -30, 0],
-                  opacity: [0.3, 0.6, 0.3],
+                  y: [0, -40 - (i % 3) * 10, 0],
+                  x: [0, (i % 2 === 0 ? 15 : -15), 0],
+                  opacity: [0.2, 0.7, 0.2],
+                  rotate: [0, 360],
                 }}
                 transition={{
-                  duration: 4 + i,
+                  duration: 6 + (i % 4),
                   repeat: Infinity,
                   ease: "easeInOut",
-                  delay: i * 0.5,
+                  delay: i * 0.3,
                 }}
                 style={{
-                  left: `${10 + (i * 15)}%`,
-                  top: `${20 + (i * 10)}%`,
+                  left: `${5 + (i * 6)}%`,
+                  top: `${10 + (i * 5)}%`,
                 }}
               >
-                <IconComponent className={`w-5 h-5 ${colors[i % colors.length]}`} />
+                <IconComponent className={`w-${4 + (i % 3)} h-${4 + (i % 3)} ${colors[i % colors.length]}`} />
               </motion.div>
             );
           })}

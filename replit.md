@@ -147,6 +147,10 @@ Preferred communication style: Simple, everyday language.
 - **June 24, 2025**: Added interactive statistics section with rotating icons and hover animations
 - **June 24, 2025**: Optimized landing page performance by reducing complex animations and particle count
 - **June 24, 2025**: Simplified hover effects and removed heavy CSS animations to improve responsiveness
+- **June 24, 2025**: Increased floating particles from 6 to 15 with enhanced variety and animations
+- **June 24, 2025**: Implemented context menu system for chat messages with reply, copy, and delete options
+- **June 24, 2025**: Added long-press and right-click support for message interactions
+- **June 24, 2025**: Created reply preview system with visual indicators and cancel functionality
 
 ## User Preferences
 

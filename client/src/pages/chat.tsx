@@ -11,7 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
-import { Send, Users, MessageCircle, Music, Crown, AtSign } from "lucide-react";
+import { Send, Users, MessageCircle, Music, Crown, AtSign, Reply, Copy, Trash2, MoreHorizontal } from "lucide-react";
 import type { ChatMessage, User } from "@shared/schema";
 
 interface ChatMessageWithUser extends ChatMessage {
@@ -26,6 +26,9 @@ export default function Chat() {
   const [cursorPosition, setCursorPosition] = useState(0);
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
   const [isTyping, setIsTyping] = useState(false);
+  const [selectedMessage, setSelectedMessage] = useState<number | null>(null);
+  const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
+  const [replyingTo, setReplyingTo] = useState<ChatMessageWithUser | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
@@ -275,8 +278,70 @@ export default function Chat() {
       clearTimeout(typingTimeoutRef.current);
     }
     
-    sendMessageMutation.mutate(message.trim());
+    let messageText = message.trim();
+    
+    // Add reply context if replying
+    if (replyingTo) {
+      const replyUserInfo = getUserDisplayInfo(replyingTo.userId, replyingTo.user?.username || 'Usuário');
+      messageText = `@${replyUserInfo.displayName} ${messageText}`;
+      setReplyingTo(null);
+    }
+    
+    sendMessageMutation.mutate(messageText);
   };
+
+  // Handle long press/right click on message
+  const handleMessageLongPress = (messageId: number, event: React.MouseEvent | React.TouchEvent) => {
+    event.preventDefault();
+    
+    const clientX = 'touches' in event ? event.touches[0]?.clientX || 0 : event.clientX;
+    const clientY = 'touches' in event ? event.touches[0]?.clientY || 0 : event.clientY;
+    
+    setSelectedMessage(messageId);
+    setContextMenuPosition({ x: clientX, y: clientY });
+  };
+
+  // Handle context menu actions
+  const handleReply = (msg: ChatMessageWithUser) => {
+    setReplyingTo(msg);
+    setSelectedMessage(null);
+    inputRef.current?.focus();
+  };
+
+  const handleCopy = (msg: ChatMessageWithUser) => {
+    navigator.clipboard.writeText(msg.message);
+    toast({
+      title: "Mensagem copiada",
+      description: "A mensagem foi copiada para a área de transferência",
+    });
+    setSelectedMessage(null);
+  };
+
+  const handleDelete = (messageId: number) => {
+    // TODO: Implement delete message mutation
+    toast({
+      title: "Função em desenvolvimento",
+      description: "A função de deletar mensagens será implementada em breve",
+    });
+    setSelectedMessage(null);
+  };
+
+  // Close context menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setSelectedMessage(null);
+    };
+    
+    if (selectedMessage) {
+      document.addEventListener('click', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
+      
+      return () => {
+        document.removeEventListener('click', handleClickOutside);
+        document.removeEventListener('touchstart', handleClickOutside);
+      };
+    }
+  }, [selectedMessage]);
 
   const formatTime = (dateString: string) => {
     return new Date(dateString).toLocaleTimeString("pt-BR", {
@@ -561,11 +626,25 @@ export default function Chat() {
                             <motion.div
                               whileHover={{ scale: 1.02 }}
                               transition={{ duration: 0.2 }}
-                              className={`px-4 py-3 rounded-2xl backdrop-blur-sm transition-all duration-300 relative shadow-lg ${
+                              className={`px-4 py-3 rounded-2xl backdrop-blur-sm transition-all duration-300 relative shadow-lg cursor-pointer select-none ${
                                 isOwnMessage
                                   ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white ml-auto shadow-purple-500/25'
                                   : 'bg-card/90 text-foreground border border-border/30 shadow-black/5'
                               }`}
+                              onContextMenu={(e) => handleMessageLongPress(msg.id, e)}
+                              onTouchStart={(e) => {
+                                const touchStartTime = Date.now();
+                                const timeout = setTimeout(() => {
+                                  handleMessageLongPress(msg.id, e);
+                                }, 500);
+                                
+                                const handleTouchEnd = () => {
+                                  clearTimeout(timeout);
+                                  document.removeEventListener('touchend', handleTouchEnd);
+                                };
+                                
+                                document.addEventListener('touchend', handleTouchEnd);
+                              }}
                             >
                               <p className="text-sm leading-relaxed whitespace-pre-wrap font-medium">
                                 {renderMessageWithMentions(msg.message)}
@@ -576,6 +655,27 @@ export default function Chat() {
                               } text-muted-foreground`}>
                                 {messageTime}
                               </div>
+                              
+                              {/* Message Options Button */}
+                              <motion.div
+                                className={`absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
+                                  isOwnMessage ? '-left-8 top-1/2 -translate-y-1/2' : '-right-8 top-1/2 -translate-y-1/2'
+                                }`}
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                              >
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="w-6 h-6 p-0 bg-background/80 hover:bg-background border border-border/30 rounded-full shadow-lg"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleMessageLongPress(msg.id, e);
+                                  }}
+                                >
+                                  <MoreHorizontal className="w-3 h-3" />
+                                </Button>
+                              </motion.div>
                             </motion.div>
                           </div>
 
@@ -605,6 +705,62 @@ export default function Chat() {
                 </div>
               )}
             </ScrollArea>
+
+            {/* Context Menu */}
+            <AnimatePresence>
+              {selectedMessage && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.2 }}
+                  className="fixed z-50 bg-card/95 backdrop-blur-xl border border-border/30 rounded-2xl shadow-2xl py-2"
+                  style={{
+                    left: Math.min(contextMenuPosition.x, window.innerWidth - 200),
+                    top: Math.min(contextMenuPosition.y, window.innerHeight - 150),
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {(() => {
+                    const currentMessage = messages.find(m => m.id === selectedMessage);
+                    if (!currentMessage) return null;
+                    
+                    return (
+                      <>
+                        <motion.button
+                          whileHover={{ backgroundColor: 'hsl(var(--muted))' }}
+                          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:text-primary transition-colors duration-200"
+                          onClick={() => handleReply(currentMessage)}
+                        >
+                          <Reply className="w-4 h-4" />
+                          Responder
+                        </motion.button>
+                        
+                        <motion.button
+                          whileHover={{ backgroundColor: 'hsl(var(--muted))' }}
+                          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:text-primary transition-colors duration-200"
+                          onClick={() => handleCopy(currentMessage)}
+                        >
+                          <Copy className="w-4 h-4" />
+                          Copiar
+                        </motion.button>
+                        
+                        {user?.isAdmin && (
+                          <motion.button
+                            whileHover={{ backgroundColor: 'hsl(var(--destructive) / 0.1)' }}
+                            className="w-full flex items-center gap-3 px-4 py-3 text-sm text-destructive hover:text-destructive/80 transition-colors duration-200"
+                            onClick={() => handleDelete(selectedMessage)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            Deletar
+                          </motion.button>
+                        )}
+                      </>
+                    );
+                  })()}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </CardContent>
 
           {/* Message Input */}
@@ -681,6 +837,37 @@ export default function Chat() {
                       : `${typingUsers[0]} e +${typingUsers.length - 1} pessoas estão digitando...`
                     }
                   </motion.span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            
+            {/* Reply Preview */}
+            <AnimatePresence>
+              {replyingTo && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center gap-3 px-4 py-3 mb-3 bg-muted/50 border border-border/30 rounded-2xl"
+                >
+                  <Reply className="w-4 h-4 text-muted-foreground" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-muted-foreground">
+                      Respondendo a {getUserDisplayInfo(replyingTo.userId, replyingTo.user?.username || 'Usuário').displayName}
+                    </p>
+                    <p className="text-sm font-medium truncate">
+                      {replyingTo.message}
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="w-6 h-6 p-0 text-muted-foreground hover:text-foreground"
+                    onClick={() => setReplyingTo(null)}
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </Button>
                 </motion.div>
               )}
             </AnimatePresence>
