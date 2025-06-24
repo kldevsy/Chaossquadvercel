@@ -82,23 +82,16 @@ export default function Landing() {
       {/* Animated Background Elements */}
       <div className="fixed inset-0 pointer-events-none">
         <motion.div
-          className="absolute w-96 h-96 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full blur-3xl"
+          className="absolute w-96 h-96 bg-gradient-to-r from-primary/15 to-secondary/15 rounded-full blur-3xl"
           animate={{
-            x: mousePosition.x / 50,
-            y: mousePosition.y / 50,
-            scale: [1, 1.1, 1],
+            x: mousePosition.x / 80,
+            y: mousePosition.y / 80,
           }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
           style={{ left: "10%", top: "20%" }}
         />
-        <motion.div
-          className="absolute w-64 h-64 bg-gradient-to-r from-orange-400/20 to-pink-400/20 rounded-full blur-2xl"
-          animate={{
-            x: -mousePosition.x / 30,
-            y: -mousePosition.y / 30,
-            rotate: [0, 180, 360],
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+        <div
+          className="absolute w-64 h-64 bg-gradient-to-r from-orange-400/15 to-pink-400/15 rounded-full blur-2xl"
           style={{ right: "15%", bottom: "30%" }}
         />
       </div>
@@ -161,22 +154,12 @@ export default function Landing() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             style={{ y, opacity }}
           >
-            <motion.div
-              className="inline-block mb-6"
-              animate={{ 
-                boxShadow: [
-                  "0 0 20px rgba(59, 130, 246, 0.3)",
-                  "0 0 40px rgba(139, 92, 246, 0.4)",
-                  "0 0 20px rgba(59, 130, 246, 0.3)"
-                ]
-              }}
-              transition={{ duration: 3, repeat: Infinity }}
-            >
+            <div className="inline-block mb-6">
               <Badge variant="outline" className="text-lg px-6 py-2 bg-primary/10 border-primary/30">
                 <Sparkles className="w-4 h-4 mr-2" />
                 Plataforma Musical Geek
               </Badge>
-            </motion.div>
+            </div>
 
             <motion.h1
               className="text-6xl md:text-8xl font-bold mb-8 leading-tight"
@@ -184,13 +167,9 @@ export default function Landing() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <motion.span 
-                className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent bg-300% animate-pulse"
-                animate={{ backgroundPosition: ["0%", "100%", "0%"] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-              >
+              <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
                 Chaos Squad
-              </motion.span>
+              </span>
             </motion.h1>
             
             <motion.p
@@ -262,13 +241,9 @@ export default function Landing() {
                   whileHover={{ scale: 1.1, y: -5 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <motion.div
-                    className="inline-flex items-center justify-center w-12 h-12 bg-primary/10 rounded-full mb-3 group-hover:bg-primary/20 transition-colors duration-300"
-                    animate={{ rotate: [0, 360] }}
-                    transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                  >
+                  <div className="inline-flex items-center justify-center w-12 h-12 bg-primary/10 rounded-full mb-3 group-hover:bg-primary/20 transition-colors duration-300">
                     <stat.icon className="w-6 h-6 text-primary" />
-                  </motion.div>
+                  </div>
                   <div className="text-2xl font-bold text-primary mb-1">{stat.value}</div>
                   <div className="text-sm text-muted-foreground">{stat.label}</div>
                 </motion.div>
@@ -277,63 +252,36 @@ export default function Landing() {
           </motion.div>
         </div>
 
-        {/* Floating Elements - Enhanced */}
+        {/* Simplified Floating Elements */}
         <div className="absolute inset-0 pointer-events-none">
-          {[...Array(12)].map((_, i) => {
+          {[...Array(6)].map((_, i) => {
             const icons = [Gamepad2, Music, Star, Heart, Mic, Radio];
-            const IconComponent = icons[i % icons.length];
-            const colors = ['text-primary/40', 'text-secondary/40', 'text-orange-400/40', 'text-pink-400/40', 'text-green-400/40', 'text-purple-400/40'];
+            const IconComponent = icons[i];
+            const colors = ['text-primary/30', 'text-secondary/30', 'text-orange-400/30'];
             
             return (
               <motion.div
                 key={i}
                 className="absolute"
                 animate={{
-                  y: [0, -40 - (i * 5), 0],
-                  x: [0, 30 - (i * 3), 0],
-                  rotate: [0, 360],
-                  opacity: [0.2, 0.8, 0.2],
-                  scale: [0.8, 1.2, 0.8],
+                  y: [0, -30, 0],
+                  opacity: [0.3, 0.6, 0.3],
                 }}
                 transition={{
-                  duration: 6 + (i * 0.5),
+                  duration: 4 + i,
                   repeat: Infinity,
                   ease: "easeInOut",
-                  delay: i * 0.3,
+                  delay: i * 0.5,
                 }}
                 style={{
-                  left: `${5 + (i * 8)}%`,
-                  top: `${15 + (i * 7)}%`,
+                  left: `${10 + (i * 15)}%`,
+                  top: `${20 + (i * 10)}%`,
                 }}
               >
-                <IconComponent className={`w-${4 + (i % 3)} h-${4 + (i % 3)} ${colors[i % colors.length]}`} />
+                <IconComponent className={`w-5 h-5 ${colors[i % colors.length]}`} />
               </motion.div>
             );
           })}
-          
-          {/* Additional particle effects */}
-          {[...Array(8)].map((_, i) => (
-            <motion.div
-              key={`particle-${i}`}
-              className="absolute w-2 h-2 bg-gradient-to-r from-primary to-secondary rounded-full opacity-30"
-              animate={{
-                y: [0, -100, -200, -100, 0],
-                x: [0, 50, -30, 20, 0],
-                scale: [0, 1, 0.5, 1, 0],
-                opacity: [0, 0.6, 0.8, 0.4, 0],
-              }}
-              transition={{
-                duration: 8,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: i * 1,
-              }}
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-              }}
-            />
-          ))}
         </div>
       </section>
 
@@ -363,121 +311,45 @@ export default function Landing() {
             {features.map((feature, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 50, rotateX: -15 }}
-                whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ 
-                  duration: 0.8, 
-                  delay: feature.delay,
-                  type: "spring",
-                  stiffness: 100
+                  duration: 0.6, 
+                  delay: feature.delay
                 }}
                 whileHover={{ 
-                  scale: 1.08, 
-                  y: -15,
-                  rotateY: 5,
-                  boxShadow: "0 30px 60px -12px rgba(0, 0, 0, 0.4)"
+                  scale: 1.05, 
+                  y: -8
                 }}
-                className="group cursor-pointer perspective-1000"
+                className="group cursor-pointer"
               >
-                <Card className="h-full relative overflow-hidden border-2 hover:border-primary/60 transition-all duration-500 bg-card/90 backdrop-blur-md shimmer hover-lift">
+                <Card className="h-full relative overflow-hidden border-2 hover:border-primary/50 transition-all duration-300 bg-card/80 backdrop-blur-sm">
                   <motion.div
-                    className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}
+                    className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}
                   />
                   
-                  {/* Animated border */}
-                  <motion.div
-                    className="absolute inset-0 rounded-lg"
-                    initial={{ opacity: 0 }}
-                    whileHover={{ opacity: 1 }}
-                    transition={{ duration: 0.3 }}
-                    style={{
-                      background: `linear-gradient(45deg, ${feature.color.includes('blue') ? '#3b82f6' : feature.color.includes('pink') ? '#ec4899' : feature.color.includes('green') ? '#10b981' : feature.color.includes('orange') ? '#f97316' : feature.color.includes('purple') ? '#8b5cf6' : '#06b6d4'}, transparent, ${feature.color.includes('blue') ? '#8b5cf6' : feature.color.includes('pink') ? '#ef4444' : feature.color.includes('green') ? '#059669' : feature.color.includes('orange') ? '#ea580c' : feature.color.includes('purple') ? '#7c3aed' : '#0891b2'})`,
-                      padding: '2px',
-                    }}
-                  />
-                  
-                  <CardContent className="p-8 relative z-10 bg-card/95 rounded-lg m-[2px]">
+                  <CardContent className="p-6 relative z-10">
                     <motion.div
-                      className={`w-20 h-20 ${feature.bgColor} rounded-3xl flex items-center justify-center mx-auto mb-6 relative overflow-hidden group-hover:shadow-lg`}
-                      whileHover={{ 
-                        scale: 1.2,
-                        rotate: 360,
-                        backgroundColor: feature.color.includes('blue') ? 'rgba(59, 130, 246, 0.2)' : feature.color.includes('pink') ? 'rgba(236, 72, 153, 0.2)' : feature.color.includes('green') ? 'rgba(16, 185, 129, 0.2)' : feature.color.includes('orange') ? 'rgba(249, 115, 22, 0.2)' : feature.color.includes('purple') ? 'rgba(139, 92, 246, 0.2)' : 'rgba(6, 182, 212, 0.2)'
-                      }}
-                      transition={{ duration: 0.6, type: "spring" }}
+                      className={`w-16 h-16 ${feature.bgColor} rounded-2xl flex items-center justify-center mx-auto mb-6`}
+                      whileHover={{ scale: 1.1 }}
+                      transition={{ duration: 0.3 }}
                     >
-                      <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"
-                      />
-                      <feature.icon className="w-10 h-10 text-primary group-hover:text-white transition-colors duration-300 relative z-10" />
-                      
-                      {/* Orbiting particles */}
-                      <motion.div
-                        className="absolute w-2 h-2 bg-primary rounded-full"
-                        animate={{
-                          rotate: [0, 360],
-                          scale: [0.5, 1, 0.5],
-                        }}
-                        transition={{
-                          duration: 3,
-                          repeat: Infinity,
-                          ease: "linear"
-                        }}
-                        style={{
-                          transformOrigin: "25px 25px",
-                          top: "calc(50% - 1px)",
-                          left: "calc(50% - 1px)"
-                        }}
-                      />
+                      <feature.icon className="w-8 h-8 text-primary group-hover:text-white transition-colors duration-300" />
                     </motion.div>
                     
-                    <motion.h3 
-                      className="text-xl font-bold mb-4 text-center group-hover:text-primary transition-colors duration-300"
-                      whileHover={{ scale: 1.05 }}
-                    >
+                    <h3 className="text-xl font-bold mb-4 text-center group-hover:text-primary transition-colors duration-300">
                       {feature.title}
-                    </motion.h3>
+                    </h3>
                     
-                    <motion.p 
-                      className="text-muted-foreground text-center leading-relaxed"
-                      initial={{ opacity: 0.8 }}
-                      whileHover={{ opacity: 1 }}
-                    >
+                    <p className="text-muted-foreground text-center leading-relaxed">
                       {feature.description}
-                    </motion.p>
+                    </p>
                   </CardContent>
                   
-                  {/* Dynamic glow effect */}
-                  <motion.div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                    style={{
-                      background: `radial-gradient(circle at 50% 50%, ${feature.color.includes('blue') ? 'rgba(59, 130, 246, 0.15)' : feature.color.includes('pink') ? 'rgba(236, 72, 153, 0.15)' : feature.color.includes('green') ? 'rgba(16, 185, 129, 0.15)' : feature.color.includes('orange') ? 'rgba(249, 115, 22, 0.15)' : feature.color.includes('purple') ? 'rgba(139, 92, 246, 0.15)' : 'rgba(6, 182, 212, 0.15)'} 0%, transparent 70%)`
-                    }}
-                  />
-                  
-                  {/* Sparkle effects */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                    {[...Array(3)].map((_, sparkleIndex) => (
-                      <motion.div
-                        key={sparkleIndex}
-                        className="absolute w-1 h-1 bg-white rounded-full"
-                        animate={{
-                          scale: [0, 1, 0],
-                          opacity: [0, 1, 0],
-                        }}
-                        transition={{
-                          duration: 1.5,
-                          repeat: Infinity,
-                          delay: sparkleIndex * 0.5,
-                        }}
-                        style={{
-                          left: `${20 + sparkleIndex * 25}%`,
-                          top: `${15 + sparkleIndex * 20}%`,
-                        }}
-                      />
-                    ))}
-                  </div>
+                  {/* Simplified glow effect */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none bg-primary/5 rounded-lg" />
+
                 </Card>
               </motion.div>
             ))}
@@ -502,16 +374,9 @@ export default function Landing() {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <motion.div
-              className="inline-block mb-8"
-              animate={{ 
-                scale: [1, 1.1, 1],
-                rotate: [0, 5, -5, 0]
-              }}
-              transition={{ duration: 3, repeat: Infinity }}
-            >
+            <div className="inline-block mb-8">
               <Sparkles className="w-20 h-20 text-primary mx-auto" />
-            </motion.div>
+            </div>
             
             <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
               Pronto para a Aventura Musical?
