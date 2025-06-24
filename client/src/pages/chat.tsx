@@ -290,17 +290,11 @@ export default function Chat() {
     sendMessageMutation.mutate(messageText);
   };
 
-  // Handle long press/right click on message
-  const handleMessageLongPress = (messageId: number, event: React.MouseEvent | React.TouchEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
-    
-    const clientX = 'touches' in event ? event.touches[0]?.clientX || 0 : event.clientX;
-    const clientY = 'touches' in event ? event.touches[0]?.clientY || 0 : event.clientY;
-    
-    console.log('Menu contextual ativado para mensagem:', messageId);
+  // Handle message menu
+  const handleMessageMenu = (messageId: number, x: number, y: number) => {
+    console.log('Menu contextual ativado para mensagem:', messageId, 'posição:', { x, y });
     setSelectedMessage(messageId);
-    setContextMenuPosition({ x: clientX, y: clientY });
+    setContextMenuPosition({ x, y });
   };
 
   // Handle context menu actions
@@ -576,7 +570,7 @@ export default function Chat() {
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, y: -10, scale: 0.95 }}
                           transition={{ duration: 0.3, delay: index * 0.02 }}
-                          className={`flex gap-3 group hover:bg-muted/20 p-2 rounded-2xl transition-all duration-300 ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
+                          className={`flex gap-3 group hover:bg-muted/20 p-2 rounded-2xl transition-all duration-300 relative ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
                         >
                           {showAvatar && !isOwnMessage && (
                             <motion.div
@@ -628,25 +622,11 @@ export default function Chat() {
                             <motion.div
                               whileHover={{ scale: 1.02 }}
                               transition={{ duration: 0.2 }}
-                              className={`px-4 py-3 rounded-2xl backdrop-blur-sm transition-all duration-300 relative shadow-lg cursor-pointer select-none ${
+                              className={`px-4 py-3 rounded-2xl backdrop-blur-sm transition-all duration-300 relative shadow-lg ${
                                 isOwnMessage
                                   ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white ml-auto shadow-purple-500/25'
                                   : 'bg-card/90 text-foreground border border-border/30 shadow-black/5'
                               }`}
-                              onContextMenu={(e) => handleMessageLongPress(msg.id, e)}
-                              onTouchStart={(e) => {
-                                const touchStartTime = Date.now();
-                                const timeout = setTimeout(() => {
-                                  handleMessageLongPress(msg.id, e);
-                                }, 500);
-                                
-                                const handleTouchEnd = () => {
-                                  clearTimeout(timeout);
-                                  document.removeEventListener('touchend', handleTouchEnd);
-                                };
-                                
-                                document.addEventListener('touchend', handleTouchEnd);
-                              }}
                             >
                               <p className="text-sm leading-relaxed whitespace-pre-wrap font-medium">
                                 {renderMessageWithMentions(msg.message)}
@@ -658,28 +638,31 @@ export default function Chat() {
                                 {messageTime}
                               </div>
                               
-                              {/* Message Options Button */}
-                              <motion.div
-                                className={`absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
-                                  isOwnMessage ? '-left-10 top-2' : '-right-10 top-2'
-                                } z-10`}
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                              >
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="w-7 h-7 p-0 bg-background/90 hover:bg-background border border-border/50 rounded-full shadow-lg"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    console.log('Botão de menu clicado para mensagem:', msg.id);
-                                    handleMessageLongPress(msg.id, e);
-                                  }}
-                                >
-                                  <MoreHorizontal className="w-4 h-4" />
-                                </Button>
-                              </motion.div>
+                          {/* Message Options Button - Move outside message bubble */}
+                          <motion.div
+                            className={`absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 top-2 z-20 ${
+                              isOwnMessage ? 'right-2' : 'left-2'
+                            }`}
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                          >
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="w-8 h-8 p-0 bg-background/95 hover:bg-background border border-border/50 rounded-full shadow-lg backdrop-blur-sm"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                console.log('Botão de menu clicado para mensagem:', msg.id);
+                                
+                                // Get button position for menu placement
+                                const rect = e.currentTarget.getBoundingClientRect();
+                                handleMessageMenu(msg.id, rect.left, rect.bottom + 5);
+                              }}
+                            >
+                              <MoreHorizontal className="w-4 h-4" />
+                            </Button>
+                          </motion.div>
                             </motion.div>
                           </div>
 
