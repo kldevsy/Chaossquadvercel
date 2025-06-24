@@ -293,10 +293,12 @@ export default function Chat() {
   // Handle long press/right click on message
   const handleMessageLongPress = (messageId: number, event: React.MouseEvent | React.TouchEvent) => {
     event.preventDefault();
+    event.stopPropagation();
     
     const clientX = 'touches' in event ? event.touches[0]?.clientX || 0 : event.clientX;
     const clientY = 'touches' in event ? event.touches[0]?.clientY || 0 : event.clientY;
     
+    console.log('Menu contextual ativado para mensagem:', messageId);
     setSelectedMessage(messageId);
     setContextMenuPosition({ x: clientX, y: clientY });
   };
@@ -326,19 +328,19 @@ export default function Chat() {
     setSelectedMessage(null);
   };
 
-  // Close context menu when clicking outside
+  // Close context menu when clicking outside or pressing escape
   useEffect(() => {
-    const handleClickOutside = () => {
-      setSelectedMessage(null);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSelectedMessage(null);
+      }
     };
     
     if (selectedMessage) {
-      document.addEventListener('click', handleClickOutside);
-      document.addEventListener('touchstart', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
       
       return () => {
-        document.removeEventListener('click', handleClickOutside);
-        document.removeEventListener('touchstart', handleClickOutside);
+        document.removeEventListener('keydown', handleKeyDown);
       };
     }
   }, [selectedMessage]);
@@ -659,21 +661,23 @@ export default function Chat() {
                               {/* Message Options Button */}
                               <motion.div
                                 className={`absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
-                                  isOwnMessage ? '-left-8 top-1/2 -translate-y-1/2' : '-right-8 top-1/2 -translate-y-1/2'
-                                }`}
+                                  isOwnMessage ? '-left-10 top-2' : '-right-10 top-2'
+                                } z-10`}
                                 whileHover={{ scale: 1.1 }}
                                 whileTap={{ scale: 0.9 }}
                               >
                                 <Button
                                   size="sm"
                                   variant="ghost"
-                                  className="w-6 h-6 p-0 bg-background/80 hover:bg-background border border-border/30 rounded-full shadow-lg"
+                                  className="w-7 h-7 p-0 bg-background/90 hover:bg-background border border-border/50 rounded-full shadow-lg"
                                   onClick={(e) => {
+                                    e.preventDefault();
                                     e.stopPropagation();
+                                    console.log('Botão de menu clicado para mensagem:', msg.id);
                                     handleMessageLongPress(msg.id, e);
                                   }}
                                 >
-                                  <MoreHorizontal className="w-3 h-3" />
+                                  <MoreHorizontal className="w-4 h-4" />
                                 </Button>
                               </motion.div>
                             </motion.div>
@@ -709,56 +713,78 @@ export default function Chat() {
             {/* Context Menu */}
             <AnimatePresence>
               {selectedMessage && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.2 }}
-                  className="fixed z-50 bg-card/95 backdrop-blur-xl border border-border/30 rounded-2xl shadow-2xl py-2"
-                  style={{
-                    left: Math.min(contextMenuPosition.x, window.innerWidth - 200),
-                    top: Math.min(contextMenuPosition.y, window.innerHeight - 150),
-                  }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {(() => {
-                    const currentMessage = messages.find(m => m.id === selectedMessage);
-                    if (!currentMessage) return null;
-                    
-                    return (
-                      <>
-                        <motion.button
-                          whileHover={{ backgroundColor: 'hsl(var(--muted))' }}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:text-primary transition-colors duration-200"
-                          onClick={() => handleReply(currentMessage)}
-                        >
-                          <Reply className="w-4 h-4" />
-                          Responder
-                        </motion.button>
-                        
-                        <motion.button
-                          whileHover={{ backgroundColor: 'hsl(var(--muted))' }}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:text-primary transition-colors duration-200"
-                          onClick={() => handleCopy(currentMessage)}
-                        >
-                          <Copy className="w-4 h-4" />
-                          Copiar
-                        </motion.button>
-                        
-                        {user?.isAdmin && (
+                <>
+                  {/* Overlay to catch clicks outside */}
+                  <div 
+                    className="fixed inset-0 z-40"
+                    onClick={() => setSelectedMessage(null)}
+                  />
+                  
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8, y: -10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.8, y: -10 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                    className="fixed z-50 bg-card border border-border rounded-xl shadow-2xl py-2 min-w-[160px]"
+                    style={{
+                      left: Math.max(10, Math.min(contextMenuPosition.x, window.innerWidth - 170)),
+                      top: Math.max(10, Math.min(contextMenuPosition.y, window.innerHeight - 120)),
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {(() => {
+                      const currentMessage = messages.find(m => m.id === selectedMessage);
+                      if (!currentMessage) {
+                        console.log('Mensagem não encontrada:', selectedMessage);
+                        return null;
+                      }
+                      
+                      console.log('Renderizando menu para mensagem:', currentMessage);
+                      
+                      return (
+                        <>
                           <motion.button
-                            whileHover={{ backgroundColor: 'hsl(var(--destructive) / 0.1)' }}
-                            className="w-full flex items-center gap-3 px-4 py-3 text-sm text-destructive hover:text-destructive/80 transition-colors duration-200"
-                            onClick={() => handleDelete(selectedMessage)}
+                            whileHover={{ backgroundColor: 'hsl(var(--muted))' }}
+                            className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:text-primary transition-colors duration-200 rounded-lg mx-1"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleReply(currentMessage);
+                            }}
                           >
-                            <Trash2 className="w-4 h-4" />
-                            Deletar
+                            <Reply className="w-4 h-4" />
+                            Responder
                           </motion.button>
-                        )}
-                      </>
-                    );
-                  })()}
-                </motion.div>
+                          
+                          <motion.button
+                            whileHover={{ backgroundColor: 'hsl(var(--muted))' }}
+                            className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground hover:text-primary transition-colors duration-200 rounded-lg mx-1"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCopy(currentMessage);
+                            }}
+                          >
+                            <Copy className="w-4 h-4" />
+                            Copiar
+                          </motion.button>
+                          
+                          {user?.isAdmin && (
+                            <motion.button
+                              whileHover={{ backgroundColor: 'hsl(var(--destructive) / 0.1)' }}
+                              className="w-full flex items-center gap-3 px-4 py-3 text-sm text-destructive hover:text-destructive/80 transition-colors duration-200 rounded-lg mx-1"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete(selectedMessage);
+                              }}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              Deletar
+                            </motion.button>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </motion.div>
+                </>
               )}
             </AnimatePresence>
           </CardContent>
