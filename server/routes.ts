@@ -70,7 +70,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Notifications routes
   app.get("/api/notifications", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const notifications = await storage.getUserNotifications(userId);
       res.json(notifications);
     } catch (error) {
@@ -85,7 +85,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User profile routes
   app.get('/api/user/artist-profile', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const artistProfile = await storage.getUserArtistProfile(userId);
       res.json(artistProfile);
     } catch (error) {
@@ -96,7 +96,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put('/api/user/profile', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const { firstName, lastName, email } = req.body;
       
       const existingUser = await storage.getUser(userId);
@@ -288,7 +288,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/artists/:id/like", isAuthenticated, async (req: any, res) => {
     try {
       const artistId = parseInt(req.params.id);
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       
       if (isNaN(artistId)) {
         return res.status(400).json({ message: "ID inválido" });
@@ -311,7 +311,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/artists/:id/like", isAuthenticated, async (req: any, res) => {
     try {
       const artistId = parseInt(req.params.id);
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       
       if (isNaN(artistId)) {
         return res.status(400).json({ message: "ID inválido" });
@@ -328,7 +328,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get user's liked artists
   app.get("/api/user/likes", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const likes = await storage.getUserLikes(userId);
       res.json(likes);
     } catch (error) {
@@ -340,7 +340,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin middleware
   const isAdmin: any = async (req: any, res: any, next: any) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       if (!user || !user.isAdmin) {
         return res.status(403).json({ message: "Acesso negado - Apenas administradores" });
@@ -464,7 +464,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/artists/:id/liked", isAuthenticated, async (req: any, res) => {
     try {
       const artistId = parseInt(req.params.id);
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       
       if (isNaN(artistId)) {
         return res.status(400).json({ message: "ID inválido" });
@@ -694,7 +694,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/chat/messages", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const { message } = req.body;
 
       if (!message || typeof message !== 'string' || message.trim().length === 0) {

@@ -151,6 +151,13 @@ Preferred communication style: Simple, everyday language.
 - **June 24, 2025**: Implemented context menu system for chat messages with reply, copy, and delete options
 - **June 24, 2025**: Added long-press and right-click support for message interactions
 - **June 24, 2025**: Created reply preview system with visual indicators and cancel functionality
+- **June 25, 2025**: Migrated from Replit Auth to simple username/password authentication system
+- **June 25, 2025**: Implemented complete login/register page with form validation
+- **June 25, 2025**: Fixed logout button to use new authentication system with mutations
+- **June 25, 2025**: Prepared project for Vercel deployment with serverless functions
+- **June 25, 2025**: Created vercel.json configuration and API directory structure
+- **June 25, 2025**: Updated all authentication routes to use standard user.id instead of Replit claims
+- **June 25, 2025**: Created deployment documentation and environment variable examples
 
 ## User Preferences
 
@@ -158,6 +165,7 @@ Preferred communication style: Simple, everyday language.
 - Video functionality: Supports hover/click preview with smooth transitions
 - Instagram/Twitter links: Open in new tab instead of embedding
 - Direct video files: No controls, auto-loop, return to cover when ended
+- Deployment: Vercel instead of Replit for production hosting
 
 ## Changelog
 

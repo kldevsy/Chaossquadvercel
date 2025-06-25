@@ -23,7 +23,7 @@ export default function Header({ onSearch, searchQuery, totalArtists = 0 }: Head
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [location] = useLocation();
   const { theme } = useTheme();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logoutMutation } = useAuth();
 
   return (
     <motion.header 
@@ -255,17 +255,20 @@ export default function Header({ onSearch, searchQuery, totalArtists = 0 }: Head
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    onClick={() => window.location.href = "/api/logout"}
+                    onClick={() => logoutMutation.mutate()}
+                    disabled={logoutMutation.isPending}
                     className="gap-1 px-2"
                   >
                     <LogOut className="w-3 h-3" />
-                    <span className="hidden lg:inline text-xs">Sair</span>
+                    <span className="hidden lg:inline text-xs">
+                      {logoutMutation.isPending ? "Saindo..." : "Sair"}
+                    </span>
                   </Button>
                 </div>
               ) : (
                 <Button 
                   size="sm" 
-                  onClick={() => window.location.href = "/api/login"}
+                  onClick={() => window.location.href = "/auth"}
                   className="gap-2"
                 >
                   <User className="w-4 h-4" />
