@@ -6,7 +6,9 @@ Vercel mostra: "Seu domínio de produção não está atendendo tráfego. Para a
 ## Solução Completa
 
 ### 0. Configuração Corrigida ✅
-O diretório de saída foi corrigido de `dist` para `dist/public` no vercel.json.
+- Criado `client/package.json` para resolver erro de build
+- Simplificada configuração do `vercel.json` para máxima compatibilidade
+- Diretório de saída configurado corretamente para `dist/public`
 
 ### 1. Faça Push das Mudanças
 ```bash
