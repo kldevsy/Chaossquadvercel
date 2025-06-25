@@ -5,6 +5,9 @@ Vercel mostra: "Seu domínio de produção não está atendendo tráfego. Para a
 
 ## Solução Completa
 
+### 0. Configuração Corrigida ✅
+O diretório de saída foi corrigido de `dist` para `dist/public` no vercel.json.
+
 ### 1. Faça Push das Mudanças
 ```bash
 # No terminal do seu computador (não no Replit):
