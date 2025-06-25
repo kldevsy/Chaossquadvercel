@@ -59,15 +59,13 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const userId = Date.now().toString();
+    const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const userData = {
       id: userId,
       ...insertUser,
-      email: null,
-      firstName: null,
-      lastName: null,
       profileImageUrl: null,
-      isAdmin: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
     const [user] = await db.insert(users).values(userData).returning();
     return user;

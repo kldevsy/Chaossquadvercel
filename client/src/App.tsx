@@ -4,7 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth, AuthProvider } from "@/hooks/useAuth";
 import FloatingNotification from "@/components/floating-notification";
 import { useFloatingNotifications } from "@/hooks/useFloatingNotifications";
 import Home from "@/pages/home";
@@ -13,16 +13,27 @@ import Chat from "@/pages/chat";
 import ArtistProfile from "@/pages/artist-profile";
 import Profile from "@/pages/profile";
 import Admin from "@/pages/admin";
-import Landing from "@/components/landing";
+import AuthPage from "@/pages/auth";
 import NotFound from "@/pages/not-found";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
     <Switch>
-      {isLoading || !isAuthenticated ? (
-        <Route path="/" component={Landing} />
+      {!isAuthenticated ? (
+        <>
+          <Route path="/auth" component={AuthPage} />
+          <Route path="/*" component={AuthPage} />
+        </>
       ) : (
         <>
           <Route path="/" component={Home} />
@@ -31,9 +42,9 @@ function Router() {
           <Route path="/artist-profile/:id" component={ArtistProfile} />
           <Route path="/profile" component={Profile} />
           <Route path="/admin" component={Admin} />
+          <Route component={NotFound} />
         </>
       )}
-      <Route component={NotFound} />
     </Switch>
   );
 }
@@ -59,12 +70,14 @@ function AppWithNotifications() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <TooltipProvider>
-          <Toaster />
-          <AppWithNotifications />
-        </TooltipProvider>
-      </ThemeProvider>
+      <AuthProvider>
+        <ThemeProvider>
+          <TooltipProvider>
+            <Toaster />
+            <AppWithNotifications />
+          </TooltipProvider>
+        </ThemeProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

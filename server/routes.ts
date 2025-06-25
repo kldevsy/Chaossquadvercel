@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupAuth, isAuthenticated } from "./auth";
 import { insertArtistSchema, insertProjectSchema, insertNotificationSchema, insertChatMessageSchema } from "@shared/schema";
 import { z } from "zod";
 import { WebSocketServer } from "ws";
@@ -79,17 +79,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
-  });
+  // Auth routes - now handled by auth.ts
+  // app.get('/api/auth/user') is now app.get('/api/user') in auth.ts
 
   // User profile routes
   app.get('/api/user/artist-profile', isAuthenticated, async (req: any, res) => {
