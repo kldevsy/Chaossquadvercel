@@ -2,7 +2,7 @@
 
 ## Overview
 
-chaos squad is a modern web application for discovering and exploring music artists with a focus on geek culture and gaming-inspired music. The platform features a clean, responsive interface for browsing artists by categories, playing music samples, and managing artist profiles.
+chaos squadis a modern web application for discovering and exploring music artists with a focus on geek culture and gaming-inspired music. The platform features a clean, responsive interface for browsing artists by categories, playing music samples, and managing artist profiles.
 
 ## System Architecture
 
