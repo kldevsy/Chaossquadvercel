@@ -2,18 +2,32 @@
 
 Plataforma de descoberta de artistas musicais da cultura geek com autenticação simples.
 
-## Preparação para Deploy
+## Problema: "Sem implantação de produção"
 
-### 1. Configuração do Banco de Dados
-Configure um banco PostgreSQL (recomendado: Neon, Supabase ou Railway):
+Se você está vendo a mensagem "Seu domínio de produção não está atendendo tráfego", siga estes passos:
+
+### 1. Resolva o Git primeiro
+```bash
+# Adicione todas as mudanças
+git add .
+
+# Faça commit das mudanças
+git commit -m "Preparar para deploy na Vercel"
+
+# Publique a branch principal
+git push -u origin principal
+```
+
+### 2. Configure o Banco de Dados
+Crie um banco PostgreSQL (recomendado: Neon, Supabase ou Railway):
 
 ```bash
 # Exemplo de URL do banco
 DATABASE_URL=postgresql://username:password@host:5432/database
 ```
 
-### 2. Variáveis de Ambiente na Vercel
-Configure as seguintes variáveis no painel da Vercel:
+### 3. Variáveis de Ambiente na Vercel
+No painel da Vercel, vá em Settings > Environment Variables e adicione:
 
 ```
 DATABASE_URL=sua_url_do_banco_postgresql
@@ -21,17 +35,18 @@ SESSION_SECRET=uma_chave_secreta_forte_aleatoria
 NODE_ENV=production
 ```
 
-### 3. Deploy na Vercel
+### 4. Force um novo deploy
+Após fazer o push para o GitHub:
+1. Vá no painel da Vercel
+2. Clique em "Deployments"
+3. Clique nos 3 pontinhos do último deploy
+4. Selecione "Redeploy"
 
-1. Conecte seu repositório GitHub na Vercel
-2. Configure as variáveis de ambiente
-3. O deploy será automático usando a configuração `vercel.json`
-
-### 4. Migração do Banco
-Após o deploy, execute as migrações:
+### 5. Migração do Banco
+Após o deploy bem-sucedido, execute as migrações:
 
 ```bash
-npm run db:push
+npx drizzle-kit push
 ```
 
 ## Funcionalidades
