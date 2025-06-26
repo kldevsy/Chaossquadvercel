@@ -167,6 +167,9 @@ Preferred communication style: Simple, everyday language.
 - **June 26, 2025**: Corrigidas incompatibilidades de tipos entre InsertArtist/Artist e InsertNotification/Notification
 - **June 26, 2025**: Removidas propriedades duplicadas no objeto artist
 - **June 26, 2025**: Build do servidor concluído com sucesso - projeto pronto para deploy no Vercel
+- **June 26, 2025**: Corrigidos avisos do Vercel - atualizado vercel.json para configuração moderna sem builds
+- **June 26, 2025**: Corrigido erro de CSS - renomeada classe .bg-300% para .bg-gradient-300
+- **June 26, 2025**: Projeto completamente otimizado para deploy no Vercel sem avisos ou erros
 
 ## User Preferences
 

@@ -22,15 +22,29 @@
 
 **Solução**: Refatorado para mapear explicitamente cada propriedade sem usar spread operator.
 
+### 5. Aviso Vercel: Build settings não aplicadas
+**Problema**: Configuração `builds` obsoleta no `vercel.json` causando aviso sobre Build and Development Settings ignoradas.
+
+**Solução**: Atualizado `vercel.json` para usar configuração moderna com `functions`, `rewrites`, `buildCommand` e `outputDirectory`.
+
+### 6. Erro CSS: Sintaxe inválida `bg-300%`
+**Problema**: Classe CSS `.bg-300%` com caractere `%` inválido causando erro durante minificação.
+
+**Solução**: Renomeado para `.bg-gradient-300` no arquivo `client/src/index.css`.
+
 ## Arquivos Modificados
 
 - `server/storage.ts`: Correções de tipos e implementação de métodos ausentes
+- `vercel.json`: Atualizado para configuração moderna sem `builds`
+- `client/src/index.css`: Corrigida classe CSS inválida
 
 ## Status do Build
 
 ✅ Build do servidor concluído com sucesso
 ✅ Todos os erros de TypeScript corrigidos
-✅ Projeto pronto para deploy no Vercel
+✅ Avisos do Vercel resolvidos
+✅ Erro de CSS corrigido
+✅ Projeto totalmente pronto para deploy no Vercel
 
 ## Próximos Passos
 
