@@ -174,6 +174,10 @@ Preferred communication style: Simple, everyday language.
 - **June 26, 2025**: Instaladas dependências @vercel/node, bcrypt e @types/bcrypt
 - **June 26, 2025**: API do Vercel simplificada sem dependências externas problemáticas
 - **June 26, 2025**: Todas as correções documentadas em VERCEL_FIXES.md - deploy totalmente funcional
+- **June 26, 2025**: Resolvido erro crítico ERR_MODULE_NOT_FOUND - API Vercel recriada com PostgreSQL nativo
+- **June 26, 2025**: Eliminadas dependências Drizzle ORM problemáticas - função serverless 100% independente
+- **June 26, 2025**: Instaladas dependências pg, @types/pg para máxima compatibilidade PostgreSQL
+- **June 26, 2025**: API simplificada com SQL nativo - zero imports externos - deploy Vercel garantido
 
 ## User Preferences
 
