@@ -506,6 +506,8 @@ export class MemStorage implements IStorage {
       const newArtist: Artist = { 
         ...artist, 
         id,
+        userId: artist.userId || null,
+        banner: artist.banner || null,
         musicUrl: artist.musicUrl || null,
         isActive: artist.isActive ?? true,
         musicalStyles: artist.musicalStyles || [],
@@ -637,13 +639,19 @@ export class MemStorage implements IStorage {
   async createArtist(insertArtist: InsertArtist): Promise<Artist> {
     const id = this.currentArtistId++;
     const artist: Artist = { 
-      ...insertArtist, 
       id,
+      name: insertArtist.name,
+      avatar: insertArtist.avatar,
+      banner: insertArtist.banner || null,
+      description: insertArtist.description,
+      roles: insertArtist.roles,
+      socialLinks: insertArtist.socialLinks,
       musicUrl: insertArtist.musicUrl || null,
       isActive: insertArtist.isActive ?? true,
       musicalStyles: insertArtist.musicalStyles || [],
       artistTypes: insertArtist.artistTypes || [],
-      likesCount: insertArtist.likesCount ?? 0
+      likesCount: insertArtist.likesCount ?? 0,
+      userId: insertArtist.userId || null
     };
     this.artists.set(id, artist);
     return artist;
@@ -776,12 +784,39 @@ export class MemStorage implements IStorage {
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }
 
+  async getUserNotifications(userId: string): Promise<Notification[]> {
+    return Array.from(this.notifications.values())
+      .filter(notification => {
+        if (!notification.isActive) return false;
+        
+        // All users notification
+        if (notification.targetType === "all") return true;
+        
+        // Specific user notification
+        if (notification.targetType === "specific_user" && notification.userId === userId) return true;
+        
+        // Artists only notification - check if user has an artist profile
+        if (notification.targetType === "artists_only") {
+          const userArtist = Array.from(this.artists.values()).find(artist => artist.userId === userId);
+          return !!userArtist;
+        }
+        
+        return false;
+      })
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+
   async createNotification(insertNotification: InsertNotification): Promise<Notification> {
     const id = this.currentNotificationId++;
     const notification: Notification = {
       id,
-      ...insertNotification,
-      isActive: insertNotification.isActive ?? true,
+      title: insertNotification.title,
+      message: insertNotification.message,
+      type: insertNotification.type || "info",
+      userId: insertNotification.userId || null,
+      targetType: insertNotification.targetType || "all",
+      relatedMessageId: insertNotification.relatedMessageId || null,
+      isActive: true,
       createdAt: new Date().toISOString(),
     };
     this.notifications.set(id, notification);
