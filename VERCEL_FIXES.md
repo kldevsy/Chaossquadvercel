@@ -32,11 +32,17 @@
 
 **Solução**: Renomeado para `.bg-gradient-300` no arquivo `client/src/index.css`.
 
+### 7. Erro Vercel: Módulo não encontrado `/var/task/server/routes`
+**Problema**: Função serverless do Vercel não conseguia encontrar dependências externas devido à estrutura de importação.
+
+**Solução**: Refatorado `api/index.ts` para ser uma função serverless independente usando `@vercel/node` com toda a lógica da API integrada.
+
 ## Arquivos Modificados
 
 - `server/storage.ts`: Correções de tipos e implementação de métodos ausentes
 - `vercel.json`: Atualizado para configuração moderna sem `builds`
 - `client/src/index.css`: Corrigida classe CSS inválida
+- `api/index.ts`: Refatorado como função serverless independente
 
 ## Status do Build
 
@@ -44,6 +50,8 @@
 ✅ Todos os erros de TypeScript corrigidos
 ✅ Avisos do Vercel resolvidos
 ✅ Erro de CSS corrigido
+✅ API do Vercel refatorada para função serverless
+✅ Dependências @vercel/node instaladas
 ✅ Projeto totalmente pronto para deploy no Vercel
 
 ## Próximos Passos

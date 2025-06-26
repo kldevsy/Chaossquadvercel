@@ -170,6 +170,10 @@ Preferred communication style: Simple, everyday language.
 - **June 26, 2025**: Corrigidos avisos do Vercel - atualizado vercel.json para configuração moderna sem builds
 - **June 26, 2025**: Corrigido erro de CSS - renomeada classe .bg-300% para .bg-gradient-300
 - **June 26, 2025**: Projeto completamente otimizado para deploy no Vercel sem avisos ou erros
+- **June 26, 2025**: Corrigido erro crítico do Vercel - refatorada API serverless para função independente
+- **June 26, 2025**: Instaladas dependências @vercel/node, bcrypt e @types/bcrypt
+- **June 26, 2025**: API do Vercel simplificada sem dependências externas problemáticas
+- **June 26, 2025**: Todas as correções documentadas em VERCEL_FIXES.md - deploy totalmente funcional
 
 ## User Preferences
 
