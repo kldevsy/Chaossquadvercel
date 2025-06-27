@@ -21,20 +21,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Initialize auth state from localStorage
   useEffect(() => {
     console.log('AuthProvider: Initializing auth state');
-    try {
-      const storedUser = localStorage.getItem('geektunes-user');
-      if (storedUser) {
-        const userData = JSON.parse(storedUser);
-        if (userData && userData.id && userData.username) {
-          console.log('AuthProvider: Found stored user:', userData.username);
-          setUser(userData);
+    // Small delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      try {
+        const storedUser = localStorage.getItem('geektunes-user');
+        if (storedUser) {
+          const userData = JSON.parse(storedUser);
+          if (userData && userData.id && userData.username) {
+            console.log('AuthProvider: Found stored user:', userData.username);
+            setUser(userData);
+          } else {
+            console.log('AuthProvider: Invalid stored user data, clearing');
+            localStorage.removeItem('geektunes-user');
+          }
+        } else {
+          console.log('AuthProvider: No stored user found');
         }
+      } catch (error) {
+        console.error('AuthProvider: Error loading stored user:', error);
+        localStorage.removeItem('geektunes-user');
       }
-    } catch (error) {
-      console.error('AuthProvider: Error loading stored user:', error);
-      localStorage.removeItem('geektunes-user');
-    }
-    setIsLoading(false);
+      setIsLoading(false);
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const login = async (username: string, password: string) => {

@@ -184,8 +184,8 @@ export default async function handler(req: any, res: any) {
       });
     }
     
-    // User endpoint - check for authentication token in headers
-    if (url === '/api/user' && method === 'GET') {
+    // User endpoint - check for authentication token in headers (both /api/user and /api/usuário)
+    if ((url === '/api/user' || url === '/api/usuário') && method === 'GET') {
       // For demo purposes on Vercel, we'll check Authorization header
       const authHeader = req.headers.authorization;
       const userToken = req.headers['x-user-token'];
