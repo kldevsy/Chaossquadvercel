@@ -185,6 +185,10 @@ Preferred communication style: Simple, everyday language.
 - **June 27, 2025**: Adicionadas notificações de demonstração ao banco PostgreSQL para funcionalidade completa
 - **June 27, 2025**: Criado usuário demo (demo/demo123) para testes - autenticação e sessões funcionais
 - **June 27, 2025**: Projeto 100% funcional localmente - pronto para deploy no Vercel sem erros
+- **June 27, 2025**: CORREÇÃO CRÍTICA - Implementado sistema de autenticação simplificado para resolver bug da tela vazia no Vercel
+- **June 27, 2025**: Criado sistema de auth baseado em localStorage puro, sem dependência de React Query para Vercel
+- **June 27, 2025**: Adicionada página de debug (/debug) para diagnosticar problemas de autenticação em produção
+- **June 27, 2025**: Criados hooks useAuthSimple e auth-simple.tsx para máxima compatibilidade com deployment serverless
 
 ## User Preferences
 

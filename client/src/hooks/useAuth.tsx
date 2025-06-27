@@ -36,25 +36,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     data: user,
     error,
     isLoading,
-  } = useQuery<SelectUser | undefined, Error>({
+  } = useQuery<SelectUser | null, Error>({
     queryKey: ["/api/user"],
     retry: false,
+    staleTime: 1000 * 60 * 5, // 5 minutes
     queryFn: async () => {
-      // Always try to get user from localStorage first
-      const storedUser = localStorage.getItem('geektunes-user');
-      if (storedUser) {
-        try {
+      // Always try to get user from localStorage first for Vercel compatibility
+      try {
+        const storedUser = localStorage.getItem('geektunes-user');
+        if (storedUser) {
           const userData = JSON.parse(storedUser);
           // Validate the stored user has required fields
           if (userData && userData.id && userData.username) {
+            console.log('User found in localStorage:', userData.username);
             return userData;
           }
-        } catch (e) {
-          localStorage.removeItem('geektunes-user');
         }
+      } catch (e) {
+        console.error('Error parsing stored user:', e);
+        localStorage.removeItem('geektunes-user');
       }
       
-      // If no valid stored user, the user is not authenticated
+      console.log('No valid user found, returning null');
       return null;
     },
   });
