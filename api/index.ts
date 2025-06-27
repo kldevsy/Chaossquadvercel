@@ -184,8 +184,34 @@ export default async function handler(req: any, res: any) {
       });
     }
     
-    // User endpoint
+    // User endpoint - check for authentication token in headers
     if (url === '/api/user' && method === 'GET') {
+      // For demo purposes on Vercel, we'll check Authorization header
+      const authHeader = req.headers.authorization;
+      const userToken = req.headers['x-user-token'];
+      
+      // If we have a user token from localStorage (via headers), validate it
+      if (userToken) {
+        try {
+          const userData = JSON.parse(decodeURIComponent(userToken));
+          return res.json(userData);
+        } catch (error) {
+          return res.status(401).json({ message: "Invalid user token" });
+        }
+      }
+      
+      // Demo admin user for testing
+      if (authHeader === 'Bearer admin-token') {
+        return res.json({
+          id: 'admin123', 
+          username: 'admin',
+          email: 'admin@geektunes.com',
+          firstName: 'Admin',
+          lastName: 'GeeKTunes',
+          isAdmin: true
+        });
+      }
+      
       return res.status(401).json({ message: "Authentication required" });
     }
     

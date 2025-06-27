@@ -40,22 +40,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryKey: ["/api/user"],
     retry: false,
     queryFn: async () => {
-      // Try to get user from localStorage first
+      // Always try to get user from localStorage first
       const storedUser = localStorage.getItem('geektunes-user');
       if (storedUser) {
         try {
-          return JSON.parse(storedUser);
+          const userData = JSON.parse(storedUser);
+          // Validate the stored user has required fields
+          if (userData && userData.id && userData.username) {
+            return userData;
+          }
         } catch (e) {
           localStorage.removeItem('geektunes-user');
         }
       }
       
-      // If no stored user, try API (will likely return 401)
-      const res = await fetch('/api/user');
-      if (!res.ok) {
-        return null;
-      }
-      return res.json();
+      // If no valid stored user, the user is not authenticated
+      return null;
     },
   });
 
@@ -78,8 +78,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         title: "Login realizado",
         description: `Bem-vindo de volta, ${user.username}!`,
       });
-      // Force page refresh to ensure state is updated
-      setTimeout(() => window.location.href = '/', 100);
     },
     onError: (error: Error) => {
       toast({
@@ -109,8 +107,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         title: "Conta criada",
         description: `Bem-vindo ao GeeKTunes, ${user.username}!`,
       });
-      // Force page refresh to ensure state is updated
-      setTimeout(() => window.location.href = '/', 100);
     },
     onError: (error: Error) => {
       toast({
