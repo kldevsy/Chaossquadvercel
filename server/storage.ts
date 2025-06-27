@@ -462,6 +462,7 @@ export class MemStorage implements IStorage {
     // Initialize with sample data
     this.initializeArtists();
     this.initializeProjects();
+    this.initializeNotifications();
   }
 
   private initializeArtists() {
@@ -558,6 +559,51 @@ export class MemStorage implements IStorage {
         releaseDate: project.releaseDate || null
       };
       this.projects.set(id, newProject);
+    });
+  }
+
+  private initializeNotifications() {
+    const sampleNotifications = [
+      {
+        title: "Bem-vindo ao GeeKTunes!",
+        message: "Descubra uma nova dimensão da música geek. Explore artistas únicos, projetos colaborativos e conecte-se com a comunidade!",
+        type: "info" as const,
+        targetType: "all" as const,
+        userId: null,
+        relatedMessageId: null
+      },
+      {
+        title: "Novo Projeto Lançado",
+        message: "O projeto 'Cyber City' foi lançado! Confira esta incrível colaboração entre artistas cyberpunk.",
+        type: "success" as const,
+        targetType: "all" as const,
+        userId: null,
+        relatedMessageId: null
+      },
+      {
+        title: "Comunidade Crescendo",
+        message: "Já somos mais de 1000 artistas conectados! Junte-se à revolução da música geek.",
+        type: "info" as const,
+        targetType: "all" as const,
+        userId: null,
+        relatedMessageId: null
+      }
+    ];
+
+    sampleNotifications.forEach(notif => {
+      const id = this.currentNotificationId++;
+      const notification: Notification = {
+        id,
+        title: notif.title,
+        message: notif.message,
+        type: notif.type,
+        userId: notif.userId,
+        targetType: notif.targetType,
+        relatedMessageId: notif.relatedMessageId,
+        isActive: true,
+        createdAt: new Date().toISOString()
+      };
+      this.notifications.set(id, notification);
     });
   }
 

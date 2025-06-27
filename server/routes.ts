@@ -67,11 +67,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
 
-  // Notifications routes
-  app.get("/api/notifications", isAuthenticated, async (req: any, res) => {
+  // Notifications routes - public access
+  app.get("/api/notifications", async (req: any, res) => {
     try {
-      const userId = req.user.id;
-      const notifications = await storage.getUserNotifications(userId);
+      const notifications = await storage.getActiveNotifications();
       res.json(notifications);
     } catch (error) {
       console.error("Error fetching notifications:", error);

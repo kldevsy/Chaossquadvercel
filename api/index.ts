@@ -90,7 +90,7 @@ export default async function handler(req: any, res: any) {
       return res.json(projects);
     }
     
-    // Notifications endpoint
+    // Notifications endpoint - public access
     if (url === '/api/notifications' && method === 'GET') {
       const notifications = [
         {
@@ -108,6 +108,16 @@ export default async function handler(req: any, res: any) {
           title: "Novo Projeto Lançado",
           message: "O projeto 'Cyber City' foi lançado! Confira esta incrível colaboração entre artistas cyberpunk.",
           type: "success",
+          targetType: "all",
+          targetUserId: null,
+          isActive: true,
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: 3,
+          title: "Comunidade Crescendo",
+          message: "Já somos mais de 1000 artistas conectados! Junte-se à revolução da música geek.",
+          type: "info",
           targetType: "all",
           targetUserId: null,
           isActive: true,

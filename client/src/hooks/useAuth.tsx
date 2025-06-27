@@ -39,6 +39,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   } = useQuery<SelectUser | undefined, Error>({
     queryKey: ["/api/user"],
     retry: false,
+    queryFn: async () => {
+      // Try to get user from localStorage first
+      const storedUser = localStorage.getItem('geektunes-user');
+      if (storedUser) {
+        try {
+          return JSON.parse(storedUser);
+        } catch (e) {
+          localStorage.removeItem('geektunes-user');
+        }
+      }
+      
+      // If no stored user, try API (will likely return 401)
+      const res = await fetch('/api/user');
+      if (!res.ok) {
+        return null;
+      }
+      return res.json();
+    },
   });
 
   const loginMutation = useMutation({
@@ -46,16 +64,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await apiRequest("POST", "/api/login", credentials);
       if (!res.ok) {
         const error = await res.json();
-        throw new Error(error.message || "Login failed");
+        throw new Error(error.error || "Login failed");
       }
-      return await res.json();
+      const data = await res.json();
+      return data.user;
     },
     onSuccess: (user: SelectUser) => {
+      // Save to localStorage for persistence
+      localStorage.setItem('geektunes-user', JSON.stringify(user));
       queryClient.setQueryData(["/api/user"], user);
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
         title: "Login realizado",
         description: `Bem-vindo de volta, ${user.username}!`,
       });
+      // Force page refresh to ensure state is updated
+      setTimeout(() => window.location.href = '/', 100);
     },
     onError: (error: Error) => {
       toast({
@@ -71,16 +95,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await apiRequest("POST", "/api/register", credentials);
       if (!res.ok) {
         const error = await res.json();
-        throw new Error(error.message || "Registration failed");
+        throw new Error(error.error || "Registration failed");
       }
-      return await res.json();
+      const data = await res.json();
+      return data.user;
     },
     onSuccess: (user: SelectUser) => {
+      // Save to localStorage for persistence
+      localStorage.setItem('geektunes-user', JSON.stringify(user));
       queryClient.setQueryData(["/api/user"], user);
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
         title: "Conta criada",
         description: `Bem-vindo ao GeeKTunes, ${user.username}!`,
       });
+      // Force page refresh to ensure state is updated
+      setTimeout(() => window.location.href = '/', 100);
     },
     onError: (error: Error) => {
       toast({
@@ -93,13 +123,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/logout");
-      if (!res.ok) {
-        throw new Error("Logout failed");
-      }
+      // Remove from localStorage
+      localStorage.removeItem('geektunes-user');
+      return Promise.resolve();
     },
     onSuccess: () => {
       queryClient.setQueryData(["/api/user"], null);
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
         title: "Logout realizado",
         description: "Até a próxima!",
